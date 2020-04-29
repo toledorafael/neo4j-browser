@@ -21,3 +21,5 @@ signature.pem
 HEAD
 neo4j-enterprise-*/
 .settings/
+.classpath
+.project
