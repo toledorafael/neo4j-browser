@@ -148,6 +148,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     }
   })
 
+  // rect.on(wheel, function(d) {
+  //   var direction = d3.event.wheelDelta < 0 ? 'down' : 'up'
+  //   isZoomingIn = direction === 'up' ? d : d.parent
+  //   return zoomClick(this)
+  // })
+
   baseGroup
     .call(zoomBehavior)
     .on('dblclick.zoom', null)

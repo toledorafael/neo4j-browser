@@ -35,6 +35,14 @@ export function createGraph (nodes, relationships) {
   return graph
 }
 
+export function createInteractionsBundling () {
+  // let hierachy = new hierarchy()
+  // hierarchy.addNodes()
+  // hierarchy.addLinks()
+  // hierarchy.display = {}
+  // return hierarchy
+}
+
 export function mapNodes (nodes) {
   return nodes.map(
     node => new Node(node.id, node.labels, mapProperties(node.properties))

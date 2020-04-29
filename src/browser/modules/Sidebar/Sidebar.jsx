@@ -77,6 +77,12 @@ class Sidebar extends Component {
         title: 'Documentation',
         icon: isOpen => <DocumentsIcon isOpen={isOpen} title='Documentation' />,
         content: DocumentsDrawer
+      },
+      {
+        name: 'FileInteractions',
+        title: 'FileInteractions',
+        icon: isOpen => <CloudSyncIcon isOpen={isOpen} title='FileInteraction' />, // get new icon
+        content: DocumentsDrawer // define drawer for visualization panels
       }
     ]
     const bottomNavItemsList = [
