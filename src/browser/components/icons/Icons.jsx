@@ -40,6 +40,7 @@ import Text201 from 'icons/Text2-01.svg'
 import appWindowCode from 'icons/app-window-code.svg'
 import arrowLeft1 from 'icons/arrow-left-1.svg'
 import arrowRight1 from 'icons/arrow-right-1.svg'
+import hierachyInteract from 'icons/hierarchy-8.svg'
 
 const inactive = `
   color: #797979;
@@ -47,6 +48,9 @@ const inactive = `
 `
 const green = `
   color: #4cd950;
+`
+const yellow = `
+  color: #ffff00;
 `
 const successGreen = `
   color: #4cd950;
@@ -85,6 +89,24 @@ const credits = css`
 const databaseConnectionStateStyles = {
   connected: {
     active: green,
+    inactive: inactive,
+    classModifier: 'check'
+  },
+  disconnected: {
+    active: warningRed,
+    inactive: inactive,
+    classModifier: 'delete'
+  },
+  pending: {
+    active: alertYellow,
+    inactive: inactive,
+    classModifier: 'alert'
+  }
+}
+
+const fileInteractionsStateStyles = {
+  connected: {
+    active: yellow,
     inactive: inactive,
     classModifier: 'check'
   },
@@ -158,6 +180,20 @@ export const CloudSyncIcon = props => {
       activeStyle={connected ? successGreen : warningRed}
       inactiveStyle={connected ? inactive : warningRed}
       icon={connected ? cloudCheck : cloudRemove}
+      width={28}
+      {...rest}
+    />
+  )
+}
+
+export const FileInteractionsIcon = props => {
+  const { connectionState, ...rest } = props
+  return (
+    <IconContainer
+      activeStyle={fileInteractionsStateStyles[connectionState].active}
+      inactiveStyle={fileInteractionsStateStyles[connectionState].inactive}
+      className={fileInteractionsStateStyles[connectionState].classModifier}
+      icon={hierachyInteract}
       width={28}
       {...rest}
     />

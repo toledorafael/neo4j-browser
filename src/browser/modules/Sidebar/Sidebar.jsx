@@ -41,7 +41,8 @@ import {
   DocumentsIcon,
   CloudSyncIcon,
   SettingsIcon,
-  AboutIcon
+  AboutIcon,
+  FileInteractionsIcon
 } from 'browser-components/icons/Icons'
 
 class Sidebar extends Component {
@@ -81,7 +82,13 @@ class Sidebar extends Component {
       {
         name: 'FileInteractions',
         title: 'FileInteractions',
-        icon: isOpen => <CloudSyncIcon isOpen={isOpen} title='FileInteraction' />, // get new icon
+        icon: isOpen => (
+          <FileInteractionsIcon
+            isOpen={isOpen}
+            connectionState={this.props.neo4jConnectionState}
+            title='FileInteraction'
+          />
+        ),
         content: DocumentsDrawer // define drawer for visualization panels
       }
     ]
