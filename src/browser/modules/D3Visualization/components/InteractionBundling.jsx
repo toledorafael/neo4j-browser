@@ -3,7 +3,7 @@ import '../lib/visualization/index'
 // import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton } from './styled'
 // import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 
-export class FileInteractionsComponent extends Component {
+export class VisualAnalysisComponent extends Component {
   state = {
     zoomInLimitReached: true,
     zoomOutLimitReached: false,

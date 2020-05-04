@@ -57,7 +57,7 @@ export function getRecentView (state) {
 /**
  * Reducer helpers
  */
-function addFrame (state, newState) {
+function addFrame (state, newState) { // Should handle my frames
   if (newState.parentId && state.allIds.indexOf(newState.parentId) < 0) {
     // No parent
     return state

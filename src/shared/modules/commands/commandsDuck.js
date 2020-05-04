@@ -159,6 +159,7 @@ export const handleCommandEpic = (action$, store) =>
       const parentId = action.parentId || v4()
       store.dispatch(
         addFrame({ type: 'cypher-script', id: parentId, cmd: action.cmd })
+        // addFrame({ type: 'analysis-script',....})
       )
       const cmdchar = getCmdChar(store.getState())
       let jobs = []

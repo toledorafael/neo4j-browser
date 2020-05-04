@@ -29,6 +29,7 @@ import Settings from './Settings'
 import BrowserSync from './../Sync/BrowserSync'
 import { isUserSignedIn } from 'shared/modules/sync/syncDuck'
 import { useBrowserSync } from 'shared/modules/features/featuresDuck'
+import { VisualAnalysis } from '../VisualAnalysis/VisualAnalysis'
 import {
   PENDING_STATE,
   CONNECTED_STATE,
@@ -42,7 +43,7 @@ import {
   CloudSyncIcon,
   SettingsIcon,
   AboutIcon,
-  FileInteractionsIcon
+  VisualAnalysisIcon
 } from 'browser-components/icons/Icons'
 
 class Sidebar extends Component {
@@ -50,6 +51,7 @@ class Sidebar extends Component {
     const openDrawer = this.props.openDrawer
     const onNavClick = this.props.onNavClick
     const DatabaseDrawer = DatabaseInfo
+    const VisualAnalysisDrawer = VisualAnalysis
     const FavoritesDrawer = Favorites
     const DocumentsDrawer = Documents
     const SettingsDrawer = Settings
@@ -80,16 +82,16 @@ class Sidebar extends Component {
         content: DocumentsDrawer
       },
       {
-        name: 'FileInteractions',
-        title: 'FileInteractions',
+        name: 'VisualAnalysis',
+        title: 'VisualAnalysis',
         icon: isOpen => (
-          <FileInteractionsIcon
+          <VisualAnalysisIcon
             isOpen={isOpen}
             connectionState={this.props.neo4jConnectionState}
-            title='FileInteraction'
+            title='VisualAnalysis'
           />
         ),
-        content: DocumentsDrawer // define drawer for visualization panels
+        content: VisualAnalysisDrawer // define drawer for visualization panels
       }
     ]
     const bottomNavItemsList = [

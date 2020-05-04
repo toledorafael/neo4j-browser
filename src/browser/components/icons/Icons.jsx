@@ -186,7 +186,7 @@ export const CloudSyncIcon = props => {
   )
 }
 
-export const FileInteractionsIcon = props => {
+export const VisualAnalysisIcon = props => {
   const { connectionState, ...rest } = props
   return (
     <IconContainer

@@ -28,8 +28,8 @@ import {
 } from 'browser-components/drawer'
 import {
   StyledLabel,
-  StyledRelationship,
-  StyledProperty,
+  // StyledRelationship,
+  // StyledProperty,
   StyledShowMoreContainer,
   StyledShowMoreLink
 } from './styled'
@@ -125,95 +125,50 @@ const LabelItems = ({
     </DrawerSection>
   )
 }
-const RelationshipItems = ({
-  relationshipTypes = [],
+
+const VisualAnalysisItems = ({
+  //TODO: Set what arguments will be used
+  labels = [],
   totalNumItems,
   onItemClick,
   moreStep,
   onMoreClick,
   count
 }) => {
-  let relationshipItems = <p>No relationships in database</p>
-  if (relationshipTypes.length > 0) {
-    const editorCommandTemplate = (text, i) => {
+  //TODO: set the editorCommandTemplate that will be used to get the needed data
+  let labelItems = <p>There are no labels in database</p>
+  if (labels.length) {
+    const editorCommandTemplate = (text, i) => { // CYPHER QUERY DEFINED FOR EACH BUTTON
       if (i === 0) {
-        return 'MATCH p=()-->() RETURN p LIMIT 25'
+        return 'MATCH (n) RETURN n LIMIT 25'
       }
-      return `MATCH p=()-[r:${ecsapeCypherMetaItem(
-        text
-      )}]->() RETURN p LIMIT 25`
+      return `MATCH (n:${ecsapeCypherMetaItem(text)}) RETURN n LIMIT 25`
     }
-    relationshipItems = createItems(
-      relationshipTypes,
+
+    //TODO: create visualization item
+    labelItems = createItems(
+      labels,
       onItemClick,
-      { component: StyledRelationship },
+      { component: StyledLabel },
       editorCommandTemplate,
       true,
       count
     )
   }
+  //TODO:  draw menu
   return (
     <DrawerSection>
-      <DrawerSubHeader>Relationship Types</DrawerSubHeader>
+      <DrawerSubHeader>Node Labels</DrawerSubHeader>
       <DrawerSectionBody
         className={classNames({
           [styles['wrapper']]: true
         })}
       >
-        {relationshipItems}
+        {labelItems}
       </DrawerSectionBody>
       <ShowMore
         total={totalNumItems}
-        shown={relationshipTypes.length}
-        moreStep={moreStep}
-        onMore={onMoreClick}
-      />
-    </DrawerSection>
-  )
-}
-const PropertyItems = ({
-  properties,
-  totalNumItems,
-  onItemClick,
-  moreStep,
-  onMoreClick
-}) => {
-  let propertyItems = <p>There are no properties in database</p>
-  if (properties.length > 0) {
-    const editorCommandTemplate = text => {
-      return `MATCH (n) WHERE EXISTS(n.${ecsapeCypherMetaItem(
-        text
-      )}) RETURN DISTINCT "node" as entity, n.${ecsapeCypherMetaItem(
-        text
-      )} AS ${ecsapeCypherMetaItem(
-        text
-      )} LIMIT 25 UNION ALL MATCH ()-[r]-() WHERE EXISTS(r.${ecsapeCypherMetaItem(
-        text
-      )}) RETURN DISTINCT "relationship" AS entity, r.${ecsapeCypherMetaItem(
-        text
-      )} AS ${ecsapeCypherMetaItem(text)} LIMIT 25`
-    }
-    propertyItems = createItems(
-      properties,
-      onItemClick,
-      { component: StyledProperty },
-      editorCommandTemplate,
-      false
-    )
-  }
-  return (
-    <DrawerSection>
-      <DrawerSubHeader>Property Keys</DrawerSubHeader>
-      <DrawerSectionBody
-        className={classNames({
-          [styles['wrapper']]: true
-        })}
-      >
-        {propertyItems}
-      </DrawerSectionBody>
-      <ShowMore
-        total={totalNumItems}
-        shown={properties.length}
+        shown={labels.length}
         moreStep={moreStep}
         onMore={onMoreClick}
       />
@@ -221,4 +176,101 @@ const PropertyItems = ({
   )
 }
 
-export { LabelItems, RelationshipItems, PropertyItems }
+// const RelationshipItems = ({
+//   relationshipTypes = [],
+//   totalNumItems,
+//   onItemClick,
+//   moreStep,
+//   onMoreClick,
+//   count
+// }) => {
+//   let relationshipItems = <p>No relationships in database</p>
+//   if (relationshipTypes.length > 0) {
+//     const editorCommandTemplate = (text, i) => {
+//       if (i === 0) {
+//         return 'MATCH p=()-->() RETURN p LIMIT 25'
+//       }
+//       return `MATCH p=()-[r:${ecsapeCypherMetaItem(
+//         text
+//       )}]->() RETURN p LIMIT 25`
+//     }
+//     relationshipItems = createItems(
+//       relationshipTypes,
+//       onItemClick,
+//       { component: StyledRelationship },
+//       editorCommandTemplate,
+//       true,
+//       count
+//     )
+//   }
+//   return (
+//     <DrawerSection>
+//       <DrawerSubHeader>Relationship Types</DrawerSubHeader>
+//       <DrawerSectionBody
+//         className={classNames({
+//           [styles['wrapper']]: true
+//         })}
+//       >
+//         {relationshipItems}
+//       </DrawerSectionBody>
+//       <ShowMore
+//         total={totalNumItems}
+//         shown={relationshipTypes.length}
+//         moreStep={moreStep}
+//         onMore={onMoreClick}
+//       />
+//     </DrawerSection>
+//   )
+// }
+// const PropertyItems = ({
+//   properties,
+//   totalNumItems,
+//   onItemClick,
+//   moreStep,
+//   onMoreClick
+// }) => {
+//   let propertyItems = <p>There are no properties in database</p>
+//   if (properties.length > 0) {
+//     const editorCommandTemplate = text => {
+//       return `MATCH (n) WHERE EXISTS(n.${ecsapeCypherMetaItem(
+//         text
+//       )}) RETURN DISTINCT "node" as entity, n.${ecsapeCypherMetaItem(
+//         text
+//       )} AS ${ecsapeCypherMetaItem(
+//         text
+//       )} LIMIT 25 UNION ALL MATCH ()-[r]-() WHERE EXISTS(r.${ecsapeCypherMetaItem(
+//         text
+//       )}) RETURN DISTINCT "relationship" AS entity, r.${ecsapeCypherMetaItem(
+//         text
+//       )} AS ${ecsapeCypherMetaItem(text)} LIMIT 25`
+//     }
+//     propertyItems = createItems(
+//       properties,
+//       onItemClick,
+//       { component: StyledProperty },
+//       editorCommandTemplate,
+//       false
+//     )
+//   }
+//   return (
+//     <DrawerSection>
+//       <DrawerSubHeader>Property Keys</DrawerSubHeader>
+//       <DrawerSectionBody
+//         className={classNames({
+//           [styles['wrapper']]: true
+//         })}
+//       >
+//         {propertyItems}
+//       </DrawerSectionBody>
+//       <ShowMore
+//         total={totalNumItems}
+//         shown={properties.length}
+//         moreStep={moreStep}
+//         onMore={onMoreClick}
+//       />
+//     </DrawerSection>
+//   )
+// }
+
+// export { LabelItems, RelationshipItems, PropertyItems }
+export { LabelItems, VisualAnalysisItems }
