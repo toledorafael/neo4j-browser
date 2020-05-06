@@ -21,6 +21,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DatabaseInfo from '../DatabaseInfo/DatabaseInfo'
+import VisualAnalysis from '../VisualAnalysis/VisualAnalysis'
 import Favorites from './Favorites'
 import Documents from './Documents'
 import About from './About'
@@ -29,7 +30,7 @@ import Settings from './Settings'
 import BrowserSync from './../Sync/BrowserSync'
 import { isUserSignedIn } from 'shared/modules/sync/syncDuck'
 import { useBrowserSync } from 'shared/modules/features/featuresDuck'
-import { VisualAnalysis } from '../VisualAnalysis/VisualAnalysis'
+
 import {
   PENDING_STATE,
   CONNECTED_STATE,

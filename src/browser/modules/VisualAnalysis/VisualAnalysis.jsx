@@ -23,7 +23,10 @@ import { connect } from 'react-redux'
 import { withBus } from 'react-suber'
 import { executeCommand } from 'shared/modules/commands/commandsDuck'
 import { getCurrentUser } from 'shared/modules/currentUser/currentUserDuck'
-import { LabelItems, VisualAnalysisItems } from './MenuItems'
+import { VisualAnalysisItems } from './MenuItems'
+// import { VisualAnalysisItems } from './MenuItems'
+// import { UserDetails } from '../DatabaseInfo/UserDetails'
+// import DatabaseKernelInfo from '../DatabaseInfo/DatabaseKernelInfo'
 import { Drawer, DrawerBody, DrawerHeader } from 'browser-components/drawer'
 
 export class VisualAnalysis extends Component {
@@ -44,29 +47,30 @@ export class VisualAnalysis extends Component {
   render () {
     const {
       labels = [],
-      relationshipTypes = [],
-      properties = [],
-      databaseKernelInfo,
-      nodes,
-      relationships
+      // relationshipTypes = [],
+      // properties = [],
+      // databaseKernelInfo,
+      // relationships,
+      nodes
     } = this.props.meta
-    const { user, onItemClick } = this.props
+    // const { user, onItemClick } = this.props
+    const { onItemClick } = this.props
 
     return (
       <Drawer id='vis-drawer'>
-        <DrawerHeader>Database Information</DrawerHeader>
+        <DrawerHeader>Visual Analysis</DrawerHeader>
         <DrawerBody>
-          <LabelItems
+          {/* <LabelItems
             count={nodes}
             labels={labels.slice(0, this.state.labelsMax).map(l => l.val)}
             totalNumItems={labels.length}
             onItemClick={onItemClick}
             onMoreClick={this.onMoreClick.bind(this)('labels')}
             moreStep={this.state.moreStep}
-          />
+          /> */}
 
           <VisualAnalysisItems
-
+            onItemClick={onItemClick}
           />
 
         </DrawerBody>
