@@ -150,7 +150,7 @@ const createVizItems = (
 const VisualAnalysisItems = ({
   onItemClick
 }) => {
-  let itemsList = ['Component interactions']
+  let itemsList = ['Database Schema']
   // TODO: set the editorCommandTemplate that will be used to get the needed data
   let vizItems = <p>No visualization templates</p>
   if (itemsList.length) {
