@@ -193,6 +193,45 @@ const availableCommands = [
     }
   },
   {
+    name: 'analysis',
+    match: cmd => /^analysis$/.test(cmd),
+    exec: (action, cmdchar, put, store) => {
+      const state = store.getState()
+      const newAction = Object.assign(action, {cmd: action.cmd.substr(1)})
+      const [id, request] = handleCypherCommand(
+        newAction,
+        put,
+        getParams(state),
+        shouldUseCypherThread(state),
+        newAction.type === SINGLE_COMMAND_QUEUED
+          ? getUserDirectTxMetadata({
+            hasServerSupport: canSendTxMetadata(store.getState())
+          })
+          : getBackgroundTxMetadata({
+            hasServerSupport: canSendTxMetadata(store.getState())
+          })
+      )
+      put(cypher(newAction.cmd))
+      put(frames.add({ ...newAction, type: 'analysis', requestId: id }))
+      return request
+        .then(res => {
+          put(updateQueryResult(id, res, REQUEST_STATUS_SUCCESS))
+          put(successfulCypher(newAction.cmd))
+          return res
+        })
+        .catch(function (e) {
+          const request = getRequest(store.getState(), id)
+          // Only update error statuses for pending queries
+          if (request.status !== REQUEST_STATUS_PENDING) {
+            return
+          }
+          put(updateQueryResult(id, e, REQUEST_STATUS_ERROR))
+          put(unsuccessfulCypher(newAction.cmd))
+          throw e
+        })
+    }
+  },
+  {
     name: 'server',
     match: cmd => /^server(\s)/.test(cmd),
     exec: (action, cmdchar, put, store) => {

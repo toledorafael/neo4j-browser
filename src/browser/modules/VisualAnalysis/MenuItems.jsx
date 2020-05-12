@@ -33,7 +33,7 @@ import {
   // StyledShowMoreContainer,
   // StyledShowMoreLink
 } from './styled'
-import Render from 'browser-components/Render'
+// import Render from 'browser-components/Render'
 
 // const ShowMore = ({ total, shown, moreStep, onMore }) => {
 //   const numMore = total - shown > moreStep ? moreStep : total - shown
@@ -150,12 +150,21 @@ const createVizItems = (
 const VisualAnalysisItems = ({
   onItemClick
 }) => {
-  let itemsList = ['Database Schema']
+  let itemsList = ['DatabaseSchema', 'ComponentsInteraction']
   // TODO: set the editorCommandTemplate that will be used to get the needed data
   let vizItems = <p>No visualization templates</p>
   if (itemsList.length) {
     const editorCommandTemplate = (text, i) => {
-      return 'CALL db.schema()'
+      switch (text) {
+        case 'DatabaseSchema':
+          return 'CALL db.schema()'
+
+        case 'ComponentsInteraction':
+          return '!CALL db.schema()' // Change this query to query requiring filenames or rings and their interactions
+
+        default:
+          break
+      }
     }
 
     vizItems = createVizItems(

@@ -22,6 +22,7 @@ import { connect } from 'react-redux'
 import React, { PureComponent } from 'react'
 import { StyledStream } from './styled'
 
+import AnalysisFrame from './CypherFrame/AnalysisFrame'
 import CypherFrame from './CypherFrame/index'
 import HistoryFrame from './HistoryFrame'
 import PlayFrame from './PlayFrame'
@@ -48,6 +49,7 @@ import { getScrollToTop } from 'shared/modules/settings/settingsDuck'
 
 const getFrame = type => {
   const trans = {
+    analysis: AnalysisFrame,
     error: ErrorFrame,
     cypher: CypherFrame,
     'cypher-script': CypherScriptFrame,
