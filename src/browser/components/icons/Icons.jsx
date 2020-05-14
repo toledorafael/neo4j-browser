@@ -40,7 +40,8 @@ import Text201 from 'icons/Text2-01.svg'
 import appWindowCode from 'icons/app-window-code.svg'
 import arrowLeft1 from 'icons/arrow-left-1.svg'
 import arrowRight1 from 'icons/arrow-right-1.svg'
-import hierachyInteract from 'icons/hierarchy-8.svg'
+import visualAnalysis from 'icons/hierarchy-8.svg'
+import componentInteraction from 'icons/hierarchy-9.svg'
 
 const inactive = `
   color: #797979;
@@ -193,7 +194,7 @@ export const VisualAnalysisIcon = props => {
       activeStyle={fileInteractionsStateStyles[connectionState].active}
       inactiveStyle={fileInteractionsStateStyles[connectionState].inactive}
       className={fileInteractionsStateStyles[connectionState].classModifier}
-      icon={hierachyInteract}
+      icon={visualAnalysis}
       width={28}
       {...rest}
     />
@@ -236,6 +237,9 @@ export const AsciiIcon = () => (
 )
 export const CodeIcon = () => (
   <IconContainer icon={appWindowCode} text='Code' width={20} />
+)
+export const ComponentInteractionIcon = () => (
+  <IconContainer icon={componentInteraction} text='Interactions' width={20} />
 )
 export const PlanIcon = () => (
   <IconContainer className='sl-hierarchy' text='Plan' />

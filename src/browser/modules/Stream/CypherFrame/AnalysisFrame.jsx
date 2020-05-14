@@ -38,7 +38,7 @@ import {
   AlertIcon,
   ErrorIcon,
   Spinner,
-  VisualAnalysisIcon
+  ComponentInteractionIcon
 } from 'browser-components/icons/Icons'
 import { AsciiView, AsciiStatusbar } from './AsciiView'
 import { TableView, TableStatusbar } from './TableView'
@@ -47,6 +47,7 @@ import { ErrorsViewBus as ErrorsView, ErrorsStatusbar } from './ErrorsView'
 import { WarningsView, WarningsStatusbar } from './WarningsView'
 import { PlanView, PlanStatusbar } from './PlanView'
 import { VisualizationConnectedBus } from './VisualizationView'
+import { ComponentInteractionConnectedBus } from './ComponentInteractionView'
 import Render from 'browser-components/Render'
 import Display from 'browser-components/Display'
 import * as viewTypes from 'shared/modules/stream/frameViewTypes'
@@ -212,12 +213,12 @@ export class AnalysisFrame extends Component {
         </Render>
         <Render if={!resultIsError(this.props.request)}>
           <CypherFrameButton
-            selected={this.state.openView === viewTypes.CODE}
+            selected={this.state.openView === viewTypes.COMPONENTINTERACTION}
             onClick={() => {
-              this.changeView(viewTypes.CODE)
+              this.changeView(viewTypes.COMPONENTINTERACTION)
             }}
           >
-            <PlanIcon />
+            <ComponentInteractionIcon />
           </CypherFrameButton>
         </Render>
 
@@ -312,6 +313,22 @@ export class AnalysisFrame extends Component {
             maxNeighbours={this.props.maxNeighbours}
           />
         </Display>
+        <Display if={this.state.openView === viewTypes.COMPONENTINTERACTION} lazy>
+          <ComponentInteractionConnectedBus
+            {...this.state}
+            result={result}
+            updated={this.props.request.updated}
+            setParentState={this.setState.bind(this)}
+            frameHeight={this.state.frameHeight}
+            assignVisElement={(svgElement, graphElement) => {
+              this.visElement = { svgElement, graphElement, type: 'graph' }
+              this.setState({ hasVis: true })
+            }}
+            initialNodeDisplay={this.props.initialNodeDisplay}
+            autoComplete={this.props.autoComplete}
+            maxNeighbours={this.props.maxNeighbours}
+          />
+        </Display>
       </StyledFrameBody>
     )
   }
@@ -384,8 +401,9 @@ export class AnalysisFrame extends Component {
       ) : (
         this.getFrameContents(request, result, query)
       )
-    const statusBar =
-      this.state.openView !== viewTypes.VISUALIZATION
+    const statusBar = // TODO: Not sure if our vis will have a status bar info
+      ((this.state.openView !== viewTypes.VISUALIZATION) &&
+        (this.state.openView !== viewTypes.COMPONENTINTERACTION))
         ? this.getStatusbar(result)
         : null
 
@@ -401,7 +419,8 @@ export class AnalysisFrame extends Component {
         visElement={
           this.state.hasVis &&
           (this.state.openView === viewTypes.VISUALIZATION ||
-            this.state.openView === viewTypes.PLAN)
+            this.state.openView === viewTypes.COMPONENTINTERACTION ||
+              this.state.openView === viewTypes.PLAN)
             ? this.visElement
             : null
         }

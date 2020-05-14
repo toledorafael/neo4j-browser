@@ -160,7 +160,7 @@ const VisualAnalysisItems = ({
           return 'CALL db.schema()'
 
         case 'ComponentsInteraction':
-          return '!CALL db.schema()' // Change this query to query requiring filenames or rings and their interactions
+          return '!MATCH (n:cFile) RETURN n' // Change this query to query requiring filenames or rings and their interactions
 
         default:
           break
