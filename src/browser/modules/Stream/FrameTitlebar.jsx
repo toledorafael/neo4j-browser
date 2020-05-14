@@ -99,7 +99,7 @@ class FrameTitlebar extends Component {
     let props = this.props
     const { frame = {} } = props
     return (
-      (frame.type === 'cypher' && (this.hasData() || props.visElement)) ||
+      ((frame.type === 'cypher' || frame.type === 'analysis') && (this.hasData() || props.visElement)) ||
       (frame.type === 'style' && this.hasData())
     )
   }
@@ -135,7 +135,7 @@ class FrameTitlebar extends Component {
                       </DropdownItem>
                     </span>
                   </Render>
-                  <Render if={this.hasData() && frame.type === 'cypher'}>
+                  <Render if={this.hasData() && (frame.type === 'cypher' || frame.type === 'analysis')}>
                     <DropdownItem
                       onClick={() => this.exportCSV(props.getRecords())}
                     >
@@ -165,7 +165,7 @@ class FrameTitlebar extends Component {
             <PinIcon />
           </FrameButton>
           <Render
-            if={['cypher', 'play', 'play-remote', 'queries'].includes(
+            if={['cypher', 'play', 'play-remote', 'queries', 'analysis'].includes(
               frame.type
             )}
           >
@@ -182,7 +182,7 @@ class FrameTitlebar extends Component {
           >
             {expandCollapseIcon}
           </FrameButton>
-          <Render if={['cypher', 'style'].includes(frame.type)}>
+          <Render if={['cypher', 'style', 'analysis'].includes(frame.type)}>
             <FrameButton
               data-testid='rerunFrameButton'
               title='Rerun'
