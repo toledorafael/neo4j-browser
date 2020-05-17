@@ -83,6 +83,7 @@ export class GraphComponent extends Component {
         }
       }
       this.graph = createGraph(this.props.nodes, this.props.relationships)
+      // console.log(this.graph)
       this.graphView = new NeoConstructor(
         this.svgElement,
         measureSize,

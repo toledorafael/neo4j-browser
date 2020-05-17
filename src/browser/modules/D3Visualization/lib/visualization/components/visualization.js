@@ -331,8 +331,87 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     nodeGroups.exit().remove()
 
+    // create groups
+    const fileGroups = container.append('g').attr('class', 'fileGroups')
+    var polygon, centroid
+    // select nodes of the group, retrieve its positions
+    // and return the convex hull of the specified points
+    // (3 points as minimum, otherwise returns null)
+    var polygonGenerator = function (groupId) {
+      var nodeCoords = nodeGroups
+        .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+        .data()
+        .map(function (d) { return [d.x, d.y] })
+
+      return d3.geom.hull(nodeCoords)
+      // return d3.geom.polygon(nodeCoords)
+      // return d3.polygonHull(nodeCoords)
+    }
+
+    // count members of each group. Groups with less
+    // than 3 member will not be considered (creating
+    // a convex hull need 3 points at least)
+    // console.log(nodes)
+    var groupIds = d3.set(nodes.map(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return n.propertyMap.filename } }))
+      .values()
+      .map(function (groupId) {
+        return {
+          groupId: groupId,
+          count: nodes.filter(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(n.propertyMap.filename) } }).length
+        }
+      })
+      .filter(function (group) { return group.count > 2 })
+      .map(function (group) { return group.groupId })
+
+    // console.log(groupIds)
+
+    var color = d3.scale.category20()
+
+    var scaleFactor = 1.2
+
+    var valueline = d3.svg.line()
+      .x(function (d) { return d[0] })
+      .y(function (d) { return d[1] })
+      .interpolate('basis')
+      // .curve(d3.curveCatmullRomClosed)
+
+    const fileGroupsBorders = fileGroups.selectAll('.path_placeholder')
+      .data(groupIds, function (d) { return d })
+      .enter()
+      .append('g')
+      .attr('class', 'path_placeholder')
+      .append('groupBorder')
+      .attr('stroke', function (d) { return color(d) })
+      .attr('fill', function (d) { return color(d) })
+      .attr('opacity', 0)
+
+    fileGroupsBorders
+      .transition()
+      .duration(2000)
+      .attr('opacity', 1)
+
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
+      console.log(fileGroupsBorders)
+      groupIds.forEach(function (groupId) {
+        var path = fileGroupsBorders.filter(function (d) { return d })
+          .attr('transform', 'scale(1) translate(0,0)')
+          .attr('d', function (d) {
+            polygon = polygonGenerator(d)
+            console.log(polygon)
+            centroid = polygon.centroid //TODO: implement a function to calculate the centroid of a hull
+            // to scale the shape properly around its points:
+            // move the 'g' element to the centroid point, translate
+            // all the path around the center of the 'g' and then
+            // we can scale the 'g' element properly
+            return valueline(
+              polygon.map(function (point) {
+                return [ point[0] - centroid[0], point[1] - centroid[1] ]
+              })
+            )
+          })
+        d3.select(path.node().parentNode).attr('transform', 'translate(' + centroid[0] + ',' + (centroid[1]) + ') scale(' + scaleFactor + ')')
+      })
 
       viz.resize()
       viz.trigger('updated')
@@ -364,3 +443,97 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 }
 
 export default vizFn
+
+// create groups
+// groups = svg.append('g').attr('class', 'groups');
+
+// link = svg.append('g')
+//     .attr('class', 'links')
+//   .selectAll('line')
+//   .data(graph.links)
+//   .enter().append('line')
+//     .attr('stroke-width', function(d) { return Math.sqrt(d.value); });
+
+// node = svg.append('g')
+//     .attr('class', 'nodes')
+//   .selectAll('circle')
+//   .data(graph.nodes)
+//   .enter().append('circle')
+//     .attr('r', 5)
+//     .attr('fill', function(d) { return color(d.group); })
+//     .call(d3.drag()
+//         .on('start', dragstarted)
+//         .on('drag', dragged)
+//         .on('end', dragended));
+
+// count members of each group. Groups with less
+// than 3 member will not be considered (creating
+// a convex hull need 3 points at least)
+// groupIds = d3.set(graph.nodes.map(function(n) { return +n.group; }))
+//   .values()
+//   .map( function(groupId) {
+//     return {
+//       groupId : groupId,
+//       count : graph.nodes.filter(function(n) { return +n.group == groupId; }).length
+//     };
+//   })
+//   .filter( function(group) { return group.count > 2;})
+//   .map( function(group) { return group.groupId; });
+
+// paths = groups.selectAll('.path_placeholder')
+//   .data(groupIds, function(d) { return +d; })
+//   .enter()
+//   .append('g')
+//   .attr('class', 'path_placeholder')
+//   .append('path')
+//   .attr('stroke', function(d) { return color(d); })
+//   .attr('fill', function(d) { return color(d); })
+//   .attr('opacity', 0);
+
+// paths
+//   .transition()
+//   .duration(2000)
+//   .attr('opacity', 1);
+
+// // add interaction to the groups
+// // groups.selectAll('.path_placeholder')
+// //   .call(d3.drag()
+// //     .on('start', group_dragstarted)
+// //     .on('drag', group_dragged)
+// //     .on('end', group_dragended)
+// //     );
+
+// // select nodes of the group, retrieve its positions
+// // and return the convex hull of the specified points
+// // (3 points as minimum, otherwise returns null)
+// var polygonGenerator = function(groupId) {
+//   var node_coords = node
+//     .filter(function(d) { return d.group == groupId; })
+//     .data()
+//     .map(function(d) { return [d.x, d.y]; });
+
+//   return d3.polygonHull(node_coords);
+// };
+
+// function updateGroups() {
+//   groupIds.forEach(function(groupId) {
+//     var path = paths.filter(function(d) { return d == groupId;})
+//       .attr('transform', 'scale(1) translate(0,0)')
+//       .attr('d', function(d) {
+//         polygon = polygonGenerator(d);
+//         centroid = d3.polygonCentroid(polygon);
+
+//         // to scale the shape properly around its points:
+//         // move the 'g' element to the centroid point, translate
+//         // all the path around the center of the 'g' and then
+//         // we can scale the 'g' element properly
+//         return valueline(
+//           polygon.map(function(point) {
+//             return [  point[0] - centroid[0], point[1] - centroid[1] ];
+//           })
+//         );
+//       });
+
+//     d3.select(path.node().parentNode).attr('transform', 'translate('  + centroid[0] + ',' + (centroid[1]) + ') scale(' + scaleFactor + ')');
+//   });
+// }
