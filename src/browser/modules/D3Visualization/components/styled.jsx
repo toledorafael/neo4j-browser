@@ -66,10 +66,11 @@ export const StyledSvgWrapper = styled.div`
         }
       }
     }
-    groupBorder {
+    .groupBorder {
       fill-opacity: .1;
       stroke-opacity: 1;
     }
+    
     .relationship {
       > .overlay {
         opacity: 0;

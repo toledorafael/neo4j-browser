@@ -224,6 +224,56 @@ const relationshipOverlay = new Renderer({
   }
 })
 
+const groupCountour = new Renderer({
+  name: 'groupCountor',
+  onGraphChange (selection) {
+    // var polygon, centroid
+    // // select nodes of the group, retrieve its positions
+    // // and return the convex hull of the specified points
+    // // (3 points as minimum, otherwise returns null)
+    // var polygonGenerator = function (groupId, selection) {
+    //   var nodeCoords = selection
+    //     .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+    //     .data()
+    //     .map(function (d) { return [d.x, d.y] })
+
+    //   return d3.geom.polygon(d3.geom.hull(nodeCoords))
+    //   // return d3.geom.polygon(nodeCoords)
+    //   // return d3.polygonHull(nodeCoords)
+    // }
+
+    // var scaleFactor = 1.2
+
+    // var valueline = d3.svg.line()
+    //   .x(function (d) { return d[0] })
+    //   .y(function (d) { return d[1] })
+    //   .interpolate('basis')
+    //   // .curve(d3.curveCatmullRomClosed)
+
+    // groupIds.forEach(function (groupId) {
+    //   var path = fileGroups.filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+    //     .attr('transform', 'scale(1) translate(0,0)')
+    //     .attr('d', function (d) {
+    //       polygon = polygonGenerator(d)
+    //       centroid = polygon.centroid()
+    //       // to scale the shape properly around its points:
+    //       // move the 'g' element to the centroid point, translate
+    //       // all the path around the center of the 'g' and then
+    //       // we can scale the 'g' element properly
+    //       return valueline(
+    //         polygon.map(function (point) {
+    //           return [ point[0] - centroid[0], point[1] - centroid[1] ]
+    //         })
+    //       )
+    //     })
+    //   d3.select(path.node().parentNode).attr('transform', 'translate(' + centroid[0] + ',' + (centroid[1]) + ') scale(' + scaleFactor + ')')
+    // })
+    return selection
+  },
+
+  onTick: noop
+})
+
 const node = []
 node.push(nodeOutline)
 node.push(nodeIcon)
@@ -235,4 +285,8 @@ relationship.push(arrowPath)
 relationship.push(relationshipType)
 relationship.push(relationshipOverlay)
 
-export { node, relationship }
+const fileGroup = []
+fileGroup.push(groupCountour)
+// fileGroup.push(fileLabel)
+
+export { node, relationship, fileGroup } // Add countour

@@ -230,6 +230,14 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       nodeGroups.call(renderer.onTick, viz)
     }
 
+    const fileGroups = container
+      .selectAll('g.fileGroup')
+      .attr('transform', d => `translate(${d.x},${d.y})`)
+
+    for (renderer of Array.from(vizRenderers.fileGroup)) {
+      fileGroups.call(renderer.onTick, viz)
+    }
+
     const relationshipGroups = container
       .selectAll('g.relationship')
       .attr(
@@ -270,7 +278,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     const layers = container
       .selectAll('g.layer')
-      .data(['relationships', 'nodes'])
+      .data(['relationships', 'nodes', 'fileGroups'])
     layers
       .enter()
       .append('g')
@@ -278,6 +286,20 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     const nodes = graph.nodes()
     const relationships = graph.relationships()
+    // count members of each group. Groups with less
+    // than 3 member will not be considered (creating
+    // a convex hull need 3 points at least)
+    // console.log(nodes)
+    const groupIds = d3.set(nodes.map(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return n.propertyMap.filename } }))
+      .values()
+      .map(function (groupId) {
+        return {
+          groupId: groupId,
+          count: nodes.filter(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(n.propertyMap.filename) } }).length
+        }
+      })
+      .filter(function (group) { return group.count > 2 })
+      .map(function (group) { return group.groupId })
 
     const relationshipGroups = container
       .select('g.layer.relationships')
@@ -331,8 +353,6 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     nodeGroups.exit().remove()
 
-    // create groups
-    const fileGroups = container.append('g').attr('class', 'fileGroups')
     var polygon, centroid
     // select nodes of the group, retrieve its positions
     // and return the convex hull of the specified points
@@ -343,27 +363,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .data()
         .map(function (d) { return [d.x, d.y] })
 
-      return d3.geom.hull(nodeCoords)
+      return d3.geom.polygon(d3.geom.hull(nodeCoords))
       // return d3.geom.polygon(nodeCoords)
       // return d3.polygonHull(nodeCoords)
     }
 
-    // count members of each group. Groups with less
-    // than 3 member will not be considered (creating
-    // a convex hull need 3 points at least)
-    // console.log(nodes)
-    var groupIds = d3.set(nodes.map(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return n.propertyMap.filename } }))
-      .values()
-      .map(function (groupId) {
-        return {
-          groupId: groupId,
-          count: nodes.filter(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(n.propertyMap.filename) } }).length
-        }
-      })
-      .filter(function (group) { return group.count > 2 })
-      .map(function (group) { return group.groupId })
-
-    // console.log(groupIds)
+    // // console.log(groupIds)
 
     var color = d3.scale.category20()
 
@@ -375,31 +380,46 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       .interpolate('basis')
       // .curve(d3.curveCatmullRomClosed)
 
-    const fileGroupsBorders = fileGroups.selectAll('.path_placeholder')
+    // create groups
+    const fileGroups = container
+      .select('g.layer.fileGroups')
+      .selectAll('g.fileGroup')
       .data(groupIds, function (d) { return d })
-      .enter()
+
+    fileGroups.enter()
       .append('g')
-      .attr('class', 'path_placeholder')
-      .append('groupBorder')
+      .attr('class', 'fileGroup')
       .attr('stroke', function (d) { return color(d) })
       .attr('fill', function (d) { return color(d) })
-      .attr('opacity', 0)
-
-    fileGroupsBorders
-      .transition()
-      .duration(2000)
       .attr('opacity', 1)
 
+    // fileGroups
+    //   .transition()
+    //   .duration(2000)
+    //   .attr('opacity', 1)
+
+    for (renderer of Array.from(vizRenderers.fileGroup)) {
+      fileGroups.call(renderer.onGraphChange, viz)
+    }
+
+    fileGroups.exit().remove()
+
+    // console.log(fileGroups.node())
+    // console.log(fileGroups.node().parentNode)
+    // console.log(nodeGroups.node())
+    // console.log(nodeGroups.node().parentNode)
+    // console.log(relationshipGroups.node())
+    // console.log(relationshipGroups.node().parentNode)
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
-      console.log(fileGroupsBorders)
+      // console.log(fileGroups)
       groupIds.forEach(function (groupId) {
-        var path = fileGroupsBorders.filter(function (d) { return d })
-          .attr('transform', 'scale(1) translate(0,0)')
+        var path = fileGroups.filter(function (d) { return groupId.localeCompare(d) })
+          .attr('transform', d => `translate(0,0)`)
           .attr('d', function (d) {
             polygon = polygonGenerator(d)
-            console.log(polygon)
-            centroid = polygon.centroid //TODO: implement a function to calculate the centroid of a hull
+            centroid = polygon.centroid()
+            console.log(centroid)            
             // to scale the shape properly around its points:
             // move the 'g' element to the centroid point, translate
             // all the path around the center of the 'g' and then
@@ -410,7 +430,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
               })
             )
           })
-        d3.select(path.node().parentNode).attr('transform', 'translate(' + centroid[0] + ',' + (centroid[1]) + ') scale(' + scaleFactor + ')')
+        d3.select(path.node().parentNode).attr('transform', d => `translate(${centroid[0]},${centroid[1]})`)
       })
 
       viz.resize()
