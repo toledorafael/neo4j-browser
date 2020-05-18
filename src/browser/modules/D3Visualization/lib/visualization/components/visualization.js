@@ -230,13 +230,50 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       nodeGroups.call(renderer.onTick, viz)
     }
 
-    const fileGroups = container
-      .selectAll('g.fileGroup')
-      .attr('transform', d => `translate(${d.x},${d.y})`)
+    // count members of each group. Groups with less
+    // than 3 member will not be considered (creating
+    // a convex hull need 3 points at least)
+    // console.log(nodes)
+    // var centroid, polygon
+    const groupIds = d3.set(graph.nodes().map(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return n.propertyMap.filename } }))
+      .values()
+      .map(function (groupId) {
+        return {
+          groupId: groupId,
+          count: graph.nodes().filter(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(n.propertyMap.filename) } }).length
+        }
+      })
+      .filter(function (group) { return group.count > 2 })
+      .map(function (group) { return group.groupId })
 
-    for (renderer of Array.from(vizRenderers.fileGroup)) {
-      fileGroups.call(renderer.onTick, viz)
-    }
+    const groupPaths = container
+      .select('g.layer.fileGroups')
+      .selectAll('g.fileGroup') // path_placeholder
+      // .attr('transform', d => `translate(0,0)`)
+      .data(groupIds, function (d) { return d })
+
+    groupPaths.enter() // Update to path
+      // .append('g')
+      // .attr('class', 'fileGroup')
+      .append('path')
+      .attr('transform', `translate(0,0)`)
+      .attr('stroke', function (d) { return color(d) })
+      .attr('fill', function (d) { return color(d) })
+      .attr('opacity', 0.2)
+
+    groupPaths
+      .transition()
+      .duration(2000)
+      .attr('opacity', 0.2)
+
+    groupPaths.exit().remove()
+    updateGroups(groupIds, groupPaths, nodeGroups)
+
+    console.log(groupIds)
+    console.log(groupPaths)
+    // for (renderer of Array.from(vizRenderers.fileGroup)) {
+    //   fileGroups.call(renderer.onTick, viz)
+    // }
 
     const relationshipGroups = container
       .selectAll('g.relationship')
@@ -353,56 +390,54 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     nodeGroups.exit().remove()
 
-    var polygon, centroid
+    // var polygon, centroid
     // select nodes of the group, retrieve its positions
     // and return the convex hull of the specified points
     // (3 points as minimum, otherwise returns null)
-    var polygonGenerator = function (groupId) {
-      var nodeCoords = nodeGroups
-        .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
-        .data()
-        .map(function (d) { return [d.x, d.y] })
-
-      return d3.geom.polygon(d3.geom.hull(nodeCoords))
-      // return d3.geom.polygon(nodeCoords)
-      // return d3.polygonHull(nodeCoords)
-    }
 
     // // console.log(groupIds)
 
     var color = d3.scale.category20()
 
-    var scaleFactor = 1.2
+    // var scaleFactor = 1.2
 
-    var valueline = d3.svg.line()
-      .x(function (d) { return d[0] })
-      .y(function (d) { return d[1] })
-      .interpolate('basis')
-      // .curve(d3.curveCatmullRomClosed)
+    // var polygonGenerator = function (groupId) {
+    //   var nodeCoords = nodeGroups
+    //     .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+    //     .data()
+    //     .map(function (d) { return [d.x, d.y] })
 
-    // create groups
-    const fileGroups = container
+    //   return d3.geom.polygon(d3.geom.hull(nodeCoords))
+    //   // return d3.geom.polygon(nodeCoords)
+    //   // return d3.polygonHull(nodeCoords)
+    // }
+
+    const groupPaths = container
       .select('g.layer.fileGroups')
-      .selectAll('g.fileGroup')
+      .selectAll('g.fileGroup') // path_placeholder
       .data(groupIds, function (d) { return d })
 
-    fileGroups.enter()
-      .append('g')
-      .attr('class', 'fileGroup')
-      .attr('stroke', function (d) { return color(d) })
-      .attr('fill', function (d) { return color(d) })
-      .attr('opacity', 1)
+    groupPaths.enter() // Update to path
+      // .append('g')
+      // .attr('class', 'fileGroup')
+      .append('path')
+      // .attr('transform', `translate(0,0)`)
+      // .attr('stroke', function (d) { return color(d) })
+      // .attr('fill', function (d) { return color(d) })
+      // .attr('opacity', 0.2)
 
-    // fileGroups
+    // groupPaths
     //   .transition()
     //   .duration(2000)
-    //   .attr('opacity', 1)
+    //   .attr('opacity', 0.2)
 
-    for (renderer of Array.from(vizRenderers.fileGroup)) {
-      fileGroups.call(renderer.onGraphChange, viz)
-    }
+    // for (renderer of Array.from(vizRenderers.fileGroup)) {
+    //   groupPaths.call(renderer.onGraphChange, viz)
+    // }
 
-    fileGroups.exit().remove()
+    // updateGroups(groupIds, groupPaths, nodeGroups)
+
+    // groupPaths.exit().remove()
 
     // console.log(fileGroups.node())
     // console.log(fileGroups.node().parentNode)
@@ -412,26 +447,29 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     // console.log(relationshipGroups.node().parentNode)
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
-      // console.log(fileGroups)
-      groupIds.forEach(function (groupId) {
-        var path = fileGroups.filter(function (d) { return groupId.localeCompare(d) })
-          .attr('transform', d => `translate(0,0)`)
-          .attr('d', function (d) {
-            polygon = polygonGenerator(d)
-            centroid = polygon.centroid()
-            console.log(centroid)            
-            // to scale the shape properly around its points:
-            // move the 'g' element to the centroid point, translate
-            // all the path around the center of the 'g' and then
-            // we can scale the 'g' element properly
-            return valueline(
-              polygon.map(function (point) {
-                return [ point[0] - centroid[0], point[1] - centroid[1] ]
-              })
-            )
-          })
-        d3.select(path.node().parentNode).attr('transform', d => `translate(${centroid[0]},${centroid[1]})`)
-      })
+
+      // // update group paths
+      // groupIds.forEach(function (groupId) {
+      //   var path = groupPaths.filter(function (d) { return groupId.localeCompare(d) })
+      //     .attr('transform', `scale(1) translate(0,0)`)
+      //     .attr('d', function (d) {
+      //       polygon = polygonGenerator(d)
+      //       centroid = polygon.centroid()
+      //       // console.log(centroid)
+      //       // to scale the shape properly around its points:
+      //       // move the 'g' element to the centroid point, translate
+      //       // all the path around the center of the 'g' and then
+      //       // we can scale the 'g' element properly
+      //       return valueline(
+      //         polygon.map(function (point) {
+      //           return [ point[0] - centroid[0], point[1] - centroid[1] ]
+      //         })
+      //       )
+      //     })
+      //   // console.log(centroid)
+      //   // console.log(path.node().parentNode)
+      //   d3.select(path.node().parentNode).attr('transform', `translate(${centroid[0]},${centroid[1]}) scale(${scaleFactor})`)
+      // })
 
       viz.resize()
       viz.trigger('updated')
@@ -460,6 +498,56 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   clickHandler.on('dblclick', onNodeDblClick)
 
   return viz
+}
+
+var color = d3.scale.category20()
+
+// var scaleFactor = 1.2
+
+var polygonGenerator = function (groupId, nodeGroups) {
+  var nodeCoords = nodeGroups
+    .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+    .data()
+    .map(function (d) { return [d.x, d.y] })
+
+  return d3.geom.polygon(d3.geom.hull(nodeCoords))
+  // return d3.geom.polygon(nodeCoords)
+  // return d3.polygonHull(nodeCoords)
+}
+
+var valueline = d3.svg.line()
+  .x(function (d) { return d[0] })
+  .y(function (d) { return d[1] })
+  .interpolate('basis')
+// .curve(d3.curveCatmullRomClosed)
+
+function updateGroups (groupIds, fileGroups, nodeGroups) {
+  // console.log(fileGroups)
+  var polygon
+  var centroid = null
+  groupIds.forEach(function (groupId) {
+    var path = fileGroups.filter(function (d) { return groupId.localeCompare(d) })
+      // .attr('transform', `translate(0,0)`)
+      .attr('d', function (d) {
+        polygon = polygonGenerator(d, nodeGroups)
+        centroid = polygon.centroid()
+        // console.log(centroid)
+        // to scale the shape properly around its points:
+        // move the 'g' element to the centroid point, translate
+        // all the path around the center of the 'g' and then
+        // we can scale the 'g' element properly
+        return valueline(
+          polygon.map(function (point) {
+            return [ point[0] - centroid[0], point[1] - centroid[1] ]
+          })
+        )
+      })
+    // console.log(centroid)
+    // console.log(path.node().parentNode)
+    if (centroid) {
+      d3.select(path.node()).attr('transform', `translate(${centroid[0]},${centroid[1]})`)
+    }
+  })
 }
 
 export default vizFn
