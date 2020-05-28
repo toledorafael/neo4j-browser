@@ -87,5 +87,11 @@ module.exports = {
     port: 8080,
     disableHostCheck: true,
     hot: !helpers.isProduction
+  },
+  watch: true,
+  watchOptions: {
+    aggregateTimeout: 1000,
+    poll: 1000,
+    ignored: /node_modules/
   }
 }
