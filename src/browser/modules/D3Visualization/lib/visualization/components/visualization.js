@@ -52,6 +52,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   const layoutDimension = 200
 
   let updateViz = true
+  var color = d3.scale.category20()
+  const groupIds = getGroupIDs(graph.nodes())
 
   // To be overridden
   viz.trigger = function (event, ...args) {}
@@ -63,8 +65,16 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
   const onNodeDblClick = node => viz.trigger('nodeDblClicked', node)
 
-  const onNodeDragToggle = node => viz.trigger('nodeDragToggle', node)
-
+  const onNodeDragToggle = (node, groupIds) => {
+    if (groupIds) {
+      const groupPaths = container
+        .selectAll('g.fileGroup')
+      const nodeGroups = container
+        .selectAll('g.node')
+      updateGroups(groupIds, groupPaths, nodeGroups)
+    }
+    viz.trigger('nodeDragToggle', node)
+  }
   const onRelationshipClick = relationship => {
     d3.event.stopPropagation()
     updateViz = false
@@ -230,49 +240,52 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       nodeGroups.call(renderer.onTick, viz)
     }
 
-    // count members of each group. Groups with less
-    // than 3 member will not be considered (creating
-    // a convex hull need 3 points at least)
-    // console.log(nodes)
-    // var centroid, polygon
-    const groupIds = d3.set(graph.nodes().map(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return n.propertyMap.filename } }))
-      .values()
-      .map(function (groupId) {
-        return {
-          groupId: groupId,
-          count: graph.nodes().filter(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(n.propertyMap.filename) } }).length
-        }
-      })
-      .filter(function (group) { return group.count > 2 })
-      .map(function (group) { return group.groupId })
-
+    // it might be called when it does not exist yet
     const groupPaths = container
-      .select('g.layer.fileGroups')
       .selectAll('g.fileGroup') // path_placeholder
+      // .select('path')
       // .attr('transform', d => `translate(0,0)`)
-      .data(groupIds, function (d) { return d })
+      // .attr('stroke', function (d) { return color(d) })
+      // .attr('fill', function (d) { return color(d) })
+      // .attr('opacity', 1)
+    //   .data(groupIds, function (d) { return d })
 
-    groupPaths.enter() // Update to path
-      // .append('g')
-      // .attr('class', 'fileGroup')
-      .append('path')
-      .attr('transform', `translate(0,0)`)
-      .attr('stroke', function (d) { return color(d) })
-      .attr('fill', function (d) { return color(d) })
-      .attr('opacity', 0.2)
+    // groupPaths // Update to path
+    //   // .append('g')
+    //   // .attr('class', 'fileGroup')
+    //   .append('path')
+    //   .attr('transform', `translate(0,0)`)
+    //   .attr('stroke', function (d) { return color(d) })
+    //   .attr('fill', function (d) { return color(d) })
+    //   .attr('opacity', 0.2)
 
-    groupPaths
-      .transition()
-      .duration(2000)
-      .attr('opacity', 0.2)
+    // const groupPaths = container
+    //   .select('g.layer.fileGroups')
+    //   .selectAll('fileGroup')
+    //   .data(groupIds, function (d) { return d })
 
-    groupPaths.exit().remove()
+    // groupPaths
+    //   .enter() // Update to path
+    //   .append('g')
+    //   .attr('class', 'fileGroup')
+    //   .append('path')
+    //   // .attr('transform', `translate(0,0)`)
+    //   .attr('stroke', function (d) { return color(d) })
+    //   .attr('fill', function (d) { return color(d) })
+    //   .attr('opacity', 1)
+
+    // groupPaths
+    //   .transition()
+    //   .duration(2000)
+    //   .attr('opacity', 0.2)
+
+    // groupPaths.exit().remove()
+
+    // groupPaths are empty because container just have node and relationship layers
     updateGroups(groupIds, groupPaths, nodeGroups)
 
-    console.log(groupIds)
-    console.log(groupPaths)
     // for (renderer of Array.from(vizRenderers.fileGroup)) {
-    //   fileGroups.call(renderer.onTick, viz)
+    //   groupPaths.call(renderer.onTick, viz)
     // }
 
     const relationshipGroups = container
@@ -298,8 +311,37 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   // Add custom drag event listeners
   force
     .drag()
-    .on('dragstart.node', d => onNodeDragToggle(d))
+    .on('dragstart.node', d => onNodeDragToggle(d, groupIds))
     .on('dragend.node', () => onNodeDragToggle())
+
+  /// ///////////////////////////////////////// Initiate polygons
+  // const groupPaths = container
+  //   .selectAll('g.fileGroup') // path_placeholder
+  //   .append('path')
+  //   .attr('transform', `translate(0,0)`)
+  //   .attr('stroke', function (d) { return color(d) })
+  //   .attr('fill', function (d) { return color(d) })
+  //   .attr('opacity', 1)
+
+  // const groupPaths = container
+  //   .select('g.layer.fileGroups')
+  //   .selectAll('fileGroup')
+  //   .data(groupIds, function (d) { return d })
+
+  // groupPaths.enter() // Update to path
+  //   .append('g')
+  //   .attr('class', 'fileGroup')
+  //   .append('path')
+  //   // .attr('transform', `translate(0,0)`)
+  //   .attr('stroke', function (d) { return color(d) })
+  //   .attr('fill', function (d) { return color(d) })
+  //   .attr('opacity', 1)
+
+  // // groupPaths
+  // //   .transition()
+  // //   .duration(2000)
+  // //   .attr('opacity', 0.6)
+  // groupPaths.exit().remove()
 
   viz.collectStats = function () {
     const latestStats = currentStats
@@ -307,6 +349,11 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     currentStats = newStatsBucket()
     return latestStats
   }
+
+  // viz.initGroupMarks() {
+  //   const groupIds = getGroupIDs(nodes)
+  // ....
+  // }
 
   viz.update = function () {
     if (!graph) {
@@ -323,20 +370,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     const nodes = graph.nodes()
     const relationships = graph.relationships()
-    // count members of each group. Groups with less
-    // than 3 member will not be considered (creating
-    // a convex hull need 3 points at least)
-    // console.log(nodes)
-    const groupIds = d3.set(nodes.map(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return n.propertyMap.filename } }))
-      .values()
-      .map(function (groupId) {
-        return {
-          groupId: groupId,
-          count: nodes.filter(function (n) { if (n.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(n.propertyMap.filename) } }).length
-        }
-      })
-      .filter(function (group) { return group.count > 2 })
-      .map(function (group) { return group.groupId })
+
+    const groupIds = getGroupIDs(nodes) // update groupIds with current states of nodes set
 
     const relationshipGroups = container
       .select('g.layer.relationships')
@@ -395,10 +430,6 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     // and return the convex hull of the specified points
     // (3 points as minimum, otherwise returns null)
 
-    // // console.log(groupIds)
-
-    var color = d3.scale.category20()
-
     // var scaleFactor = 1.2
 
     // var polygonGenerator = function (groupId) {
@@ -414,30 +445,38 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     const groupPaths = container
       .select('g.layer.fileGroups')
-      .selectAll('g.fileGroup') // path_placeholder
+      .selectAll('g.fileGroup')
       .data(groupIds, function (d) { return d })
 
-    groupPaths.enter() // Update to path
-      // .append('g')
-      // .attr('class', 'fileGroup')
+    groupPaths
+      .enter() // Update to path
+      .append('g')
+      .attr('class', 'fileGroup')
       .append('path')
-      // .attr('transform', `translate(0,0)`)
-      // .attr('stroke', function (d) { return color(d) })
-      // .attr('fill', function (d) { return color(d) })
-      // .attr('opacity', 0.2)
+      .attr('transform', `translate(0,0)`)
+      .attr('stroke', function (d) { return color(d) })
+      .attr('fill', function (d) { return color(d) })
+      .attr('opacity', 1)
 
-    // groupPaths
-    //   .transition()
-    //   .duration(2000)
-    //   .attr('opacity', 0.2)
+    // // groupPaths
+    // //   .transition()
+    // //   .duration(2000)
+    // //   .attr('opacity', 0.6)
 
-    // for (renderer of Array.from(vizRenderers.fileGroup)) {
-    //   groupPaths.call(renderer.onGraphChange, viz)
-    // }
+    // // groupPaths
+    // //   .transition()
+    // //   .duration(2000)
+    // //   .attr('opacity', 0.2)
 
-    // updateGroups(groupIds, groupPaths, nodeGroups)
+    // // for (renderer of Array.from(vizRenderers.fileGroup)) {
+    // //   groupPaths.call(renderer.onGraphChange, viz)
+    // // }
 
-    // groupPaths.exit().remove()
+    // Learn about the exit function ************************** Right now it removes the whole layer
+    groupPaths.exit().remove()
+
+    /// /////////////// Should select the g initialized
+    // const groupPaths = container.select('g.fileGroups')
 
     // console.log(fileGroups.node())
     // console.log(fileGroups.node().parentNode)
@@ -447,6 +486,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     // console.log(relationshipGroups.node().parentNode)
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
+      updateGroups(groupIds, groupPaths, nodeGroups)
 
       // // update group paths
       // groupIds.forEach(function (groupId) {
@@ -500,54 +540,73 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   return viz
 }
 
-var color = d3.scale.category20()
-
 // var scaleFactor = 1.2
 
 var polygonGenerator = function (groupId, nodeGroups) {
-  var nodeCoords = nodeGroups
-    .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
-    .data()
-    .map(function (d) { return [d.x, d.y] })
+  // console.log(groupId)
+  // console.log(nodeGroups)
 
+  var nodeCoords = nodeGroups
+    .filter(function (d) {
+      if (d.propertyMap.hasOwnProperty('filename')) {
+        return groupId === d.propertyMap.filename
+      }
+    })
+    .data()
+    .map(function (d) {
+      // console.log(Object.keys(d))
+      // console.log(d.caption.node.x)
+      return [d.x, d.y]
+    })
   return d3.geom.polygon(d3.geom.hull(nodeCoords))
   // return d3.geom.polygon(nodeCoords)
-  // return d3.polygonHull(nodeCoords)
+  // return d3.geom.hull(nodeCoords)
 }
 
 var valueline = d3.svg.line()
   .x(function (d) { return d[0] })
   .y(function (d) { return d[1] })
-  .interpolate('basis')
+  .interpolate('basis-closed')
 // .curve(d3.curveCatmullRomClosed)
 
 function updateGroups (groupIds, fileGroups, nodeGroups) {
-  // console.log(fileGroups)
-  var polygon
-  var centroid = null
-  groupIds.forEach(function (groupId) {
-    var path = fileGroups.filter(function (d) { return groupId.localeCompare(d) })
-      // .attr('transform', `translate(0,0)`)
-      .attr('d', function (d) {
-        polygon = polygonGenerator(d, nodeGroups)
-        centroid = polygon.centroid()
-        // console.log(centroid)
-        // to scale the shape properly around its points:
-        // move the 'g' element to the centroid point, translate
-        // all the path around the center of the 'g' and then
-        // we can scale the 'g' element properly
-        return valueline(
-          polygon.map(function (point) {
-            return [ point[0] - centroid[0], point[1] - centroid[1] ]
-          })
-        )
-      })
-    // console.log(centroid)
-    // console.log(path.node().parentNode)
-    if (centroid) {
-      d3.select(path.node()).attr('transform', `translate(${centroid[0]},${centroid[1]})`)
+  if (fileGroups[0].length > 0) {
+    var polygon
+    var centroid = null
+    groupIds.forEach(function (groupId) {
+      var path = fileGroups.filter(function (d) { return groupId === d })
+        .select('path')
+        .attr('transform', 'translate(0,0)')
+        .attr('d', function (d) {
+          polygon = polygonGenerator(d, nodeGroups)
+          centroid = polygon.centroid()
+
+          return valueline(
+            polygon.map(function (point) {
+              return [ point[0] - centroid[0], point[1] - centroid[1] ]
+            })
+          ) + 'Z'
+        })
+      d3.select(path.node().parentNode).attr('transform', `translate(${+centroid[0]},${+centroid[1]}) scale(1.5)`)
+    })
+  }
+}
+
+function getGroupIDs (nodes) {
+  return d3.set(nodes.map(function (n) {
+    if (n.propertyMap.hasOwnProperty('filename')) {
+      return n.propertyMap.filename
     }
-  })
+  }))
+    .values()
+    .map(function (groupId) {
+      return {
+        groupId: groupId,
+        count: nodes.filter(function (n) { return groupId === n.propertyMap.filename }).length
+      }
+    })
+    .filter(function (group) { return group.count > 2 })
+    .map(function (group) { return group.groupId })
 }
 
 export default vizFn
