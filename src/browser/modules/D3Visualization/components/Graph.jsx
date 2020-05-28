@@ -23,7 +23,7 @@ import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton } from './styled'
+import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
@@ -31,7 +31,8 @@ export class GraphComponent extends Component {
   state = {
     zoomInLimitReached: true,
     zoomOutLimitReached: false,
-    shouldResize: false
+    shouldResize: false,
+    scaleFactor: 1.2
   }
 
   graphInit (el) {
@@ -83,7 +84,6 @@ export class GraphComponent extends Component {
         }
       }
       this.graph = createGraph(this.props.nodes, this.props.relationships)
-      // console.log(this.graph)
       this.graphView = new NeoConstructor(
         this.svgElement,
         measureSize,
@@ -101,6 +101,7 @@ export class GraphComponent extends Component {
       this.graphEH.bindEventHandlers()
       this.props.onGraphModelChange(getGraphStats(this.graph))
       this.graphView.resize()
+      // this.graphView.groupMarks() //Include init groupPaths
       this.graphView.update()
     }
   }
@@ -162,10 +163,27 @@ export class GraphComponent extends Component {
     return null
   }
 
+  adjustGroupsScale (event) {
+    // el.graphView.updateGroupScale(this.state.scaleFactor) //fix scale slider
+    // this.setState({scaleFactor: event.target.value})
+    this.graphView.updateGroupScale(event.target.value)
+  }
+
+  inputSlider () {
+    if (this.props.fullscreen) {
+      return (
+        <StyledSliderHolder>
+          <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.value} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
+        </StyledSliderHolder>)
+    }
+    /* oninput="scaleFactor = value; d3.select('#scaleFactorLabel').text(scaleFactor); updateGroups()" /> */
+  }
+
   render () {
     return (
       <StyledSvgWrapper>
         <svg className='neod3viz' ref={this.graphInit.bind(this)} />
+        {this.inputSlider()}
         {this.zoomButtons()}
       </StyledSvgWrapper>
     )
