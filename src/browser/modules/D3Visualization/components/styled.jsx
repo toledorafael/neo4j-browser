@@ -350,6 +350,15 @@ export const StyledFullSizeContainer = styled.div`
 export const StyledInspectorFooterStatusMessage = styled.div`
   font-weight: bold;
 `
+export const StyledSliderHolder = styled.div`
+  position: absolute;
+  top: 63px;
+  right: 0;
+  padding: 6px 6px 0 6px;
+  border-left: #e6e9ef solid 1px;
+  border-top: #e6e9ef solid 1px;
+  background: #fff;
+`
 
 export const StyledZoomHolder = styled.div`
   position: absolute;
