@@ -67,7 +67,6 @@ export const StyledSvgWrapper = styled.div`
       }
     }
     .fileGroup {
-      fill-opacity: .1;
       stroke-opacity: 1;
     }
     
