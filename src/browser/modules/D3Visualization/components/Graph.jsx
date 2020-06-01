@@ -164,6 +164,7 @@ export class GraphComponent extends Component {
   }
 
   adjustGroupsScale (event) {
+    this.setState({scaleFactor: event.target.value})
     this.graphView.updateScaleFactor(event.target.value)
   }
 
@@ -171,7 +172,7 @@ export class GraphComponent extends Component {
     if (this.props.fullscreen) {
       return (
         <StyledSliderHolder>
-          <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.value} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
+          <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.scaleFactor} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
         </StyledSliderHolder>)
     }
   }
