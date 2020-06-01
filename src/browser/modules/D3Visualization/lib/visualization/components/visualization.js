@@ -421,7 +421,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   return viz
 }
 
-var scaleFactor = 1.5
+var scaleFactor = 1
 
 var polygonGenerator = function (groupId, nodeGroups) {
   var nodeCoords = nodeGroups

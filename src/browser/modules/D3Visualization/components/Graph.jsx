@@ -32,7 +32,7 @@ export class GraphComponent extends Component {
     zoomInLimitReached: true,
     zoomOutLimitReached: false,
     shouldResize: false,
-    scaleFactor: 1.2
+    scaleFactor: 1
   }
 
   graphInit (el) {
