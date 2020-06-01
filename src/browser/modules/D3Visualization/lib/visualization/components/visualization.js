@@ -242,7 +242,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     // it might be called when it does not exist yet
     const groupPaths = container
-      .selectAll('g.fileGroup') // path_placeholder
+      .selectAll('g.fileGroup')
       // .select('path')
       // .attr('transform', d => `translate(0,0)`)
       // .attr('stroke', function (d) { return color(d) })
@@ -456,7 +456,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       .attr('transform', `translate(0,0)`)
       .attr('stroke', function (d) { return color(d) })
       .attr('fill', function (d) { return color(d) })
-      .attr('opacity', 1)
+      .attr('fill-opacity', 0.2)
+      .attr('stroke-opacity', 1)
 
     // // groupPaths
     // //   .transition()
