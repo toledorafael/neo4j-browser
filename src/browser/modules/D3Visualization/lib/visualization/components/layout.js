@@ -39,6 +39,10 @@ const layout = {
               linkDistance
           )
           .charge(-1000)
+          // .linkStrength(
+          //   relationship =>
+          //     relationship.source
+          // )
 
         const newStatsBucket = function () {
           const bucket = {
@@ -112,6 +116,8 @@ const layout = {
         }
 
         forceLayout.drag = d3force.drag
+        forceLayout.alpha = d3force.alpha
+        forceLayout.start = d3force.start
         return forceLayout
       }
     }
