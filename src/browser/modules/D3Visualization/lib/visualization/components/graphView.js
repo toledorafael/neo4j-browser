@@ -63,9 +63,8 @@ export default class graphView {
     return this
   }
 
-  updateGroupScale (value) {
-    console.log('Passing value ' + value)
-    // this.viz.updateScaleFactor(value) // create this function in visualization.js in order to update and scale the groups
+  updateScaleFactor (value) {
+    this.viz.updateScaleFactor(value) // create this function in visualization.js in order to update and scale the groups
     return this
   }
 
