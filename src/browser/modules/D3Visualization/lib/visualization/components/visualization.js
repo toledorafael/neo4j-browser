@@ -71,7 +71,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .selectAll('g.fileGroup')
       const nodeGroups = container
         .selectAll('g.node')
-      updateGroups(groupIds, groupPaths, nodeGroups)
+      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
     }
     viz.trigger('nodeDragToggle', node)
   }
@@ -264,7 +264,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     //   .selectAll('fileGroup')
     //   .data(groupIds, function (d) { return d })
 
-    // groupPaths
+    updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
     //   .enter() // Update to path
     //   .append('g')
     //   .attr('class', 'fileGroup')
@@ -486,7 +486,10 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     // console.log(relationshipGroups.node().parentNode)
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
-      updateGroups(groupIds, groupPaths, nodeGroups)
+      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+      viz.resize()
+      viz.trigger('updated')
+    }
 
       // // update group paths
       // groupIds.forEach(function (groupId) {
@@ -531,6 +534,13 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     )
   }
 
+  viz.updateScaleFactor = function (newScaleFactor) {
+    scaleFactor = newScaleFactor
+    const nodeGroups = container.selectAll('g.node')
+    const fileGroups = container.selectAll('g.fileGroup')
+    updateGroups(groupIds, fileGroups, nodeGroups, scaleFactor)
+  }
+
   viz.boundingBox = () => container.node().getBBox()
 
   var clickHandler = vizClickHandler()
@@ -540,7 +550,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   return viz
 }
 
-// var scaleFactor = 1.2
+var scaleFactor = 1.5
 
 var polygonGenerator = function (groupId, nodeGroups) {
   // console.log(groupId)
@@ -567,7 +577,7 @@ var valueline = d3.svg.line()
   .y(function (d) { return d[1] })
   .interpolate('linear-closed')
 
-function updateGroups (groupIds, fileGroups, nodeGroups) {
+function updateGroups (groupIds, fileGroups, nodeGroups, scaleFactor) {
   if (fileGroups[0].length > 0) {
     var polygon
     var centroid = null
@@ -585,7 +595,7 @@ function updateGroups (groupIds, fileGroups, nodeGroups) {
             })
           ) + 'Z'
         })
-      d3.select(path.node().parentNode).attr('transform', `translate(${+centroid[0]},${+centroid[1]}) scale(1.5)`)
+      d3.select(path.node().parentNode).attr('transform', `translate(${+centroid[0]},${+centroid[1]}) scale(${scaleFactor})`)
     })
   }
 }

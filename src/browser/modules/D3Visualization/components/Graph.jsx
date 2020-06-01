@@ -164,9 +164,7 @@ export class GraphComponent extends Component {
   }
 
   adjustGroupsScale (event) {
-    // el.graphView.updateGroupScale(this.state.scaleFactor) //fix scale slider
-    // this.setState({scaleFactor: event.target.value})
-    this.graphView.updateGroupScale(event.target.value)
+    this.graphView.updateScaleFactor(event.target.value)
   }
 
   inputSlider () {
@@ -176,7 +174,6 @@ export class GraphComponent extends Component {
           <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.value} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
         </StyledSliderHolder>)
     }
-    /* oninput="scaleFactor = value; d3.select('#scaleFactorLabel').text(scaleFactor); updateGroups()" /> */
   }
 
   render () {
