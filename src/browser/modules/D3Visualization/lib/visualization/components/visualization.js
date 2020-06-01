@@ -554,9 +554,8 @@ var polygonGenerator = function (groupId, nodeGroups) {
     })
     .data()
     .map(function (d) {
-      // console.log(Object.keys(d))
+      return [d.px, d.py]
       // console.log(d.caption.node.x)
-      return [d.x, d.y]
     })
   return d3.geom.polygon(d3.geom.hull(nodeCoords))
   // return d3.geom.polygon(nodeCoords)
@@ -566,8 +565,7 @@ var polygonGenerator = function (groupId, nodeGroups) {
 var valueline = d3.svg.line()
   .x(function (d) { return d[0] })
   .y(function (d) { return d[1] })
-  .interpolate('basis-closed')
-// .curve(d3.curveCatmullRomClosed)
+  .interpolate('linear-closed')
 
 function updateGroups (groupIds, fileGroups, nodeGroups) {
   if (fileGroups[0].length > 0) {
