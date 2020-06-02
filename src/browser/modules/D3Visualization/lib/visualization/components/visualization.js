@@ -46,6 +46,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   // This flags that a panning is ongoing and won't trigger
   // 'canvasClick' event when panning ends.
   let draw = false
+  var drawGroupMarks = false
 
   // Arbitrary dimension used to keep force layout aligned with
   // the centre of the svg view-port.
@@ -66,7 +67,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   const onNodeDblClick = node => viz.trigger('nodeDblClicked', node)
 
   const onNodeDragToggle = (node, groupIds) => {
-    if (groupIds) {
+    if (groupIds && drawGroupMarks) {
       const groupPaths = container
         .selectAll('g.fileGroup')
       const nodeGroups = container
@@ -234,10 +235,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       nodeGroups.call(renderer.onTick, viz)
     }
 
-    const groupPaths = container
-      .selectAll('g.fileGroup')
+    if (drawGroupMarks) {
+      const groupPaths = container
+        .selectAll('g.fileGroup')
 
-    updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+    }
 
     const relationshipGroups = container
       .selectAll('g.relationship')
@@ -272,10 +275,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     return latestStats
   }
 
-  viz.update = function () {
+  viz.update = function (showGroupMarks) {
     if (!graph) {
       return
     }
+
+    drawGroupMarks = showGroupMarks
 
     const layers = container
       .selectAll('g.layer')
@@ -288,7 +293,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     const nodes = graph.nodes()
     const relationships = graph.relationships()
 
-    const groupIds = getGroupIDs(nodes)
+    var groupIds
 
     const relationshipGroups = container
       .select('g.layer.relationships')
@@ -342,27 +347,37 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
     nodeGroups.exit().remove()
 
-    const groupPaths = container
-      .select('g.layer.fileGroups')
-      .selectAll('g.fileGroup')
-      .data(groupIds, function (d) { return d })
+    if (drawGroupMarks) {
+      groupIds = getGroupIDs(nodes)
 
-    groupPaths
-      .enter() // Update to path
-      .append('g')
-      .attr('class', 'fileGroup')
-      .append('path')
-      .attr('transform', `translate(0,0)`)
-      .attr('stroke', function (d) { return color(d) })
-      .attr('fill', function (d) { return color(d) })
-      .attr('fill-opacity', 0.2)
-      .attr('stroke-opacity', 1)
+      const groupPaths = container
+        .select('g.layer.fileGroups')
+        .selectAll('g.fileGroup')
+        .data(groupIds, function (d) { return d })
 
-    groupPaths.exit().remove()
+      groupPaths
+        .enter() // Update to path
+        .append('g')
+        .attr('class', 'fileGroup')
+        .append('path')
+        .attr('transform', `translate(0,0)`)
+        .attr('stroke', function (d) { return color(d) })
+        .attr('fill', function (d) { return color(d) })
+        .attr('fill-opacity', 0.2)
+        .attr('stroke-opacity', 1)
+
+      groupPaths.exit().remove()
+      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+    } else {
+      container
+        .select('g.layer.fileGroups')
+        .selectAll('g.fileGroup')
+        .data({})
+        .exit().remove()
+    }
 
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
-      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
       viz.resize()
       viz.trigger('updated')
     }

@@ -23,7 +23,7 @@ import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder } from './styled'
+import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
@@ -32,6 +32,7 @@ export class GraphComponent extends Component {
     zoomInLimitReached: true,
     zoomOutLimitReached: false,
     shouldResize: false,
+    showGroupMarks: false,
     scaleFactor: 1
   }
 
@@ -101,8 +102,7 @@ export class GraphComponent extends Component {
       this.graphEH.bindEventHandlers()
       this.props.onGraphModelChange(getGraphStats(this.graph))
       this.graphView.resize()
-      // this.graphView.groupMarks() //Include init groupPaths
-      this.graphView.update()
+      this.graphView.update(this.state.showGroupMarks)
     }
   }
 
@@ -112,14 +112,14 @@ export class GraphComponent extends Component {
         mapRelationships(internalRelationships, this.graph)
       )
       this.props.onGraphModelChange(getGraphStats(this.graph))
-      this.graphView.update()
+      this.graphView.update(this.state.showGroupMarks)
       this.graphEH.onItemMouseOut()
     }
   }
 
   componentWillReceiveProps (props) {
     if (props.styleVersion !== this.props.styleVersion) {
-      this.graphView.update()
+      this.graphView.update(this.state.showGroupMarks)
     }
     if (
       this.props.fullscreen !== props.fullscreen ||
@@ -168,12 +168,29 @@ export class GraphComponent extends Component {
     this.graphView.updateScaleFactor(event.target.value)
   }
 
+  toggleGroupMarks (event) {
+    const toggleGroupMarks = !this.state.showGroupMarks
+    this.setState({ showGroupMarks: toggleGroupMarks })
+    this.graphView.displayGroupMarks(toggleGroupMarks)
+  }
+
   inputSlider () {
     if (this.props.fullscreen) {
       return (
         <StyledSliderHolder>
           <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.scaleFactor} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
-        </StyledSliderHolder>)
+        </StyledSliderHolder>
+      )
+    }
+  }
+
+  inputToggle () {
+    if (this.props.fullscreen) {
+      return (
+        <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)} >
+          <ZoomInIcon />
+        </StyleToggleGroupMarksButton>
+      )
     }
   }
 
@@ -183,6 +200,7 @@ export class GraphComponent extends Component {
         <svg className='neod3viz' ref={this.graphInit.bind(this)} />
         {this.inputSlider()}
         {this.zoomButtons()}
+        {this.inputToggle()}
       </StyledSvgWrapper>
     )
   }

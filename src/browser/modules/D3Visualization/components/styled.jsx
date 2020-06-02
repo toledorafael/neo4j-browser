@@ -359,6 +359,32 @@ export const StyledSliderHolder = styled.div`
   background: #fff;
 `
 
+export const StyleToggleGroupMarksButton = styled.button`
+  position: absolute;
+  top: 80px;
+  right: 150px;
+  list-style-type: none;
+  font-size: 2em;
+  border: none;
+  color: #9b9da2;
+  background: transparent;
+  border-color: black;
+  padding: 2px 6px 3px;
+  &:hover {
+    color: black;
+  }
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
 export const StyledZoomHolder = styled.div`
   position: absolute;
   bottom: 39px;

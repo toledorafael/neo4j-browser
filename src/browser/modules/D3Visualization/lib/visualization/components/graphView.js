@@ -58,13 +58,18 @@ export default class graphView {
     return this
   }
 
-  update () {
-    this.viz.update()
+  update (showGroupMarks) {
+    this.viz.update(showGroupMarks)
     return this
   }
 
   updateScaleFactor (value) {
-    this.viz.updateScaleFactor(value) // create this function in visualization.js in order to update and scale the groups
+    this.viz.updateScaleFactor(value)
+    return this
+  }
+
+  displayGroupMarks (value) {
+    this.viz.update(value)
     return this
   }
 
