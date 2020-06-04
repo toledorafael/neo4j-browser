@@ -43,6 +43,15 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   const container = baseGroup.append('g')
   const geometry = new NeoD3Geometry(style)
 
+  //
+  var expandableNetworkData = {}
+  var expandableNetwork
+  expandableNetworkData.nodes = graph.nodes()
+  expandableNetworkData.links = graph.relationships()
+  expandableNetworkData.helpers = {left: {}, right: {}}
+  expandableNetwork = buildNetwork(expandableNetworkData, expandableNetwork)
+  console.log(expandableNetwork)
+
   // This flags that a panning is ongoing and won't trigger
   // 'canvasClick' event when panning ends.
   let draw = false
@@ -436,6 +445,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   return viz
 }
 
+/// Helper functions to generate groupMarks(polygons)
+
 var scaleFactor = 1
 
 var polygonGenerator = function (groupId, nodeGroups) {
@@ -495,6 +506,235 @@ function getGroupIDs (nodes) {
     })
     .filter(function (group) { return group.count > 2 })
     .map(function (group) { return group.groupId })
+}
+
+/// Helper functions to generate collapse/expand groups
+
+function nodeId (n) {
+  return n.size > 0 ? '_g_' + n.group + '_' + n.expansion : n.id
+}
+
+function initExpandableNetworkData (expandableNetworkData, graph) {
+  expandableNetworkData.nodes = graph.nodes
+  expandableNetworkData.links = graph.relationships
+  expandableNetworkData.helpers = {left: {}, right: {}}
+}
+
+var expand = {}
+
+// constructs the network to visualize
+function buildNetwork (data, prev) {
+  expand = expand || {} // map indicating which group should be expanded
+  console.log(expand)
+  var groupMap = {} // group map
+  var nodeMap = {} // nm
+  var nodeMapLeft = {} // nml
+  var nodeMapRight = {} // nmr
+  var nodeMapClone = {} // nmimg
+  var linkMap = {} // lm link maps - lm ~ lml-lmm-lmr linkMap ~ linkMapLeft-linkMapMiddel-linkMapRight
+  var linkMapLeft = {} // lml
+  var linkMapMiddle = {} // lmm
+  var linkMapRight = {} // lmr
+  var previousGroupNodes = {} // gn
+  var previousGroupCentroid = {} // gc
+  var outputNodes = [] // nodes
+  var outputLinks = [] // links
+  // eslint-disable-next-line camelcase
+  var helper_nodes = [] // helper force graph nodes
+  // eslint-disable-next-line camelcase
+  var helper_links = [] // helper force graph links
+  // eslint-disable-next-line camelcase
+  var helper_render_links = [] // helper force graph links
+  var k
+
+  // console.log(prev)
+
+  // process previous nodes for reuse or centroid calculation
+  if (prev) {
+    prev.nodes.forEach(function (n) {
+      var i = n.group // filename
+      var o
+      if (n.size > 0) {
+        previousGroupNodes[i] = n
+        n.size = 0
+        n.ig_link_count = 0
+        n.link_count = 0
+        n.first_link = null
+        n.first_link_target = null
+      } else {
+        o = previousGroupCentroid[i] || (previousGroupCentroid[i] = {x: 0, y: 0, count: 0})
+        o.x += n.x
+        o.y += n.y
+        o.count += 1 // we count regular nodes here, so .count is a measure for the number of nodes in the group
+      }
+    })
+  }
+
+  // determine nodes
+  for (k = 0; k < data.nodes.length; ++k) {
+    var currentNode = data.nodes[k]
+    var currentFile = currentNode.propertyMap.filename
+    var expansion = expand[currentFile] || 0
+    var currentGroup = groupMap[currentFile] ||
+            (groupMap[currentFile] = previousGroupNodes[currentFile]) ||
+            (groupMap[currentFile] = {group: currentFile, size: 0, nodes: [], ig_link_count: 0, link_count: 0, expansion: expansion})
+    var img
+
+    // we need to create a NEW object when expansion changes from 0->1 for a group node
+    // in order to break the references from the d3 selections, so that the next time
+    // this group node will indeed land in the 'enter()' set
+    if (currentGroup.expansion !== expansion) {
+      currentGroup = previousGroupNodes[currentFile] = groupMap[currentFile] = {group: currentGroup.group, x: currentGroup.x, y: currentGroup.y, size: currentGroup.size, nodes: currentGroup.nodes, ig_link_count: currentGroup.ig_link_count, link_count: currentGroup.link_count, expansion: expansion}
+    }
+
+    if (expansion === 2) {
+      // the node should be directly visible
+      nodeMap[nodeId(currentNode)] = currentNode
+      img = {ref: currentNode, x: currentNode.x, y: currentNode.y, size: currentNode.size || 0, fixed: 1, id: nodeId(currentNode)}
+      nodeMapClone[nodeId(currentNode)] = img
+      outputNodes.push(currentNode)
+      helper_nodes.push(img)
+      if (previousGroupNodes[currentFile]) {
+        // place new nodes at cluster location (plus jitter)
+        currentNode.x = previousGroupNodes[currentFile].x + Math.random()
+        currentNode.y = previousGroupNodes[currentFile].y + Math.random()
+      }
+    } else {
+      // the node is part of a collapsed cluster
+      if (currentGroup.size === 0) {
+        // if new cluster, add to set and position at centroid of leaf nodes
+        nodeMap[nodeId(currentNode)] = currentGroup
+        currentGroup.size = 1 // hack to make nodeid() work correctly for the new group node
+        nodeMap[nodeId(currentGroup)] = currentGroup
+        img = {ref: currentGroup, x: currentGroup.x, y: currentGroup.y, size: currentGroup.size || 0, fixed: 1, id: nodeId(currentGroup)}
+        nodeMapClone[nodeId(currentGroup)] = img
+        currentGroup.size = 0 // undo hack
+        nodeMapClone[nodeId(currentNode)] = img
+        outputNodes.push(currentGroup)
+        helper_nodes.push(img)
+        if (previousGroupCentroid[currentFile]) {
+          currentGroup.x = previousGroupCentroid[currentFile].x / previousGroupCentroid[currentFile].count
+          currentGroup.y = previousGroupCentroid[currentFile].y / previousGroupCentroid[currentFile].count
+        }
+      } else {
+        // have element node point to group node:
+        nodeMap[nodeId(currentNode)] = currentGroup // l = shortcut for: nm[nodeId(currentGroup)];
+        nodeMapClone[nodeId(currentNode)] = nodeMapClone[nodeId(currentGroup)]
+      }
+      currentGroup.nodes.push(currentNode)
+    }
+    // always count group size as we also use it to tweak the force graph strengths/distances
+    currentGroup.size += 1
+    currentNode.group_data = currentGroup
+    currentNode.link_count = 0
+    currentNode.first_link = null
+    currentNode.first_link_target = null
+  }
+
+  // determine links
+  for (k = 0; k < data.links.length; ++k) { // TODO: Check if it should be relationships instead of links
+    var link = data.links[k] // e
+    var source = link.source.propertyMap.filename // u
+    var target = link.target.propertyMap.filename // v
+    var rui
+    var rvi
+    var sourceId // ui
+    var targetId // vi
+    var lu
+    var rv
+    var sourceState // ustate
+    var targetState // vstate
+    var uimg
+    var vimg
+    var i
+    var ix
+    var l
+    var ll
+    var l_
+    var lr
+    if (source !== target) {
+      groupMap[source].ig_link_count++
+      groupMap[target].ig_link_count++
+    }
+    sourceState = expand[source] || 0
+    targetState = expand[target] || 0
+
+    // while d3.layout.force does convert link.source and link.target NUMERIC values to direct node references,
+    // it doesn't for other attributes, such as .real_source, so we do not use indexes in nm[] but direct node
+    // references to skip the d3.layout.force implicit links conversion later on and ensure that both .source/.target
+    // and .real_source/.real_target are of the same type and pointing at valid nodes.
+    rui = nodeId(link.source)
+    rvi = nodeId(link.target)
+    source = nodeMap[rui]
+    target = nodeMap[rvi]
+    if (source === target) {
+      // skip links from node to same (A-A); they are rendered as 0-length lines anyhow. Less links in array = faster animation.
+      continue
+    }
+    // 'links' are produced as 3 links+2 helper nodes; this is a generalized approach so we
+    // can support multiple links between element nodes and/or groups, always, as each
+    // 'original link' gets its own set of 2 helper nodes and thanks to the force layout
+    // those helpers will all be in different places, hence the link 'path' for each
+    // parallel link will be different.
+    sourceId = nodeId(source)
+    targetId = nodeId(target)
+    i = (sourceId < targetId ? sourceId + '|' + targetId : targetId + '|' + sourceId)
+    l = linkMap[i] || (linkMap[i] = {source: source, target: target, size: 0, distance: 0})
+    if (sourceState === 1) {
+      sourceId = rui
+    }
+    if (targetState === 1) {
+      targetId = rvi
+    }
+    ix = (sourceId < targetId ? sourceId + '|' + targetId + '|' + sourceState + '|' + targetState : targetId + '|' + sourceId + '|' + targetState + '|' + sourceState)
+    ix = (sourceId < targetId ? sourceId + '|' + targetId : targetId + '|' + sourceId)
+    // link(u,v) ==> u -> lu -> rv -> v
+    lu = nodeMapLeft[ix] || (nodeMapLeft[ix] = data.helpers.left[ix] || (data.helpers.left[ix] = {ref: source, id: '_lh_' + ix, size: -1, link_ref: l}))
+    rv = nodeMapRight[ix] || (nodeMapRight[ix] = data.helpers.right[ix] || (data.helpers.right[ix] = {ref: target, id: '_rh_' + ix, size: -1, link_ref: l}))
+    uimg = nodeMapClone[sourceId]
+    vimg = nodeMapClone[targetId]
+    ll = linkMapLeft[ix] || (linkMapLeft[ix] = {g_ref: l, ref: link, id: 'l' + ix, source: uimg, target: lu, real_source: source, real_target: target, size: 0, distance: 0, left_seg: true})
+    l_ = linkMapMiddle[ix] || (linkMapMiddle[ix] = {g_ref: l, ref: link, id: 'm' + ix, source: lu, target: rv, real_source: source, real_target: target, size: 0, distance: 0, middle_seg: true})
+    lr = linkMapRight[ix] || (linkMapRight[ix] = {g_ref: l, ref: link, id: 'r' + ix, source: rv, target: vimg, real_source: source, real_target: target, size: 0, distance: 0, right_seg: true})
+    l.size += 1
+    ll.size += 1
+    l_.size += 1
+    lr.size += 1
+
+    // these are only useful for single-linked nodes, but we don't care; here we have everything we need at minimum cost.
+    if (l.size === 1) {
+      source.link_count++
+      target.link_count++
+      source.first_link = l
+      target.first_link = l
+      source.first_link_target = target
+      target.first_link_target = source
+    }
+  }
+
+  for (k in linkMap) { outputLinks.push(linkMap[k]) }
+  for (k in linkMapLeft) { helper_links.push(linkMapLeft[k]) }
+  for (k in linkMapMiddle) { helper_links.push(linkMapMiddle[k]); helper_render_links.push(linkMapMiddle[k]) }
+  for (k in linkMapRight) { helper_links.push(linkMapRight[k]) }
+  for (k in nodeMapLeft) { helper_nodes.push(nodeMapLeft[k]) }
+  for (k in nodeMapRight) { helper_nodes.push(nodeMapRight[k]) }
+
+  // console.log("Nodes")
+  // console.log(nodes)
+
+  // console.log("Links")
+  // console.log(links)
+
+  // console.log("helper_nodes")
+  // console.log(helper_nodes)
+
+  // console.log("helper_links")
+  // console.log(helper_links)
+
+  // console.log("helper_render_links")
+  // console.log(helper_render_links)
+
+  return {nodes: outputNodes, links: outputLinks, helper_nodes: helper_nodes, helper_links: helper_links, helper_render_links: helper_render_links}
 }
 
 export default vizFn
