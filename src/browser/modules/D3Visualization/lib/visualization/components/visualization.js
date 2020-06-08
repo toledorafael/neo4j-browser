@@ -27,6 +27,8 @@ import vizClickHandler from '../utils/clickHandler'
 const vizFn = function (el, measureSize, graph, layout, style) {
   const viz = { style }
 
+  const vizMode = 'expandable' // original or expandable
+
   const root = d3.select(el)
   const baseGroup = root.append('g').attr('transform', 'translate(0,0)')
   const rect = baseGroup
@@ -42,15 +44,6 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
   const container = baseGroup.append('g')
   const geometry = new NeoD3Geometry(style)
-
-  //
-  var expandableNetworkData = {}
-  var expandableNetwork
-  expandableNetworkData.nodes = graph.nodes()
-  expandableNetworkData.links = graph.relationships()
-  expandableNetworkData.helpers = {left: {}, right: {}}
-  expandableNetwork = buildNetwork(expandableNetworkData, expandableNetwork)
-  console.log(expandableNetwork)
 
   // This flags that a panning is ongoing and won't trigger
   // 'canvasClick' event when panning ends.
@@ -227,193 +220,691 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       ? () => window.performance.now()
       : () => Date.now()
 
-  const render = function () {
-    if (!currentStats.firstFrame) {
-      currentStats.firstFrame = now()
+  if (vizMode === 'original') {
+    const render = function () {
+      if (!currentStats.firstFrame) {
+        currentStats.firstFrame = now()
+      }
+      currentStats.frameCount++
+      const startRender = now()
+      geometry.onTick(graph)
+      currentStats.geometry += now() - startRender
+
+      const nodeGroups = container
+        .selectAll('g.node')
+        .attr('transform', d => `translate(${d.x},${d.y})`)
+
+      for (var renderer of Array.from(vizRenderers.node)) {
+        nodeGroups.call(renderer.onTick, viz)
+      }
+
+      if (drawGroupMarks) {
+        const groupPaths = container
+          .selectAll('g.fileGroup')
+
+        updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+      }
+
+      const relationshipGroups = container
+        .selectAll('g.relationship')
+        .attr(
+          'transform',
+          d =>
+            `translate(${d.source.x} ${d.source.y}) rotate(${d.naturalAngle +
+              180})`
+        )
+
+      for (renderer of Array.from(vizRenderers.relationship)) {
+        const startRenderer = now()
+        relationshipGroups.call(renderer.onTick, viz)
+        currentStats.relationshipRenderers[renderer.name] += now() - startRenderer
+      }
+
+      return (currentStats.lastFrame = now())
     }
-    currentStats.frameCount++
-    const startRender = now()
-    geometry.onTick(graph)
-    currentStats.geometry += now() - startRender
 
-    const nodeGroups = container
-      .selectAll('g.node')
-      .attr('transform', d => `translate(${d.x},${d.y})`)
+    const force = layout.init(render)
 
-    for (var renderer of Array.from(vizRenderers.node)) {
-      nodeGroups.call(renderer.onTick, viz)
+    // Add custom drag event listeners
+    force
+      .drag()
+      .on('dragstart.node', d => onNodeDragToggle(d, groupIds))
+      .on('dragend.node', () => onNodeDragToggle())
+
+    viz.collectStats = function () {
+      const latestStats = currentStats
+      latestStats.layout = force.collectStats()
+      currentStats = newStatsBucket()
+      return latestStats
     }
 
-    if (drawGroupMarks) {
-      const groupPaths = container
-        .selectAll('g.fileGroup')
+    viz.update = function (showGroupMarks) {
+      if (!graph) {
+        return
+      }
 
-      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
-    }
+      drawGroupMarks = showGroupMarks
 
-    const relationshipGroups = container
-      .selectAll('g.relationship')
-      .attr(
-        'transform',
-        d =>
-          `translate(${d.source.x} ${d.source.y}) rotate(${d.naturalAngle +
-            180})`
+      const layers = container
+        .selectAll('g.layer')
+        .data(['relationships', 'nodes', 'fileGroups'])
+      layers
+        .enter()
+        .append('g')
+        .attr('class', d => `layer ${d}`)
+
+      const nodes = graph.nodes()
+      const relationships = graph.relationships()
+
+      var groupIds
+
+      const relationshipGroups = container
+        .select('g.layer.relationships')
+        .selectAll('g.relationship')
+        .data(relationships, d => d.id)
+
+      relationshipGroups
+        .enter()
+        .append('g')
+        .attr('class', 'relationship')
+        .on('mousedown', onRelationshipClick)
+        .on('mouseover', onRelMouseOver)
+        .on('mouseout', onRelMouseOut)
+
+      relationshipGroups.classed(
+        'selected',
+        relationship => relationship.selected
       )
 
-    for (renderer of Array.from(vizRenderers.relationship)) {
-      const startRenderer = now()
-      relationshipGroups.call(renderer.onTick, viz)
-      currentStats.relationshipRenderers[renderer.name] += now() - startRenderer
-    }
+      geometry.onGraphChange(graph)
 
-    return (currentStats.lastFrame = now())
-  }
+      for (var renderer of Array.from(vizRenderers.relationship)) {
+        relationshipGroups.call(renderer.onGraphChange, viz)
+      }
 
-  const force = layout.init(render)
+      relationshipGroups.exit().remove()
 
-  // Add custom drag event listeners
-  force
-    .drag()
-    .on('dragstart.node', d => onNodeDragToggle(d, groupIds))
-    .on('dragend.node', () => onNodeDragToggle())
+      const nodeGroups = container
+        .select('g.layer.nodes')
+        .selectAll('g.node')
+        .data(nodes, d => d.id)
 
-  viz.collectStats = function () {
-    const latestStats = currentStats
-    latestStats.layout = force.collectStats()
-    currentStats = newStatsBucket()
-    return latestStats
-  }
-
-  viz.update = function (showGroupMarks) {
-    if (!graph) {
-      return
-    }
-
-    drawGroupMarks = showGroupMarks
-
-    const layers = container
-      .selectAll('g.layer')
-      .data(['relationships', 'nodes', 'fileGroups'])
-    layers
-      .enter()
-      .append('g')
-      .attr('class', d => `layer ${d}`)
-
-    const nodes = graph.nodes()
-    const relationships = graph.relationships()
-
-    var groupIds
-
-    const relationshipGroups = container
-      .select('g.layer.relationships')
-      .selectAll('g.relationship')
-      .data(relationships, d => d.id)
-
-    relationshipGroups
-      .enter()
-      .append('g')
-      .attr('class', 'relationship')
-      .on('mousedown', onRelationshipClick)
-      .on('mouseover', onRelMouseOver)
-      .on('mouseout', onRelMouseOut)
-
-    relationshipGroups.classed(
-      'selected',
-      relationship => relationship.selected
-    )
-
-    geometry.onGraphChange(graph)
-
-    for (var renderer of Array.from(vizRenderers.relationship)) {
-      relationshipGroups.call(renderer.onGraphChange, viz)
-    }
-
-    relationshipGroups.exit().remove()
-
-    const nodeGroups = container
-      .select('g.layer.nodes')
-      .selectAll('g.node')
-      .data(nodes, d => d.id)
-
-    nodeGroups
-      .enter()
-      .append('g')
-      .attr('class', 'node')
-      .call(force.drag)
-      .call(clickHandler)
-      .on('mouseover', onNodeMouseOver)
-      .on('mouseout', onNodeMouseOut)
-
-    nodeGroups.classed('selected', node => node.selected)
-
-    for (renderer of Array.from(vizRenderers.node)) {
-      nodeGroups.call(renderer.onGraphChange, viz)
-    }
-
-    for (renderer of Array.from(menuRenderer)) {
-      nodeGroups.call(renderer.onGraphChange, viz)
-    }
-
-    nodeGroups.exit().remove()
-
-    if (drawGroupMarks) {
-      groupIds = getGroupIDs(nodes)
-
-      const groupPaths = container
-        .select('g.layer.fileGroups')
-        .selectAll('g.fileGroup')
-        .data(groupIds, function (d) { return d })
-
-      groupPaths
-        .enter() // Update to path
+      nodeGroups
+        .enter()
         .append('g')
-        .attr('class', 'fileGroup')
-        .append('path')
-        .attr('transform', `translate(0,0)`)
-        .attr('stroke', function (d) { return color(d) })
-        .attr('fill', function (d) { return color(d) })
-        .attr('fill-opacity', 0.2)
-        .attr('stroke-opacity', 1)
+        .attr('class', 'node')
+        .call(force.drag)
+        .call(clickHandler)
+        .on('mouseover', onNodeMouseOver)
+        .on('mouseout', onNodeMouseOut)
 
-      groupPaths.exit().remove()
-      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
-    } else {
-      container
-        .select('g.layer.fileGroups')
-        .selectAll('g.fileGroup')
-        .data({})
-        .exit().remove()
+      nodeGroups.classed('selected', node => node.selected)
+
+      for (renderer of Array.from(vizRenderers.node)) {
+        nodeGroups.call(renderer.onGraphChange, viz)
+      }
+
+      for (renderer of Array.from(menuRenderer)) {
+        nodeGroups.call(renderer.onGraphChange, viz)
+      }
+
+      nodeGroups.exit().remove()
+
+      if (drawGroupMarks) {
+        groupIds = getGroupIDs(nodes)
+
+        const groupPaths = container
+          .select('g.layer.fileGroups')
+          .selectAll('g.fileGroup')
+          .data(groupIds, function (d) { return d })
+
+        groupPaths
+          .enter() // Update to path
+          .append('g')
+          .attr('class', 'fileGroup')
+          .append('path')
+          .attr('transform', `translate(0,0)`)
+          .attr('stroke', function (d) { return color(d) })
+          .attr('fill', function (d) { return color(d) })
+          .attr('fill-opacity', 0.2)
+          .attr('stroke-opacity', 1)
+
+        groupPaths.exit().remove()
+        updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+      } else {
+        container
+          .select('g.layer.fileGroups')
+          .selectAll('g.fileGroup')
+          .data({})
+          .exit().remove()
+      }
+
+      if (updateViz) {
+        force.update(graph, [layoutDimension, layoutDimension])
+        viz.resize()
+        viz.trigger('updated')
+      }
+
+      // // drag groups
+      // function groupDragStarted (groupId) {
+      //   if (!d3.event.active) force.alpha(0.3).resume()
+      //   d3.select(this).select('path').style('stroke-width', 3)
+      // }
+
+      // function groupDragged (groupId) {
+      //   nodeGroups
+      //     .filter(function (d) {
+      //       return d.propertyMap.filename === groupId
+      //     })
+      //     .each(function (d) {
+      //       d.x += d3.event.dx
+      //       d.y += d3.event.dy
+      //     })
+      // }
+
+      // function groupDragEnded (groupId) {
+      //   if (!d3.event.active) force.alpha(0.3).resume()
+      //   d3.select(this).select('path').style('stroke-width', 1)
+      // }
+
+      return (updateViz = true)
     }
+  } else if (vizMode === 'expandable') {
+    var force
+    var force2
+    var net
+    var hullg
+    var hull
+    // var linkg
+    var helperLinkg
+    // var link
+    var hlink
+    var nodeg
+    // var helper_nodeg
+    var node
+    // var hnode
+    var dr = 4 // default point radius
+    //
+    var expandableNetworkData = {}
+    var expandableNetwork
 
-    if (updateViz) {
-      force.update(graph, [layoutDimension, layoutDimension])
-      viz.resize()
-      viz.trigger('updated')
+    // const render = function () {
+    //   node = nodeg.selectAll('circle.node')
+    //   hlink = helperLinkg.selectAll('path.hlink')
+    //   hullg.selectAll('path.hull')
+    // }
+    viz.update = function () {
+      /*
+  We're kinda lazy with maintaining the anti-coll grid here: only when we hit a 'occupied' node,
+  do we go and check if the occupier is still there, updating his quant grid location.
+
+  This works because it 'evens out over time': a tested node hitting an 'unoccupied slot' takes that
+  slot, so at the start, everybody might think they've got a free slot for themselves, then on the
+  next 'tick', the slot may be suddenly found occupied by someone else also sitting in the same slot,
+  causing double occupations to be resolved as the marked owner will stay, while all the others will
+  be pushed out.
+
+  As we'll have a lot of 'ticks' before the shows stops, we'll have plenty of time to get everybody
+  to an actually really empty grid slot.
+
+  Note that the feature set lists this as 'first come, first serve', but when you read this, I'm sure
+  you realize that's a bit of a lie. After all, it's only really 'first come, first serve in nodes[]
+  order' on the INITIAL ROUND, isn't it?
+  */
+      // var anticollision_grid = [], xquant = 1, yquant = 1, xqthresh, yqthresh
+
+      expandableNetworkData.nodes = graph.nodes()
+      expandableNetworkData.links = graph.relationships()
+      expandableNetworkData.helpers = {left: {}, right: {}}
+      expandableNetwork = buildNetwork(expandableNetworkData, expandableNetwork)
+      // console.log(expandableNetwork)
+
+      if (force) force.stop()
+
+      // net = buildNetwork(data, net)
+      console.log(net)
+
+      force = d3.layout.force()
+        .nodes(expandableNetwork.nodes)
+        .links(expandableNetwork.links)
+        .size([layoutDimension, layoutDimension])
+        .linkDistance(function (l, i) {
+        // return 300;
+          var n1 = l.source
+          var n2 = l.target
+          var g1 = n1.group_data || n1
+          var g2 = n2.group_data || n2
+          var n1IsGroup = n1.size || 0
+          var n2IsGroup = n2.size || 0
+          var rv = 300
+          // larger distance for bigger groups:
+          // both between single nodes and _other_ groups (where size of own node group still counts),
+          // and between two group nodes.
+          //
+          // reduce distance for groups with very few outer links,
+          // again both in expanded and grouped form, i.e. between individual nodes of a group and
+          // nodes of another group or other group node or between two group nodes.
+          //
+          // The latter was done to keep the single-link groups close.
+          if (n1.group === n2.group) {
+            if ((n1.link_count < 2 && !n1IsGroup) || (n2.link_count < 2 && !n2IsGroup)) {
+            // 'real node' singles: these don't need a big distance to make the distance, if you whumsayin' ;-)
+              rv = 2
+            } else if (!n1IsGroup && !n2IsGroup) {
+              rv = 2
+            } else if (g1.link_count < 4 || g2.link_count < 4) {
+              rv = 100
+            }
+          } else {
+            if (!n1IsGroup && !n2IsGroup) {
+              rv = 50
+            } else if ((n1IsGroup && n2IsGroup) && (g1.link_count < 4 || g2.link_count < 4)) {
+            // 'real node' singles: these don't need a big distance to make the ditance, if you whumsayin' ;-)
+              rv = 100
+            } else if ((n1IsGroup && g1.link_count < 2) || (n2IsGroup && g2.link_count < 2)) {
+            // 'real node' singles: these don't need a big distance to make the ditance, if you whumsayin' ;-)
+              rv = 30
+            } else if (!n1IsGroup || !n2IsGroup) {
+              rv = 100
+            }
+          }
+
+          return (l.distance = rv)
+        })
+        .gravity(1.0) // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
+        .charge(function (d, i) { // ... charge is important to turn single-linked groups to the outside
+          if (d.size > 0) {
+            return -5000 // group node
+          } else {
+          // 'regular node'
+            return -1000
+          }
+        })
+        .friction(0.7) // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
+        .start()
+
+      /*
+  And here's the crazy idea for allowing AND rendering multiple links between 2 nodes, etc., as the initial attempt
+  to include the 'helper' nodes in the basic 'force' failed dramatically from a visual PoV: we 'overlay' the basic
+  nodes+links force with a SECOND force layout which 'augments' the original force layout by having it 'layout' all
+  the helper nodes (with their links) between the 'fixed' REAL nodes, which are laid out by the original force.
+
+  This way, we also have the freedom to apply a completely different force field setup to the helpers (no gravity
+  as it doesn't make sense for helpers, different charge values, etc.).
+  */
+      force2 = d3.layout.force()
+        .nodes(net.helper_nodes)
+        .links(net.helper_links)
+        .size([layoutDimension, layoutDimension])
+        .linkDistance(function (l, i) {
+          // var n1 = l.real_source
+          // var n2 = l.real_target
+          // var rv
+          var lr = l.g_ref
+          // var n1r
+          // var n2r
+          // var dx
+          // var dy
+          if (lr.source.size > 0 || lr.target.size > 0) { return 20 }
+          return 1
+        })
+        .gravity(0.0) // just a tad of gravidy to help keep those curvy buttocks decent
+        .charge(function (d, i) {
+        // helper nodes have a medium-to-high charge, depending on the number of links the related force link represents.
+        // Hence bundles of links fro A->B will have helper nodes with huge charges: better spreading of the link paths.
+        //
+        // Unless we're looking at helpers for links between 'real nodes', NOT GROUPS: in that case we want to keep
+        // the lines are straight as posssible as there would only be one relation for A->B anyway, so we lower the charge
+        // for such nodes and helpers.
+          if (d.fixed) { return -10 }
+          var l = d.link_ref
+          // var c = l.link_count || 1
+          if (l.source.size > 0 || l.target.size > 0) { return -30 }
+          return -1
+        })
+        .friction(0.95)
+        .start()
+        .stop() // and immediately stop! force.tick will drive this one every tick!
+
+      hullg = container.selectAll('path.hull').remove()
+      hull = hullg.selectAll('path.hull')
+        .data(convexHulls(net.nodes, off))
+        .enter().append('path')
+        .attr('class', 'hull')
+        .attr('d', drawCluster)
+        .style('fill', function (d) { return color(d.group) })
+        .on('click', onHullClick)
+
+      // if (debug == 1) {
+      //   link = linkg.selectAll('line.link').data(net.links, linkid)
+      //   link.exit().remove()
+      //   link.enter().append('line')
+      //     .attr('class', 'link')
+      //     .attr('x1', function (d) { return d.source.x })
+      //     .attr('y1', function (d) { return d.source.y })
+      //     .attr('x2', function (d) { return d.target.x })
+      //     .attr('y2', function (d) { return d.target.y })
+      //   // both existing and enter()ed links may have changed stroke width due to expand state change somewhere:
+      //   link.style('stroke-width', function (d) { return d.size || 1 })
+      // }
+      hlink = container.selectAll('path.hlink').data(net.helper_render_links, function (d) {
+        return d.id
+      })
+      hlink.exit().remove()
+      hlink.enter().append('path')
+        .attr('class', 'hlink')
+      // both existing and enter()ed links may have changed stroke width due to expand state change somewhere:
+      hlink.style('stroke-width', function (d) { return d.size || 1 })
+
+      // if (debug) {
+      //   hnode = helper_nodeg.selectAll('circle.node').data(net.helper_nodes, function (d) {
+      //     return d.id
+      //   })
+      //   hnode.exit().remove()
+      //   hnode.enter().append('circle')
+      //   // if (d.size) -- d.size > 0 when d is a group node.
+      //   // d.size < 0 when d is a 'path helper node'.
+      //     .attr('class', function (d) {
+      //       return 'node' + (d.size > 0 ? '' : d.size < 0 ? ' helper' : ' leaf')
+      //     })
+      //     .attr('r', function (d) {
+      //       return d.size > 0 ? d.size + dr : d.size < 0 ? 2 : dr + 1
+      //     })
+      //     .attr('cx', function (d) { return d.x })
+      //     .attr('cy', function (d) { return d.y })
+      //     .style('fill', function (d) { return color(d.group) })
+      // }
+
+      node = container.selectAll('circle.node').data(net.nodes, nodeId)
+      node.exit().remove()
+      node.enter().append('circle')
+      // if (d.size) -- d.size > 0 when d is a group node.
+      // d.size < 0 when d is a 'path helper node'.
+        .attr('class', function (d) {
+          return 'node' + (d.size > 0 ? d.expansion ? ' link-expanded' : '' : ' leaf')
+        })
+        .attr('r', function (d) {
+          return d.size > 0 ? d.size + dr : dr + 1
+        })
+        .attr('cx', function (d) { return d.x })
+        .attr('cy', function (d) { return d.y })
+        .style('fill', function (d) { return color(d.group) })
+        .on('click', onNodeClickExpandable)
+
+      node.call(force.drag)
+
+      var dragInProgress = false
+      var changeSquared
+
+      // CPU load redux for the fix, part 3: jumpstart the annealing process again when the user moves the mouse outside the node,
+      // when we believe the drag is still going on; even when it isn't anymore, but D3 doesn't inform us about that!
+      node
+        .on('mouseout.ger_fix', function (d) {
+          // if (debug == 1) console.log('mouseout.ger_fix', this, arguments, d.fixed, dragInProgress)
+          if (dragInProgress) {
+            force.resume()
+          }
+        })
+
+      var resumeThreshold = 0.05
+
+      force.on('tick', function (e) {
+        /*
+    Force all nodes with only one link to point outwards.
+
+    To do this, we first calculate the center mass (okay, we wing it, we fake node 'weight'),
+    then see whether the target node for links from single-link nodes is closer to the
+    center-of-mass than us, and if it isn't, we push the node outwards.
+    */
+        var center = {x: 0, y: 0, weight: 0}
+        var singles = []
+        var size
+        // var c
+        // var k
+        var mx
+        var my
+        var dx
+        var dy
+        var alpha
+
+        dragInProgress = false
+        net.nodes.forEach(function (n) {
+          var w = Math.max(1, n.size || 0, n.weight || 0)
+
+          center.x += w * n.x
+          center.y += w * n.y
+          center.weight += w
+
+          if (n.fixed & 2) {
+            dragInProgress = true
+          }
+
+          if (n.size > 0 ? n.link_count < 4 : n.group_data.link_count < 3) { singles.push(n) }
+        })
+
+        size = force.size()
+
+        mx = size[0] / 2
+        my = size[1] / 2
+
+        singles.forEach(function (n) {
+          var l = n.first_link
+          // var n2 = n.first_link_target
+          // var proj
+          // var ax
+          // var bx
+          // var ay
+          // var by
+          var k
+          // var x
+          // var y
+          var alpha
+          // var rej
+          var power
+          var dx
+          var dy
+          var nIsGroup = n.size || 0
+          // var ng = n.group_data || n
+          // var c2
+          var w = Math.max(1, n.size || 0, n.weight || 0)
+
+          // haven't decided what to do for unconnected nodes, yet...
+          if (!l) { return }
+
+          // apply amplification of the 'original' alpha:
+          // 1.0 for singles and double-connected nodes, close to 0 for highly connected nodes, rapidly decreasing.
+          // Use this as we want to give those 'non-singles' a little bit of the same 'push out' treatment.
+          // Reduce effect for 'real nodes' which are singles: they need much less encouragement!
+          power = Math.max(2, nIsGroup ? n.link_count : n.group_data.link_count)
+          power = 2 / power
+
+          alpha = e.alpha * power
+
+          // undo/revert gravity forces (or as near as we can get, here)
+          //
+          // revert for truely single nodes, revert just a wee little bit for dual linked nodes,
+          // only reduce ever so slighty for nodes with few links (~ 3) that made it into this
+          // 'singles' selection
+          if ((k = alpha * force.gravity() * (0.8 + power))) {
+            dx = (mx - n.x) * k
+            dy = (my - n.y) * k
+            n.x -= dx
+            n.y -= dy
+
+            center.x -= dx * w
+            center.y -= dy * w
+          }
+        })
+
+        // move the entire graph so that its center of mass sits at the center, period.
+        center.x /= center.weight
+        center.y /= center.weight
+
+        // if (debug == 1) {
+        //   c = vis.selectAll('circle.center-of-mass')
+        //     .attr('cx', center.x)
+        //     .attr('cy', center.y)
+        // }
+
+        dx = mx - center.x
+        dy = my - center.y
+
+        alpha = e.alpha * 5
+        dx *= alpha
+        dy *= alpha
+
+        net.nodes.forEach(function (n) {
+          n.x += dx
+          n.y += dy
+        })
+
+        changeSquared = 0
+
+        // fixup .px/.py so drag behaviour and annealing get the correct values, as
+        // force.tick() would expect .px and .py to be the .x and .y of yesterday.
+        net.nodes.forEach(function (n) {
+          // restrain all nodes to window area
+          var k
+          var dx
+          var dy
+          var r = (n.size > 0 ? n.size + dr : dr + 1) + 2 /* styled border outer thickness and a bit */
+
+          dx = 0
+          if (n.x < r) { dx = r - n.x } else if (n.x > size[0] - r) { dx = size[0] - r - n.x }
+
+          dy = 0
+          if (n.y < r) { dy = r - n.y } else if (n.y > size[1] - r) { dy = size[1] - r - n.y }
+
+          k = 1.2
+
+          n.x += dx * k
+          n.y += dy * k
+          // restraining completed.......................
+
+          // fixes 'elusive' node behaviour when hovering with the mouse (related to force.drag)
+          if (n.fixed) {
+            // 'elusive behaviour' ~ move mouse near node and node would take off, i.e. act as an elusive creature.
+            n.x = n.px
+            n.y = n.py
+          }
+          n.px = n.x
+          n.py = n.y
+
+          // plus copy for faster stop check
+          changeSquared += (n.qx - n.x) * (n.qx - n.x)
+          changeSquared += (n.qy - n.y) * (n.qy - n.y)
+          n.qx = n.x
+          n.qy = n.y
+        })
+
+        // kick the force2 to also do a bit of annealing alongside:
+        // to make it do something, we need to surround it alpha-tweaking stuff, though.
+        force2.resume()
+        force2.tick()
+        force2.stop()
+
+        // fast stop + the drag fix, part 2:
+        if (changeSquared < 0.005) {
+          // if (debug == 1) console.log('fast stop: CPU load redux')
+          force.stop()
+          // fix part 4: monitor D3 resetting the drag marker:
+          if (dragInProgress) {
+            // if (debug == 1) console.log('START monitor drag in progress', dragInProgress)
+            d3.timer(function () {
+              dragInProgress = false
+              net.nodes.forEach(function (n) {
+                if (n.fixed & 2) {
+                  dragInProgress = true
+                }
+              })
+              force.resume()
+              // if (debug == 1) console.log('monitor drag in progress: drag ENDED', dragInProgress)
+              // Quit monitoring as soon as we noticed the drag ENDED.
+              // Note: we continue to monitor at +500ms intervals beyond the last tick
+              //       as this timer function ALWAYS kickstarts the force layout again
+              //       through force.resume().
+              //       d3.timer() API only accepts an initial delay; we can't set this
+              //       thing to scan, say, every 500msecs until the drag is done,
+              //       so we do it that way, via the revived force.tick process.
+              return true
+            }, 500)
+          }
+        } else if (changeSquared > net.nodes.length * 5 && e.alpha < resumeThreshold) {
+          // jolt the alpha (and the visual) when there's still a lot of change when we hit the alpha threshold.
+          force.alpha(Math.min(0.1, e.alpha *= 2)) // force.resume(), but now with decreasing alpha starting value so the jolts don't get so big.
+
+          // And 'dampen out' the trigger point, so it becomes harder and harder to trigger the threshold.
+          // This is done to cope with those instable (forever rotating, etc.) layouts...
+          resumeThreshold *= 0.9
+        }
+
+        // --------------------------------------------------------------------
+
+        if (!hull.empty()) {
+          hull.data(convexHulls(net.nodes, off))
+            .attr('d', drawCluster)
+        }
+
+        // if (debug == 1) {
+        //   link.attr('x1', function (d) { return d.source.x })
+        //     .attr('y1', function (d) { return d.source.y })
+        //     .attr('x2', function (d) { return d.target.x })
+        //     .attr('y2', function (d) { return d.target.y })
+        // }
+
+        node.attr('cx', function (d) { return d.x })
+          .attr('cy', function (d) { return d.y })
+      })
+
+      force2.on('tick', function (e) {
+        /*
+      Update all 'real'=fixed nodes.
+    */
+        net.helper_nodes.forEach(function (n) {
+          var o
+          if (n.fixed) {
+            o = n.ref
+            n.px = n.x = o.x
+            n.py = n.y = o.y
+          }
+        })
+        net.helper_links.forEach(function (l) {
+          var o = l.g_ref
+          l.distance = o.distance
+        })
+
+        // NOTE: force2 is fully driven by force(1), but still there's need for 'fast stop' handling in here
+        //       as our force2 may be more 'joyous' in animating the links that force is animating the nodes
+        //       themselves. Hence we also take the delta movement of the helper nodes into account!
+        net.helper_nodes.forEach(function (n) {
+          // skip the 'fixed' buggers: those are already accounted for in force.tick!
+          if (n.fixed) { return }
+
+          // plus copy for faster stop check
+          changeSquared += (n.qx - n.x) * (n.qx - n.x)
+          changeSquared += (n.qy - n.y) * (n.qy - n.y)
+          n.qx = n.x
+          n.qy = n.y
+        })
+
+        // --------------------------------------------------------------------
+
+        hlink.attr('d', function (d) {
+          var linedata = [
+            [d.real_source.x, d.real_source.y],
+            [d.source.x, d.source.y],
+            [d.target.x, d.target.y],
+            [d.real_target.x, d.real_target.y]
+          ]
+          return pathgen(linedata)
+        })
+
+        // if (debug) {
+        //   hnode.attr('cx', function (d) { return d.x })
+        //     .attr('cy', function (d) { return d.y })
+        // }
+      })
     }
-
-    // // drag groups
-    // function groupDragStarted (groupId) {
-    //   if (!d3.event.active) force.alpha(0.3).resume()
-    //   d3.select(this).select('path').style('stroke-width', 3)
-    // }
-
-    // function groupDragged (groupId) {
-    //   nodeGroups
-    //     .filter(function (d) {
-    //       return d.propertyMap.filename === groupId
-    //     })
-    //     .each(function (d) {
-    //       d.x += d3.event.dx
-    //       d.y += d3.event.dy
-    //     })
-    // }
-
-    // function groupDragEnded (groupId) {
-    //   if (!d3.event.active) force.alpha(0.3).resume()
-    //   d3.select(this).select('path').style('stroke-width', 1)
-    // }
-
-    return (updateViz = true)
   }
 
   viz.resize = function () {
@@ -520,7 +1011,75 @@ function initExpandableNetworkData (expandableNetworkData, graph) {
   expandableNetworkData.helpers = {left: {}, right: {}}
 }
 
+function convexHulls (nodes, offset) {
+  var hulls = {}
+
+  // create point sets
+  for (var k = 0; k < nodes.length; ++k) {
+    var n = nodes[k]
+    if (n.size) continue
+    var i = getGroup(n)
+    var l = hulls[i] || (hulls[i] = [])
+    l.push([n.x - offset, n.y - offset])
+    l.push([n.x - offset, n.y + offset])
+    l.push([n.x + offset, n.y - offset])
+    l.push([n.x + offset, n.y + offset])
+  }
+
+  // create convex hulls
+  var hullset = []
+  for (i in hulls) {
+    hullset.push({group: i, path: d3.geom.hull(hulls[i])})
+  }
+
+  return hullset
+}
+
+function drawCluster (d) {
+  return curve(d.path) // 0.8
+}
+
 var expand = {}
+var curve = d3.svg.line()
+  .interpolate('cardinal-closed')
+  .tension(0.85)
+
+var off = 15
+
+// these functions call init(); by declaring them here,
+// they don't have the old init() as a closure any more.
+// This should save us some memory and cycles when using
+// this in a long-running setting.
+
+function onHullClick (d) {
+  // if (debug == 1) console.log("node click", d, arguments, this, expand[d.group]);
+  // clicking on 'path helper nodes' shouln't expand/collapse the group node:
+  if (d.size < 0) { return }
+  cycleState(d)
+  vizFn.update() // Maybe create an init function to hold this and call it here and in the viz.update()
+}
+
+function onNodeClickExpandable (d) {
+  // if (debug == 1) console.log("node click", d, arguments, this, expand[d.group]);
+  // clicking on 'path helper nodes' shouln't expand/collapse the group node:
+  if (d.size < 0) { return }
+  cycleState(d)
+  vizFn.update() // Maybe create an init function to hold this and call it here and in the viz.update()
+}
+
+function cycleState (d) {
+  var g = d.group
+  var s = expand[g] || 0
+  // it's no use 'expanding the intergroup links only' for nodes which only have 1 outside link for real:
+  if (d.ig_link_count < 2) { s = (s ? 0 : 2) } else {
+    s++; s %= 3
+  }
+  return (expand[g] = s)
+}
+
+function getGroup (n) { return n.group }
+
+var pathgen = d3.svg.line().interpolate('basis')
 
 // constructs the network to visualize
 function buildNetwork (data, prev) {
