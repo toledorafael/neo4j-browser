@@ -69,6 +69,46 @@ export const StyledSvgWrapper = styled.div`
     .fileGroup {
       stroke-opacity: 1;
     }
+
+    circle.node {
+      fill: lightsteelblue;
+      stroke: #555;
+      stroke-width: 3px;
+    }
+    circle.leaf {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+    circle.link-expanded {
+      stroke: #555;
+      stroke-width: 3px;
+      stroke-dasharray: 2px 4px;
+    }
+    circle.helper {
+      stroke-width: 0;
+      fill: #333;
+      opacity: 0.6;
+    }
+    circle.center-of-mass {
+      fill: white;
+      stroke: red;
+      stroke-width: 5px;
+    }
+    path.hull {
+      fill: lightsteelblue;
+      fill-opacity: 0.3;
+    }
+    path.hlink {
+      stroke: #333;
+      stroke-opacity: 0.5;
+      fill: none;
+      pointer-events: none;
+    }
+    line.link {
+      stroke: red;
+      stroke-opacity: 0.7;
+      pointer-events: none;
+    }
     
     .relationship {
       > .overlay {
