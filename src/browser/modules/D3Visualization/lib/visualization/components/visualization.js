@@ -155,11 +155,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   }
   // Background click event
   // Check if panning is ongoing
-  rect.on('click', function () {
-    if (!draw) {
-      return viz.trigger('canvasClicked', el)
-    }
-  })
+  // rect.on('click', function () {
+  //   if (!draw) {
+  //     return viz.trigger('canvasClicked', el)
+  //   }
+  // })
+  // TODO: fix the bug on clickling the canvas
 
   baseGroup
     .call(zoomBehavior)
