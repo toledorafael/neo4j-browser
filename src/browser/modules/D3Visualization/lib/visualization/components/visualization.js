@@ -27,14 +27,14 @@ import vizClickHandler from '../utils/clickHandler'
 const vizFn = function (el, measureSize, graph, layout, style) {
   const viz = { style }
 
-  const vizMode = 'expandable' // original or expandable
+  const vizMode = 'original' // original or expandable
 
   const root = d3.select(el)
   const baseGroup = root.append('g').attr('transform', 'translate(0,0)')
   const rect = baseGroup
     .append('rect')
     .style('fill', 'none')
-    .style('pointer-events', 'all')
+    // .style('pointer-events', 'all')
     // Make the rect cover the whole surface
     .attr('x', '-2500')
     .attr('y', '-2500')
@@ -63,10 +63,10 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
   const onNodeClick = node => {
     updateViz = false
-    return viz.trigger('nodeClicked', node)
+    return viz.trigger('nodeClicked', node, drawGroupMarks)
   }
 
-  const onNodeDblClick = node => viz.trigger('nodeDblClicked', node)
+  const onNodeDblClick = node => viz.trigger('nodeDblClicked', node, drawGroupMarks)
 
   const onNodeDragToggle = (node, groupIds) => {
     if (groupIds && drawGroupMarks) {
@@ -81,7 +81,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   const onRelationshipClick = relationship => {
     d3.event.stopPropagation()
     updateViz = false
-    return viz.trigger('relationshipClicked', relationship)
+    return viz.trigger('relationshipClicked', relationship, drawGroupMarks)
   }
 
   const onNodeMouseOver = node => viz.trigger('nodeMouseOver', node)
@@ -235,15 +235,15 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .selectAll('g.node')
         .attr('transform', d => `translate(${d.x},${d.y})`)
 
-      for (var renderer of Array.from(vizRenderers.node)) {
-        nodeGroups.call(renderer.onTick, viz)
-      }
-
       if (drawGroupMarks) {
         const groupPaths = container
           .selectAll('g.fileGroup')
 
         updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+      }
+
+      for (var renderer of Array.from(vizRenderers.node)) {
+        nodeGroups.call(renderer.onTick, viz)
       }
 
       const relationshipGroups = container
@@ -304,6 +304,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .selectAll('g.relationship')
         .data(relationships, d => d.id)
 
+      var tip
+      baseGroup.on('click', function () {
+        tip = container.selectAll('g.tip')
+        if (tip) tip.remove()
+      })
+
       relationshipGroups
         .enter()
         .append('g')
@@ -311,6 +317,49 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .on('mousedown', onRelationshipClick)
         .on('mouseover', onRelMouseOver)
         .on('mouseout', onRelMouseOut)
+        .on('contextmenu', function (d, i) {
+          d3.event.preventDefault()
+          d3.event.stopPropagation()
+
+          if (tip) tip.remove()
+
+          tip = container.append('g')
+            .attr('class', 'tip')
+            .attr('transform', 'translate(' + (d.source.x + 20) + ',' + (d.source.y + 20) + ')')
+
+          var textBox = tip.append('rect')
+            .style('fill', 'white')
+            .style('stroke', 'steelblue')
+
+          var yPos = 1
+          for (var property in d.propertyList) {
+            if (d.propertyList[property].key !== 'samplecode') {
+              tip.append('text')
+                .text(d.propertyList[property].key + ': ' + d.propertyList[property].value)
+                .attr('dy', yPos + 'em')
+                .attr('x', 5)
+              yPos++
+            } else {
+              var sampleCodeArr = d.propertyList[property].value.split(/\r?\n/)
+              tip.append('text')
+                .text('samplecode: ')
+                .attr('dy', yPos + 'em')
+                .attr('x', 5)
+              yPos++
+              for (var line in sampleCodeArr) {
+                tip.append('text')
+                  .text(sampleCodeArr[line])
+                  .attr('dy', yPos + 'em')
+                  .attr('x', 5)
+                yPos++
+              }
+            }
+          }
+
+          var bbox = tip.node().getBBox()
+          textBox.attr('width', bbox.width + 5)
+            .attr('height', bbox.height + 5)
+        })
 
       relationshipGroups.classed(
         'selected',
@@ -330,6 +379,11 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .selectAll('g.node')
         .data(nodes, d => d.id)
 
+      baseGroup.on('click', function () {
+        tip = container.selectAll('g.tip')
+        if (tip) tip.remove()
+      })
+
       nodeGroups
         .enter()
         .append('g')
@@ -338,6 +392,36 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .call(clickHandler)
         .on('mouseover', onNodeMouseOver)
         .on('mouseout', onNodeMouseOut)
+        .on('contextmenu', function (d, i) {
+          d3.event.preventDefault()
+          d3.event.stopPropagation()
+
+          if (tip) tip.remove()
+
+          tip = container.append('g')
+            .attr('class', 'tip')
+            .attr('transform', 'translate(' + (d.x + 10) + ',' + (d.y + 10) + ')')
+
+          console.log(d.propertyMap)
+          var textBox = tip.append('rect')
+            .style('fill', 'white')
+            .style('stroke', 'steelblue')
+
+          var yPos = 1
+          for (var property in d.propertyMap) {
+            if (property !== 'label') {
+              tip.append('text')
+                .text(property + ': ' + d.propertyMap[property])
+                .attr('dy', yPos + 'em')
+                .attr('x', 5)
+              yPos++
+            }
+          }
+
+          var bbox = tip.node().getBBox()
+          textBox.attr('width', bbox.width + 5)
+            .attr('height', bbox.height + 5)
+        })
 
       nodeGroups.classed('selected', node => node.selected)
 
@@ -369,6 +453,71 @@ const vizFn = function (el, measureSize, graph, layout, style) {
           .attr('fill', function (d) { return color(d) })
           .attr('fill-opacity', 0.2)
           .attr('stroke-opacity', 1)
+          .attr('data-legend', function (d) {
+            return d
+          })
+
+        // Add legend for groupMarks
+        // var legendFunction = function (g) {
+        //   g.each(function () {
+        //     var g = d3.select(this)
+        //     var items = {}
+        //     var svg = d3.select(g.property('nearestViewportElement'))
+        //     var legendPadding = g.attr('data-style-padding') || 5
+        //     var lb = g.selectAll('.legend-box').data([true])
+        //     var li = g.selectAll('.legend-items').data([true])
+
+        //     lb.enter().append('rect').classed('legend-box', true)
+        //     li.enter().append('g').classed('legend-items', true)
+
+        //     svg.selectAll('[data-legend]').each(function () {
+        //       var self = d3.select(this)
+        //       items[self.attr('data-legend')] = {
+        //         pos: self.attr('data-legend-pos') || this.getBBox().y,
+        //         color: self.attr('data-legend-color') != undefined ? self.attr('data-legend-color') : self.style('fill') != 'none' ? self.style('fill') : self.style('stroke')
+        //       }
+        //     })
+
+        //     items = d3.entries(items).sort(function (a, b) { return a.value.pos - b.value.pos })
+
+        //     li.selectAll('text')
+        //       .data(items, function (d) { return d.key })
+        //       .call(function (d) { d.enter().append('text') })
+        //       .call(function (d) { d.exit().remove() })
+        //       .attr('y', function (d, i) { return i + 'em' })
+        //       .attr('x', '1em')
+        //       .text(function (d) { ;return d.key })
+
+        //     li.selectAll('circle')
+        //       .data(items, function (d) { return d.key })
+        //       .call(function (d) { d.enter().append('circle') })
+        //       .call(function (d) { d.exit().remove() })
+        //       .attr('cy', function (d, i) { return i - 0.25 + 'em' })
+        //       .attr('cx', 0)
+        //       .attr('r', '0.4em')
+        //       .style('fill', function (d) { return d.value.color })
+
+        //       // Reposition and resize the box
+        //     var lbbox = li[0][0].getBBox()
+        //     lb.attr('x', (lbbox.x - legendPadding))
+        //       .attr('y', (lbbox.y - legendPadding))
+        //       .attr('height', (lbbox.height + 2 * legendPadding))
+        //       .attr('width', (lbbox.width + 2 * legendPadding))
+        //   })
+        //   return g
+        // }
+
+        // var legend = container.append('g')
+        //   .attr('class', 'legend')
+        //   .attr('transform', 'translate(-750,-750)')
+        //   .attr('data-style-padding', 15)
+        //   .style('font-size', '20px')
+        //   .call(legendFunction)
+
+        // setTimeout(function () {
+        //   legend
+        //     .call(legendFunction)
+        // }, 500)
 
         groupPaths.exit().remove()
         updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
@@ -444,6 +593,10 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       // initExpandableNetworkData(expandableNetworkData, graph)
       // expandableNetwork = buildNetwork(expandableNetworkData, expandableNetwork)
       var hullg = container.append('g')
+
+      var net
+      var force
+      var force2
       initExpandableView()
 
       function initExpandableView () {
@@ -462,9 +615,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         var expandableNetwork
         initExpandableNetworkData(expandableNetworkData, graph)
         expandableNetwork = buildNetwork(expandableNetworkData, expandableNetwork)
-        var force
-        var force2
-        var net
+        geometry.onTick(graph)
+
         var hull
         // var linkg
         // var helperLinkg
@@ -474,17 +626,27 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         // var helper_nodeg
         var node
         // var hnode
-        var dr = 4 // default point radius
+        var dr = 5 // default point radius
+        var canvasSize = 600
 
         net = expandableNetwork
-        if (force) force.stop()
-
+        // if (force) {
+        //   force.nodes(expandableNetwork.nodes)
+        //     .links(expandableNetwork.links)
+        //     .size([canvasSize, canvasSize])
+        //     .start()
+        //   force2.nodes(net.helper_nodes)
+        //     .links(net.helper_links)
+        //     .size([canvasSize, canvasSize])
+        //     .start()
+        //     .stop()
+        // } else {
         // net = buildNetwork(data, net)
 
         force = d3.layout.force()
           .nodes(expandableNetwork.nodes)
           .links(expandableNetwork.links)
-          .size([layoutDimension, layoutDimension])
+          .size([canvasSize, canvasSize])
           .linkDistance(function (l, i) {
             // return 300;
             var n1 = l.source
@@ -540,7 +702,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
           .friction(0.7) // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
           .start()
 
-        /*
+          /*
     And here's the crazy idea for allowing AND rendering multiple links between 2 nodes, etc., as the initial attempt
     to include the 'helper' nodes in the basic 'force' failed dramatically from a visual PoV: we 'overlay' the basic
     nodes+links force with a SECOND force layout which 'augments' the original force layout by having it 'layout' all
@@ -552,11 +714,11 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         force2 = d3.layout.force()
           .nodes(net.helper_nodes)
           .links(net.helper_links)
-          .size([layoutDimension, layoutDimension])
+          .size([canvasSize, canvasSize])
           .linkDistance(function (l, i) {
-          // var n1 = l.real_source
-          // var n2 = l.real_target
-          // var rv
+            // var n1 = l.real_source
+            // var n2 = l.real_target
+            // var rv
             var lr = l.g_ref
             // var n1r
             // var n2r
@@ -583,11 +745,39 @@ const vizFn = function (el, measureSize, graph, layout, style) {
           .start()
           .stop() // and immediately stop! force.tick will drive this one every tick!
 
-        var drag = force.drag().on('dragstart', dragstart)
-        // force2.drag().on('dragstart', dragstart)
-        function dragstart (d) {
-          d3.select(this).classed('fixed', d.fixed = true)
+        force.drag()
+          .on('dragstart.circle', d => {
+            viz.trigger('nodeDragToggle', d)
+          })
+          .on('dragend.circle', d => {
+            onNodeDragToggle()
+            d.fixed = true
+          })
+        // }
+        var nodeDrag = d3.behavior.drag()
+          .on('dragstart', dragstart)
+          .on('drag', dragmove)
+          .on('dragend', dragend)
+
+        function dragstart (d, i) {
+          // force.stop() // stops the force auto positioning before you start dragging
         }
+
+        function dragmove (d, i) {
+          d.px += d3.event.dx
+          d.py += d3.event.dy
+          d.x += d3.event.dx
+          d.y += d3.event.dy
+          tickForce(force) // this is the key to make it work together with updating both px,py,x,y on d !
+        }
+
+        function dragend (d, i) {
+          d.fixed = true // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+          tickForce(force)
+          force.resume()
+        }
+
+        // force2.drag().on('dragstart', dragstart)
 
         hullg.selectAll('path.hull').remove()
         hull = hullg.selectAll('path.hull')
@@ -649,7 +839,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
             return 'node' + (d.size > 0 ? d.expansion ? ' link-expanded' : '' : ' leaf')
           })
           .attr('r', function (d) {
-            return d.size > 0 ? d.size + dr : dr + 1
+            return d.size > 0 ? (d.size * 3) + dr : dr
           })
           .attr('cx', function (d) { return d.x })
           .attr('cy', function (d) { return d.y })
@@ -657,9 +847,23 @@ const vizFn = function (el, measureSize, graph, layout, style) {
             return (d.hasOwnProperty('group') ? color(d.group) : color(d.propertyMap.filename))
           })
           .on('click', onNodeClickExpandable)
+          .call(force.drag)
 
-        node.call(drag)
-        // node.call(force2.drag)
+        // geometry.onGraphChange(graph)
+        // for (var renderer of Array.from(vizRenderers.relationship)) {
+        //   hlink.call(renderer.onGraphChange, viz)
+        // }
+
+        // for (renderer of Array.from(vizRenderers.node)) {
+        //   node.call(renderer.onGraphChange, viz)
+        // }
+
+        // for (renderer of Array.from(menuRenderer)) {
+        //   node.call(renderer.onGraphChange, viz)
+        // }
+
+        // node.call(nodeDrag)
+        // node.call(force.drag)
         //   force
         // .drag()
         // .on('dragstart.node', d => onNodeDragToggle(d, groupIds))
@@ -673,6 +877,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         node
           .on('mouseout.ger_fix', function (d) {
           // if (debug == 1) console.log('mouseout.ger_fix', this, arguments, d.fixed, dragInProgress)
+
             if (dragInProgress) {
               force.resume()
             }
@@ -680,7 +885,9 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
         var resumeThreshold = 0.05
 
-        force.on('tick', function (e) {
+        force.on('tick', d => { tickForce(d) })
+
+        function tickForce (e) {
         /*
     Force all nodes with only one link to point outwards.
 
@@ -782,8 +989,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
           dy = my - center.y
 
           alpha = e.alpha * 5
-          dx *= alpha
-          dy *= alpha
+          // dx *= alpha
+          // dy *= alpha
 
           net.nodes.forEach(function (n) {
             n.x += dx
@@ -886,9 +1093,11 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
           node.attr('cx', function (d) { return d.x })
             .attr('cy', function (d) { return d.y })
-        })
+        }
         var pathgen = d3.svg.line().interpolate('basis')
-        force2.on('tick', function (e) {
+        force2.on('tick', d => { tickForce2(d) })
+
+        function tickForce2 (e) {
         /*
       Update all 'real'=fixed nodes.
     */
@@ -935,7 +1144,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         //   hnode.attr('cx', function (d) { return d.x })
         //     .attr('cy', function (d) { return d.y })
         // }
-        })
+        }
       }
 
       function onHullClick (d) {
@@ -953,6 +1162,26 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         if (d.size < 0) { return }
         cycleState(d)
         initExpandableView()
+
+        // var node = container.selectAll('circle.node').data(net.nodes, nodeId)
+        // node.exit().remove()
+        // node.enter().append('circle')
+        // // if (d.size) -- d.size > 0 when d is a group node.
+        // // d.size < 0 when d is a 'path helper node'.
+        //   .attr('class', function (d) {
+        //     return 'node' + (d.size > 0 ? d.expansion ? ' link-expanded' : '' : ' leaf')
+        //   })
+        //   .attr('r', function (d) {
+        //     return d.size > 0 ? (d.size * 3) + 5 : 5
+        //   })
+        //   .attr('cx', function (d) { return d.x })
+        //   .attr('cy', function (d) { return d.y })
+        //   .style('fill', function (d) {
+        //     return (d.hasOwnProperty('group') ? color(d.group) : color(d.propertyMap.filename))
+        //   })
+
+        // force.resume()
+        // force.tick()
       }
 
       function cycleState (d) {
@@ -972,6 +1201,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
   var scaleFactor = 1
 
   var polygonGenerator = function (groupId, nodeGroups) {
+    var offset = 30
+    var hullCoords = []
     var nodeCoords = nodeGroups
       .filter(function (d) {
         if (d.propertyMap.hasOwnProperty('filename')) {
@@ -982,7 +1213,19 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       .map(function (d) {
         return [d.px, d.py]
       })
-    return d3.geom.polygon(d3.geom.hull(nodeCoords))
+    nodeCoords.forEach((d) => {
+      // console.log(d)
+      if (d.length > 0) {
+        hullCoords.push([d[0] - offset, d[1] - offset])
+        hullCoords.push([d[0] - offset, d[1] + offset])
+        hullCoords.push([d[0] + offset, d[1] - offset])
+        hullCoords.push([d[0] + offset, d[1] + offset])
+      }
+    })
+    // return ([d.px - offset, d.py - offset], [d.px - offset, d.py + offset], [d.px + offset, d.py - offset], [d.px + offset, d.py + offset])
+    // console.log(nodeCoords)
+    // console.log(hullCoords)
+    return d3.geom.polygon(d3.geom.hull(hullCoords))
   }
 
   var valueline = d3.svg.line()
@@ -1015,9 +1258,9 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
   function getGroupIDs (nodes) {
     return d3.set(nodes.map(function (n) {
-      if (n.propertyMap.hasOwnProperty('filename')) {
-        return n.propertyMap.filename
-      }
+      // if (n.propertyMap.hasOwnProperty('filename')) {
+      return n.propertyMap.filename
+      // }
     }))
       .values()
       .map(function (groupId) {
@@ -1026,7 +1269,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
           count: nodes.filter(function (n) { return groupId === n.propertyMap.filename }).length
         }
       })
-      .filter(function (group) { return group.count > 2 })
+      .filter(function (group) { return group.count > 0 })
       .map(function (group) { return group.groupId })
   }
 
