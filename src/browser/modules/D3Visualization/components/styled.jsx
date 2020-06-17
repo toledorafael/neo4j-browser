@@ -68,6 +68,12 @@ export const StyledSvgWrapper = styled.div`
     }
     .fileGroup {
       stroke-opacity: 1;
+      pointer-events: none;
+    }
+    .legend rect {
+      fill:white;
+      stroke:black;
+      opacity:0.8;
     }
 
     circle.node {
