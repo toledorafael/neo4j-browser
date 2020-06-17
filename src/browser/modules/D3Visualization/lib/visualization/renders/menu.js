@@ -131,7 +131,7 @@ const createMenuItem = function (
         return viz.style.forNode(node).get('text-color-internal')
       }
     })
-
+  // Removing to stop the dragging of the background
   attachContextEvent(eventName, [tab, icon], viz, helpValue, rawSvgIcon)
 
   tab
