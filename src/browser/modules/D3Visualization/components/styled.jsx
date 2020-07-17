@@ -407,18 +407,16 @@ export const StyledSliderHolder = styled.div`
 
 export const StyleToggleGroupMarksButton = styled.button`
   position: absolute;
-  top: 80px;
+  top: 70px;
   right: 150px;
   list-style-type: none;
-  font-size: 2em;
+  font-size: 1.5em;
   border: none;
-  color: #9b9da2;
-  background: transparent;
+  border-radius: 8px;
+  color: white;
+  background: blue;
   border-color: black;
-  padding: 2px 6px 3px;
-  &:hover {
-    color: black;
-  }
+  padding:  15px 32px;
   &:focus {
     outline: none;
   }
