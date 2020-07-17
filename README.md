@@ -5,6 +5,27 @@ with modern and easy-to-use tools.
 
 ![neo4j browser screenshot](./.github/neo4j-browser-screenshot.png)
 
+
+## New features
+
+We introduce a couple of new features to enhance the user experience during their exploration of a graph representing a code factbase extracted with [Rex](https://github.com/bmuscede/Rex)
+
+### Properties popup
+
+This feature enables the user to open popups showing the nodes and links properties in the graph visualization.
+
+![neo4j browser screenshot](linkAttribute.png)
+
+### File region marks
+
+The region marks represent the source files where the nodes are declared.
+
+![neo4j browser screenshot](nodeAttribute.png)
+
+### Demo
+
+![](demoFileRegions3.gif)
+
 ## Development setup
 
 1.  Clone this repo
@@ -21,7 +42,7 @@ with modern and easy-to-use tools.
 
 `yarn dev` to have continuous testing on every file change.
 
-#### E2E Suite
+<!-- #### E2E Suite
 
 `yarn e2e` to run the cypress js test suite (requires a fresh installation of neo4j to run against, expects neo4j 3.5 by default).
 `yarn e2e --env server=3.3` to only run cypress js tests valid for neo4j server version 3.3.
@@ -58,4 +79,5 @@ Example: `CYPRESS_E2E_TEST_ENV="local" CYPRESS_BASE_URL=http://localhost:8081 cy
 Download these two chrome extensions:
 
 - [Redux devtools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en)
-- [React devtools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)
+- [React devtools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) -->
+
