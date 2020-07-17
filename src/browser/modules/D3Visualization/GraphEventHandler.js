@@ -42,16 +42,16 @@ export class GraphEventHandler {
     this.onGraphModelChange(getGraphStats(this.graph))
   }
 
-  selectItem (item) {
+  selectItem (item, drawGroupMarks) {
     if (this.selectedItem) {
       this.selectedItem.selected = false
     }
     this.selectedItem = item
     item.selected = true
-    this.graphView.update()
+    this.graphView.update(drawGroupMarks) // update and show groupmarks
   }
 
-  deselectItem () {
+  deselectItem (drawGroupMarks) {
     if (this.selectedItem) {
       this.selectedItem.selected = false
       this.selectedItem = null
@@ -63,7 +63,7 @@ export class GraphEventHandler {
         relationshipCount: this.graph.relationships().length
       }
     })
-    this.graphView.update()
+    this.graphView.update(drawGroupMarks)
   }
 
   nodeClose (d) {
@@ -74,19 +74,19 @@ export class GraphEventHandler {
     this.graphModelChanged()
   }
 
-  nodeClicked (d) {
+  nodeClicked (d, drawGroupMarks) {
     if (!d) {
       return
     }
     d.fixed = true
     if (!d.selected) {
-      this.selectItem(d)
+      this.selectItem(d, drawGroupMarks)
       this.onItemSelected({
         type: 'node',
         item: { id: d.id, labels: d.labels, properties: d.propertyList }
       })
     } else {
-      this.deselectItem()
+      this.deselectItem(drawGroupMarks)
     }
   }
 
@@ -98,7 +98,7 @@ export class GraphEventHandler {
     this.deselectItem()
   }
 
-  nodeDblClicked (d) {
+  nodeDblClicked (d, drawGroupMarks) {
     if (d.expanded) {
       this.nodeCollapse(d)
       return
@@ -114,7 +114,7 @@ export class GraphEventHandler {
       if (err) return
       graph.addExpandedNodes(d, mapNodes(nodes))
       graph.addRelationships(mapRelationships(relationships, graph))
-      graphView.update()
+      graphView.update(drawGroupMarks)
       graphModelChanged()
     })
   }
@@ -159,9 +159,9 @@ export class GraphEventHandler {
     })
   }
 
-  onRelationshipClicked (relationship) {
+  onRelationshipClicked (relationship, drawGroupMarks) {
     if (!relationship.selected) {
-      this.selectItem(relationship)
+      this.selectItem(relationship, drawGroupMarks)
       this.onItemSelected({
         type: 'relationship',
         item: {
@@ -171,7 +171,7 @@ export class GraphEventHandler {
         }
       })
     } else {
-      this.deselectItem()
+      this.deselectItem(drawGroupMarks)
     }
   }
 

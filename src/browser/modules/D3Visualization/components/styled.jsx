@@ -68,6 +68,52 @@ export const StyledSvgWrapper = styled.div`
     }
     .fileGroup {
       stroke-opacity: 1;
+      pointer-events: none;
+    }
+    .legend rect {
+      fill:white;
+      stroke:black;
+      opacity:0.8;
+    }
+
+    circle.node {
+      fill: lightsteelblue;
+      stroke: #555;
+      stroke-width: 3px;
+    }
+    circle.leaf {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+    circle.link-expanded {
+      stroke: #555;
+      stroke-width: 3px;
+      stroke-dasharray: 2px 4px;
+    }
+    circle.helper {
+      stroke-width: 0;
+      fill: #333;
+      opacity: 0.6;
+    }
+    circle.center-of-mass {
+      fill: white;
+      stroke: red;
+      stroke-width: 5px;
+    }
+    path.hull {
+      fill: lightsteelblue;
+      fill-opacity: 0.3;
+    }
+    path.hlink {
+      stroke: #333;
+      stroke-opacity: 0.5;
+      fill: none;
+      pointer-events: none;
+    }
+    line.link {
+      stroke: red;
+      stroke-opacity: 0.7;
+      pointer-events: none;
     }
     
     .relationship {
@@ -361,18 +407,16 @@ export const StyledSliderHolder = styled.div`
 
 export const StyleToggleGroupMarksButton = styled.button`
   position: absolute;
-  top: 80px;
+  top: 70px;
   right: 150px;
   list-style-type: none;
-  font-size: 2em;
+  font-size: 1.5em;
   border: none;
-  color: #9b9da2;
-  background: transparent;
+  border-radius: 8px;
+  color: white;
+  background: blue;
   border-color: black;
-  padding: 2px 6px 3px;
-  &:hover {
-    color: black;
-  }
+  padding:  15px 32px;
   &:focus {
     outline: none;
   }

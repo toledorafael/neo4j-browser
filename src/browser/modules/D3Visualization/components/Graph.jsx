@@ -188,7 +188,7 @@ export class GraphComponent extends Component {
     if (this.props.fullscreen) {
       return (
         <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)} >
-          <ZoomInIcon />
+          Toggle File Marks
         </StyleToggleGroupMarksButton>
       )
     }
