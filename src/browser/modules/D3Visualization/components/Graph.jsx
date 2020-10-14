@@ -23,7 +23,7 @@ import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton } from './styled'
+import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton, StyleInputForm, StyleSubmitButton, StyleTextArea } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
@@ -33,7 +33,8 @@ export class GraphComponent extends Component {
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
-    scaleFactor: 1
+    scaleFactor: 1,
+    featureExpression: 'Enter feature expression...'
   }
 
   graphInit (el) {
@@ -194,6 +195,32 @@ export class GraphComponent extends Component {
     }
   }
 
+  updateFeatureExpression (event) {
+    this.setState({featureExpression: event.target.value})
+  }
+
+  handleSubmit (event) {
+    // alert('An essay was submitted: ' + this.state.value)
+    // event.preventDefault()
+
+    // Pass feature expression to graph
+  }
+
+  inputFeatureExpression () {
+    if (this.props.fullscreen) { //If property condition exists in edge
+      return (
+        <StyleInputForm onSubmit={this.handleSubmit.bind(this)}>
+          <label>
+            <StyleTextArea value={this.state.value} onChange={this.updateFeatureExpression.bind(this)} />
+          </label>
+          <StyleSubmitButton type='submit' value='Submit' >
+            Submit
+          </StyleSubmitButton>
+        </StyleInputForm>
+      )
+    }
+  }
+
   render () {
     return (
       <StyledSvgWrapper>
@@ -201,6 +228,7 @@ export class GraphComponent extends Component {
         {this.inputSlider()}
         {this.zoomButtons()}
         {this.inputToggle()}
+        {this.inputFeatureExpression()}
       </StyledSvgWrapper>
     )
   }

@@ -429,6 +429,47 @@ export const StyleToggleGroupMarksButton = styled.button`
   }
 `
 
+export const StyleSubmitButton = styled.button`
+  position: absolute;
+  top: 80px;
+  right: 100px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: green;
+  border-color: white;
+  padding:  15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
+export const StyleInputForm = styled.form`
+  position: absolute;
+  top: 70px;
+  color: black;
+  background: white;
+  border: none;
+  border-radius: 3px;
+`
+
+export const StyleTextArea = styled.textarea`
+  width: 300px;
+  height: 4em;
+  line-height: 1.2em;
+  resize: none;
+  padding: 3px;
+`
+
 export const StyledZoomHolder = styled.div`
   position: absolute;
   bottom: 39px;
