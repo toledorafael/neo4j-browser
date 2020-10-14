@@ -155,6 +155,7 @@
     "suber": "^5.0.1",
     "swipe-js-iso": "^2.0.4",
     "url-parse": "^1.1.9",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "logic-solver": "2.0.1"
   }
 }
