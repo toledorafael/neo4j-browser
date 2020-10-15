@@ -215,7 +215,7 @@ export class GraphComponent extends Component {
 
   inputFeatureExpression () {
     if (this.props.fullscreen) {
-      if (this.checkPropertyList(this.graph._relationships[0].propertyList, 'condition')) { // TODO: Change the index of propertyList to the index of the condition in the graph Ramy has submitted
+      if (this.checkPropertyList(this.graph._relationships[0].propertyList, 'condition')) { // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
         return (
           // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}>
           <StyleInputDiv>
