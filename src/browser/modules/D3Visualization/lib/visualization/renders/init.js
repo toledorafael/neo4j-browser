@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Renderer from '../components/renderer'
+import Logic from 'logic-solver'
 const noop = function () {}
 
 const nodeRingStrokeSize = 8
@@ -136,17 +137,41 @@ const nodeRing = new Renderer({
 
 const arrowPath = new Renderer({
   name: 'arrowPath',
-  onGraphChange (selection, viz) {
+  onGraphChange (selection, viz, featureExpression) {
     const paths = selection.selectAll('path.outline').data(rel => [rel])
-
+    console.log(featureExpression)
     paths
       .enter()
       .append('path')
       .classed('outline', true)
 
+    if (featureExpression !== '') {
+      var variables = featureExpression.split('/\\')
+      var solver = new Logic.Solver()
+      solver.require(Logic.and(variables))
+      var solution = solver.solve()
+      solution.ignoreUnknownVariables()
+    }
+
     paths
       .attr('fill', rel => viz.style.forRelationship(rel).get('color'))
-      .attr('stroke', 'none')
+      .attr('stroke-width', '3px')
+      .attr('stroke', function (rel) {
+        if (featureExpression !== '') {
+          var presenceCondition = ''
+          for (let index = 0; index < rel.propertyList.length; index++) {
+            const element = rel.propertyList[index]
+            if (element.key === 'condition') {
+              presenceCondition = rel.propertyList[index].value
+            }
+          }
+          if (solution.evaluate(Logic.and(presenceCondition.split('/\\')))) {
+            return 'red'
+          }
+          return 'none'
+        }
+        return 'none'
+      })
 
     return paths.exit().remove()
   },
