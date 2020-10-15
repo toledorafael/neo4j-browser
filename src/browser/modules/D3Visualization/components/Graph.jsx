@@ -23,7 +23,7 @@ import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton, StyleInputForm, StyleSubmitButton, StyleTextArea } from './styled'
+import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton, StyleInputDiv, StyleSubmitButton, StyleTextArea } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
@@ -60,9 +60,9 @@ export class GraphComponent extends Component {
   getVisualAreaHeight () {
     return this.props.frameHeight && this.props.fullscreen
       ? this.props.frameHeight -
-          (dim.frameStatusbarHeight + dim.frameTitlebarHeight * 2)
+      (dim.frameStatusbarHeight + dim.frameTitlebarHeight * 2)
       : this.props.frameHeight - dim.frameStatusbarHeight ||
-          this.svgElement.parentNode.offsetHeight
+      this.svgElement.parentNode.offsetHeight
   }
 
   componentDidMount () {
@@ -165,7 +165,7 @@ export class GraphComponent extends Component {
   }
 
   adjustGroupsScale (event) {
-    this.setState({scaleFactor: event.target.value})
+    this.setState({ scaleFactor: event.target.value })
     this.graphView.updateScaleFactor(event.target.value)
   }
 
@@ -195,29 +195,37 @@ export class GraphComponent extends Component {
     }
   }
 
-  updateFeatureExpression (event) {
-    this.setState({featureExpression: event.target.value})
+  updateFeatureExpressionState (event) {
+    this.setState({ featureExpression: event.target.value })
   }
 
   handleSubmit (event) {
-    // alert('An essay was submitted: ' + this.state.value)
-    // event.preventDefault()
+    this.graphView.highlightPresenceConditions(this.state.featureExpression)
+  }
 
-    // Pass feature expression to graph
+  checkPropertyList (propertyList, propertyName) {
+    if (propertyList.length > 0) {
+      for (let index = 0; index < propertyList.length; index++) {
+        const element = propertyList[index]
+        if (element.key === propertyName) return true
+      }
+      return false
+    }
   }
 
   inputFeatureExpression () {
-    if (this.props.fullscreen) { //If property condition exists in edge
-      return (
-        <StyleInputForm onSubmit={this.handleSubmit.bind(this)}>
-          <label>
-            <StyleTextArea value={this.state.value} onChange={this.updateFeatureExpression.bind(this)} />
-          </label>
-          <StyleSubmitButton type='submit' value='Submit' >
-            Submit
-          </StyleSubmitButton>
-        </StyleInputForm>
-      )
+    if (this.props.fullscreen) {
+      if (this.checkPropertyList(this.graph._relationships[0].propertyList, 'condition')) { // TODO: Change the index of propertyList to the index of the condition in the graph Ramy has submitted
+        return (
+          // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}>
+          <StyleInputDiv>
+            <StyleTextArea value={this.state.value} placeholder='Feature expression' onChange={this.updateFeatureExpressionState.bind(this)} />
+            <StyleSubmitButton onClick={this.handleSubmit.bind(this)} >
+              Filter
+            </StyleSubmitButton>
+          </StyleInputDiv>
+        )
+      }
     }
   }
 

@@ -431,7 +431,7 @@ export const StyleToggleGroupMarksButton = styled.button`
 
 export const StyleSubmitButton = styled.button`
   position: absolute;
-  top: 80px;
+  top: 60px;
   right: 100px;
   list-style-type: none;
   font-size: 1.5em;
@@ -453,16 +453,18 @@ export const StyleSubmitButton = styled.button`
   }
 `
 
-export const StyleInputForm = styled.form`
+export const StyleInputDiv = styled.div`
   position: absolute;
   top: 70px;
   color: black;
+  width: 300px;
   background: white;
   border: none;
   border-radius: 3px;
 `
 
 export const StyleTextArea = styled.textarea`
+  position: relative;
   width: 300px;
   height: 4em;
   line-height: 1.2em;
