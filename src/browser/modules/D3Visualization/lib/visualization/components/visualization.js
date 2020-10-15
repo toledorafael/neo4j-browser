@@ -276,12 +276,10 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     return latestStats
   }
 
-  viz.update = function (showGroupMarks, presenceCondition = '') {
+  viz.update = function (showGroupMarks, featureExpression = '') {
     if (!graph) {
       return
     }
-
-    console.log(presenceCondition)
 
     drawGroupMarks = showGroupMarks
 
@@ -379,7 +377,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     geometry.onGraphChange(graph)
 
     for (var renderer of Array.from(vizRenderers.relationship)) {
-      relationshipGroups.call(renderer.onGraphChange, viz)
+      relationshipGroups.call(renderer.onGraphChange, viz, featureExpression)
     }
 
     relationshipGroups.exit().remove()
