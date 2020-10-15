@@ -276,10 +276,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     return latestStats
   }
 
-  viz.update = function (showGroupMarks) {
+  viz.update = function (showGroupMarks, presenceCondition = '') {
     if (!graph) {
       return
     }
+
+    console.log(presenceCondition)
 
     drawGroupMarks = showGroupMarks
 
