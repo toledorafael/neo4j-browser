@@ -204,9 +204,6 @@ const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
   var newPresenceCondition = parse(presenceCondition)
   for (let solutionId = 0; solutionId < solutions.length; solutionId++) {
     const solution = solutions[solutionId]
-    console.log(newPresenceCondition)
-    console.log(Logic.isFormula(newPresenceCondition))
-    console.log(Logic.isTerm(newPresenceCondition))
     if (solution.evaluate(newPresenceCondition)) {
       return true
     }
@@ -227,14 +224,12 @@ const arrowPath = new Renderer({
       var formula = parse(featureExpression)
       var solver = new Logic.Solver()
       solver.require(formula)
-      // var solution = solver.solve()
-      // solution.ignoreUnknownVariables()
       var solutions = []
       var curSol
       while ((curSol = solver.solve())) {
         curSol.ignoreUnknownVariables()
         solutions.push(curSol)
-        solver.forbid(curSol.getFormula()) // forbid the current solution
+        solver.forbid(curSol.getFormula())
       }
     }
 
