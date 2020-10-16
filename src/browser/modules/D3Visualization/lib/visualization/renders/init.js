@@ -135,22 +135,107 @@ const nodeRing = new Renderer({
   onTick: noop
 })
 
+// split expression by operator considering parentheses
+const split = (expression, operator) => {
+  const result = []
+  let braces = 0
+  let currentChunk = ''
+  for (let i = 0; i < expression.length; ++i) {
+    const curCh = expression[i]
+    if (curCh === '(') {
+      braces++
+    } else if (curCh === ')') {
+      braces--
+    }
+    if (braces === 0 && operator === curCh) {
+      result.push(currentChunk)
+      currentChunk = ''
+    } else currentChunk += curCh
+  }
+  if (currentChunk !== '') {
+    result.push(currentChunk)
+  }
+  return result
+}
+// this will only take strings containing * operator [ no + ]
+const parseDisjunctionSeparatedExpression = (expression) => {
+  const operandsString = split(expression, '+')
+  const operands = operandsString.map(noStr => {
+    if (noStr[0] === '(') {
+      const expr = noStr.substr(1, noStr.length - 2)
+      // recursive call to the main function
+      return parseConjunctionSeparatedExpression(expr)
+    }
+    return noStr
+  })
+  // const initialValue = 1.0
+  // const result = operands.reduce((acc, no) => acc * no, initialValue)
+  if (operands.length > 1) {
+    return Logic.or(operands)
+  } else {
+    return operands[0]
+  }
+}
+// both * -
+const parseConjunctionSeparatedExpression = (expression) => {
+  const operandsString = split(expression, '*')
+  const operands = operandsString.map(operandStr => parseDisjunctionSeparatedExpression(operandStr))
+  // const initialValue = numbers[0]
+  // const result = numbers.slice(1).reduce((acc, no) => acc - no, initialValue)
+  if (operands.length > 1) {
+    return Logic.and(operands)
+  } else {
+    return operands[0]
+  }
+}
+
+const parse = (featureExpression) => {
+  var newFeatureExpression = featureExpression.replaceAll('!', '-')
+  if (newFeatureExpression.includes('/\\') || newFeatureExpression.includes('\\/')) {
+    newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
+    newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
+    return parseConjunctionSeparatedExpression(newFeatureExpression)
+  } else {
+    return newFeatureExpression
+  }
+}
+
+const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
+  var newPresenceCondition = parse(presenceCondition)
+  for (let solutionId = 0; solutionId < solutions.length; solutionId++) {
+    const solution = solutions[solutionId]
+    console.log(newPresenceCondition)
+    console.log(Logic.isFormula(newPresenceCondition))
+    console.log(Logic.isTerm(newPresenceCondition))
+    if (solution.evaluate(newPresenceCondition)) {
+      return true
+    }
+  }
+  return false
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
   onGraphChange (selection, viz, featureExpression) {
     const paths = selection.selectAll('path.outline').data(rel => [rel])
-    console.log(featureExpression)
     paths
       .enter()
       .append('path')
       .classed('outline', true)
 
     if (featureExpression !== '') {
-      var variables = featureExpression.split('/\\')
+      var formula = parse(featureExpression)
       var solver = new Logic.Solver()
-      solver.require(Logic.and(variables))
-      var solution = solver.solve()
-      solution.ignoreUnknownVariables()
+      solver.require(formula)
+      // var solution = solver.solve()
+      // solution.ignoreUnknownVariables()
+      var solutions = []
+      var curSol
+      while ((curSol = solver.solve())) {
+        curSol.ignoreUnknownVariables()
+        solutions.push(curSol)
+        solver.forbid(curSol.getFormula()) // forbid the current solution
+      }
     }
 
     paths
@@ -165,7 +250,7 @@ const arrowPath = new Renderer({
               presenceCondition = rel.propertyList[index].value
             }
           }
-          if (solution.evaluate(Logic.and(presenceCondition.split('/\\')))) {
+          if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
             return 'red'
           }
           return 'none'
