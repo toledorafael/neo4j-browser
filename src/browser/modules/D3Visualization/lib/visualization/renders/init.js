@@ -164,7 +164,10 @@ const parseDisjunctionSeparatedExpression = (expression) => {
     if (noStr[0] === '(') {
       const expr = noStr.substr(1, noStr.length - 2)
       // recursive call to the main function
-      return parseConjunctionSeparatedExpression(expr)
+      // return parseConjunctionSeparatedExpression(expr)
+      return parseNegation(expr)
+    } else if (noStr[0] === '-') {
+      return parseNegation(noStr)
     }
     return noStr
   })
@@ -179,7 +182,12 @@ const parseDisjunctionSeparatedExpression = (expression) => {
 // both * -
 const parseConjunctionSeparatedExpression = (expression) => {
   const operandsString = split(expression, '*')
-  const operands = operandsString.map(operandStr => parseDisjunctionSeparatedExpression(operandStr))
+  const operands = operandsString.map(operandStr => {
+    if (operandStr[0] === '-') {
+      return parseNegation(operandStr)
+    }
+    return parseDisjunctionSeparatedExpression(operandStr)
+  })
   // const initialValue = numbers[0]
   // const result = numbers.slice(1).reduce((acc, no) => acc - no, initialValue)
   if (operands.length > 1) {
@@ -189,14 +197,34 @@ const parseConjunctionSeparatedExpression = (expression) => {
   }
 }
 
+const parseNegation = (expression) => {
+  if (expression[0] === '-') {
+    return Logic.not(parseConjunctionSeparatedExpression(expression.substr(1, expression.length - 1)))
+  } else {
+    return parseConjunctionSeparatedExpression(expression)
+  }
+}
+
 const parse = (featureExpression) => {
-  var newFeatureExpression = featureExpression.replaceAll('!', '-')
+  var newFeatureExpression = featureExpression.replaceAll(/\s/g, '').replaceAll('!', '-')
   if (newFeatureExpression.includes('/\\') || newFeatureExpression.includes('\\/')) {
     newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
     newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
-    return parseConjunctionSeparatedExpression(newFeatureExpression)
+    // return parseConjunctionSeparatedExpression(newFeatureExpression)
+    const parsedExpression = parseNegation(newFeatureExpression)
+    return parsedExpression
   } else {
     return newFeatureExpression
+  }
+}
+
+const checkPropertyList = (propertyList, propertyName) => {
+  if (propertyList.length > 0) {
+    for (let index = 0; index < propertyList.length; index++) {
+      const element = propertyList[index]
+      if (element.key === propertyName) return true
+    }
+    return false
   }
 }
 
@@ -239,16 +267,23 @@ const arrowPath = new Renderer({
       .attr('stroke', function (rel) {
         if (featureExpression !== '') {
           var presenceCondition = ''
-          for (let index = 0; index < rel.propertyList.length; index++) {
-            const element = rel.propertyList[index]
-            if (element.key === 'condition') {
-              presenceCondition = rel.propertyList[index].value
+          if (checkPropertyList(rel.propertyList, 'condition')) {
+            for (let index = 0; index < rel.propertyList.length; index++) {
+              const element = rel.propertyList[index]
+              if (element.key === 'condition') {
+                presenceCondition = rel.propertyList[index].value
+              }
             }
+            if (presenceCondition !== 'true') {
+              if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
+                return 'red'
+              }
+            } else {
+              return 'red'
+            }
+            return 'none'
           }
-          if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
-            return 'red'
-          }
-          return 'none'
+          // return 'red'
         }
         return 'none'
       })
