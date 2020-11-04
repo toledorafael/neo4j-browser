@@ -235,7 +235,7 @@ export class GraphComponent extends Component {
         <svg className='neod3viz' ref={this.graphInit.bind(this)} />
         {this.inputSlider()}
         {this.zoomButtons()}
-        {this.inputToggle()}
+        {/* {this.inputToggle()} */}
         {this.inputFeatureExpression()}
       </StyledSvgWrapper>
     )
