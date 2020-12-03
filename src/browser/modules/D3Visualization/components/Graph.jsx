@@ -23,7 +23,16 @@ import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton, StyleInputDiv, StyleSubmitButton, StyleTextArea } from './styled'
+import {
+  StyledZoomHolder,
+  StyledSvgWrapper,
+  StyledZoomButton,
+  StyledSliderHolder,
+  StyleToggleGroupMarksButton,
+  StyleInputDiv,
+  StyleSubmitButton,
+  StyleTextArea
+} from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
@@ -60,9 +69,9 @@ export class GraphComponent extends Component {
   getVisualAreaHeight () {
     return this.props.frameHeight && this.props.fullscreen
       ? this.props.frameHeight -
-      (dim.frameStatusbarHeight + dim.frameTitlebarHeight * 2)
+          (dim.frameStatusbarHeight + dim.frameTitlebarHeight * 2)
       : this.props.frameHeight - dim.frameStatusbarHeight ||
-      this.svgElement.parentNode.offsetHeight
+          this.svgElement.parentNode.offsetHeight
   }
 
   componentDidMount () {
@@ -112,7 +121,20 @@ export class GraphComponent extends Component {
       this.graph.addInternalRelationships(
         mapRelationships(internalRelationships, this.graph)
       )
-      this.props.onGraphModelChange(getGraphStats(this.graph))
+      let stats = getGraphStats(this.graph)
+      let conditionTypes
+      if (this.state.conditionTypes) {
+        conditionTypes = this.state.conditionTypes
+      } else {
+        conditionTypes = []
+      }
+      let newstats = {
+        labels: stats.labels,
+        relTypes: stats.relTypes,
+        conditionTypes: conditionTypes
+      }
+      // this.props.onGraphModelChange(getGraphStats(this.graph))
+      this.props.onGraphModelChange(newstats)
       this.graphView.update(this.state.showGroupMarks)
       this.graphEH.onItemMouseOut()
     }
@@ -136,6 +158,22 @@ export class GraphComponent extends Component {
     if (this.state.shouldResize) {
       this.graphView.resize()
     }
+    /* if (this.state.conditionTypes && this.state.newConditionType && this.state.conditionTypes.indexOf(this.state.newConditionType) == this.state.conditionTypes.length - 1) {
+      let stats = getGraphStats(this.graph)
+      let conditionTypes
+      if(this.state.conditionTypes){
+        conditionTypes = this.state.conditionTypes
+      } else {
+        conditionTypes = []
+      }
+      let newstats = {
+        "labels": stats.labels,
+        "relTypes": stats.relTypes,
+        "conditionTypes": conditionTypes
+      }
+      //this.props.onGraphModelChange(getGraphStats(this.graph))
+      this.props.onGraphModelChange(newstats)
+    } */
   }
 
   zoomButtons () {
@@ -179,7 +217,15 @@ export class GraphComponent extends Component {
     if (this.props.fullscreen) {
       return (
         <StyledSliderHolder>
-          <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.scaleFactor} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
+          <input
+            type='range'
+            id='scaleFactorLabel'
+            min='1'
+            max='3'
+            value={this.state.scaleFactor}
+            step='.1'
+            onChange={this.adjustGroupsScale.bind(this)}
+          />
         </StyledSliderHolder>
       )
     }
@@ -188,7 +234,7 @@ export class GraphComponent extends Component {
   inputToggle () {
     if (this.props.fullscreen) {
       return (
-        <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)} >
+        <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)}>
           Toggle File Marks
         </StyleToggleGroupMarksButton>
       )
@@ -196,10 +242,46 @@ export class GraphComponent extends Component {
   }
 
   updateFeatureExpressionState (event) {
+    /* if(this.state.conditionTypes) {
+      this.setState(prevState => ({
+        conditionTypes: [...prevState.conditionTypes, event.target.value]
+      }))
+    } else {
+      this.setState({conditionTypes: [event.target.value]})
+    } */
+    this.setState({ newConditionType: [event.target.value] })
     this.setState({ featureExpression: event.target.value })
   }
 
   handleSubmit (event) {
+    if (this.state.conditionTypes) {
+      if (
+        this.state.conditionTypes.indexOf(this.state.newConditionType) == -1
+      ) {
+        this.setState(prevState => ({
+          conditionTypes: [
+            ...prevState.conditionTypes,
+            this.state.newConditionType
+          ]
+        }))
+      }
+    } else {
+      this.setState({ conditionTypes: [this.state.newConditionType] })
+    }
+    let stats = getGraphStats(this.graph)
+    let conditionTypes
+    if (this.state.conditionTypes) {
+      conditionTypes = this.state.conditionTypes
+    } else {
+      conditionTypes = []
+    }
+    let newstats = {
+      labels: stats.labels,
+      relTypes: stats.relTypes,
+      conditionTypes: conditionTypes
+    }
+    // this.props.onGraphModelChange(getGraphStats(this.graph))
+    this.props.onGraphModelChange(newstats)
     this.graphView.highlightPresenceConditions(this.state.featureExpression)
   }
 
@@ -215,12 +297,22 @@ export class GraphComponent extends Component {
 
   inputFeatureExpression () {
     if (this.props.fullscreen) {
-      if (this.checkPropertyList(this.graph._relationships[0].propertyList, 'condition')) { // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
+      if (
+        this.checkPropertyList(
+          this.graph._relationships[0].propertyList,
+          'condition'
+        )
+      ) {
+        // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
         return (
           // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}>
           <StyleInputDiv>
-            <StyleTextArea value={this.state.value} placeholder='Feature expression' onChange={this.updateFeatureExpressionState.bind(this)} />
-            <StyleSubmitButton onClick={this.handleSubmit.bind(this)} >
+            <StyleTextArea
+              value={this.state.value}
+              placeholder='Feature expression'
+              onChange={this.updateFeatureExpressionState.bind(this)}
+            />
+            <StyleSubmitButton onClick={this.handleSubmit.bind(this)}>
               Filter
             </StyleSubmitButton>
           </StyleInputDiv>
