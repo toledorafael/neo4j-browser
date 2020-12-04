@@ -282,7 +282,11 @@ export class GraphComponent extends Component {
     }
     // this.props.onGraphModelChange(getGraphStats(this.graph))
     this.props.onGraphModelChange(newstats)
-    this.graphView.highlightPresenceConditions(this.state.featureExpression)
+
+    // This command triggers the highlighting of edges based on a feature expression
+    // submitted by the user. Since we are using the button for a different purpose
+    // and the highlighting will be done in a different way, this feature should be refactored.
+    // this.graphView.highlightPresenceConditions(this.state.featureExpression)
   }
 
   checkPropertyList (propertyList, propertyName) {
