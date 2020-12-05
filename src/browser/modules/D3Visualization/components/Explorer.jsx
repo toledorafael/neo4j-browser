@@ -150,7 +150,7 @@ export class ExplorerComponent extends Component {
   onSelectedCondition (condition, propertyKeys) {
     this.setState({
       selectedItem: {
-        type: 'condition',
+        type: 'legend-item',
         item: {
           selectedLabel: null,
           selectedRelType: null,

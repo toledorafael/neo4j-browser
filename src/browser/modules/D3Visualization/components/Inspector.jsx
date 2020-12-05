@@ -112,6 +112,7 @@ export class InspectorComponent extends Component {
           <GrassEditor
             selectedLabel={item.selectedLabel}
             selectedRelType={item.selectedRelType}
+            selectedCondition={item.selectedCondition}
           />
         )
       }
