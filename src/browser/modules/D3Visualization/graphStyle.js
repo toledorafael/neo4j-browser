@@ -272,6 +272,12 @@ export default function neoGraphStyle () {
       return new Selector('relationship', classes)
     }
 
+    const conditionSelector = function (cond) {
+      cond = cond || null
+      const classes = cond != null ? [cond] : []
+      return new Selector('relationship', classes)
+    }
+
     const findRule = function (selector, rules) {
       for (let i = 0; i < rules.length; i++) {
         let rule = rules[i]
@@ -552,6 +558,10 @@ export default function neoGraphStyle () {
       return this.calculateStyle(selector)
     }
 
+    GraphStyle.prototype.forCondition = function (cond) {
+      const selector = conditionSelector(cond)
+      return this.calculateStyle(selector)
+    }
     return GraphStyle
   })()
   return new GraphStyle()

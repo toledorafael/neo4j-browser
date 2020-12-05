@@ -71,9 +71,9 @@ export const StyledSvgWrapper = styled.div`
       pointer-events: none;
     }
     .legend rect {
-      fill:white;
-      stroke:black;
-      opacity:0.8;
+      fill: white;
+      stroke: black;
+      opacity: 0.8;
     }
 
     circle.node {
@@ -115,7 +115,7 @@ export const StyledSvgWrapper = styled.div`
       stroke-opacity: 0.7;
       pointer-events: none;
     }
-    
+
     .relationship {
       > .overlay {
         opacity: 0;
@@ -311,7 +311,7 @@ export const StyledLegendContents = styled.ul`
   float: left;
   line-height: 1em;
   position: relative;
-  top: 3px;
+  top: 1px;
   top: -1px;
 `
 
@@ -416,7 +416,7 @@ export const StyleToggleGroupMarksButton = styled.button`
   color: white;
   background: blue;
   border-color: black;
-  padding:  15px 32px;
+  padding: 15px 32px;
   &:focus {
     outline: none;
   }
@@ -440,7 +440,7 @@ export const StyleSubmitButton = styled.button`
   color: white;
   background: green;
   border-color: white;
-  padding:  15px 32px;
+  padding: 15px 32px;
   &:focus {
     outline: none;
   }

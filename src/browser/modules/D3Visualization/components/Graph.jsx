@@ -158,22 +158,6 @@ export class GraphComponent extends Component {
     if (this.state.shouldResize) {
       this.graphView.resize()
     }
-    /* if (this.state.conditionTypes && this.state.newConditionType && this.state.conditionTypes.indexOf(this.state.newConditionType) == this.state.conditionTypes.length - 1) {
-      let stats = getGraphStats(this.graph)
-      let conditionTypes
-      if(this.state.conditionTypes){
-        conditionTypes = this.state.conditionTypes
-      } else {
-        conditionTypes = []
-      }
-      let newstats = {
-        "labels": stats.labels,
-        "relTypes": stats.relTypes,
-        "conditionTypes": conditionTypes
-      }
-      //this.props.onGraphModelChange(getGraphStats(this.graph))
-      this.props.onGraphModelChange(newstats)
-    } */
   }
 
   zoomButtons () {
@@ -249,7 +233,7 @@ export class GraphComponent extends Component {
     } else {
       this.setState({conditionTypes: [event.target.value]})
     } */
-    this.setState({ newConditionType: [event.target.value] })
+    this.setState({ newConditionType: event.target.value })
     this.setState({ featureExpression: event.target.value })
   }
 

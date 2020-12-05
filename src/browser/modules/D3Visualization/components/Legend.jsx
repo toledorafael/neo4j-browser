@@ -36,6 +36,7 @@ export class LegendComponent extends Component {
   constructor (props) {
     super(props)
     this.state = {}
+    this.state.stats = this.props.stats
     this.state.typeRowContracted = true
     this.state.labelRowContracted = true
   }
@@ -106,6 +107,58 @@ export class LegendComponent extends Component {
         </StyledLegendRow>
       )
     }
+    const mapConditionTypes = conditions => {
+      if (!conditions || !conditions.length) {
+        return null
+      }
+
+      const conditionList = conditions.map((condition, i) => {
+        const styleForItem = this.props.graphStyle.forCondition(condition)
+        const onClick = () => {
+          this.props.onSelectedCondition(condition, [])
+        }
+        const style = {
+          backgroundColor: styleForItem.get('color'),
+          color: styleForItem.get('text-color-internal')
+        }
+        return (
+          <StyledLegendInlineListItem key={i} data-testid='viz-legend-reltypes'>
+            <StyledLegendContents className='contents'>
+              <StyledTokenRelationshipType
+                onClick={onClick}
+                style={style}
+                className='token token-relationship-type'
+              >
+                {condition}
+              </StyledTokenRelationshipType>
+            </StyledLegendContents>
+          </StyledLegendInlineListItem>
+        )
+      })
+
+      return (
+        <StyledLegendRow
+          className={this.state.typeRowContracted ? 'contracted' : ''}
+        >
+          <StyledLegendInlineList
+            className='list-inline'
+            ref={this.setTypeRowELem.bind(this)}
+          >
+            <RowExpandToggleComponent
+              contracted={this.state.typeRowContracted}
+              rowElem={this.state.typeRowElem}
+              containerHeight={legendRowHeight}
+              onClick={() => {
+                this.setState({
+                  typeRowContracted: !this.state.typeRowContracted
+                })
+              }}
+            />
+            {conditionList}
+          </StyledLegendInlineList>
+        </StyledLegendRow>
+      )
+    }
     const mapRelTypes = legendItems => {
       if (!legendItems || !Object.keys(legendItems).length) {
         return null
@@ -165,10 +218,12 @@ export class LegendComponent extends Component {
       )
     }
     let relTypes = mapRelTypes(this.props.stats.relTypes)
+    let conditionTypes = mapConditionTypes(this.props.stats.conditionTypes)
     return (
       <StyledLegend className={relTypes ? '' : 'one-row'}>
         {mapLabels(this.props.stats.labels)}
         {relTypes}
+        {conditionTypes}
       </StyledLegend>
     )
   }
