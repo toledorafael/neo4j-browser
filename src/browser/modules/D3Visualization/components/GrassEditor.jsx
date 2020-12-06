@@ -291,6 +291,8 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedRelType.relType || '*'}
         </StyledTokenRelationshipType>
       )
+    } else if (this.props.selectedCondition) {
+      // Adapt lines 267-292 to enable the user to style links based on the condition
     } else {
       return null
     }
