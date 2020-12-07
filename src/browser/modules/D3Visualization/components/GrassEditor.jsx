@@ -296,7 +296,7 @@ export class GrassEditorComponent extends Component {
         this.props.selectedCondition.relType !== '*'
           ? { type: this.props.selectedCondition.condition }
           : {}
-      const styleForRelType = this.graphStyle.forRelationship(conditionSelector) // Create a function similar to this.graphStyle.forRelationship but takes a conditionSelector as an argument
+      const styleForRelType = this.graphStyle.forCondition(conditionSelector) // Create a function similar to this.graphStyle.forRelationship but takes a conditionSelector as an argument
       const inlineStyle = {
         backgroundColor: styleForRelType.get('color'),
         color: styleForRelType.get('text-color-internal')
