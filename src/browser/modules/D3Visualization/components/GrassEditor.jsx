@@ -292,7 +292,33 @@ export class GrassEditorComponent extends Component {
         </StyledTokenRelationshipType>
       )
     } else if (this.props.selectedCondition) {
-      // Adapt lines 267-292 to enable the user to style links based on the condition
+      const conditionSelector =
+        this.props.selectedCondition.relType !== '*'
+          ? { type: this.props.selectedCondition.condition }
+          : {}
+      const styleForRelType = this.graphStyle.forRelationship(conditionSelector)
+      const inlineStyle = {
+        backgroundColor: styleForRelType.get('color'),
+        color: styleForRelType.get('text-color-internal')
+      }
+      pickers = [
+        this.colorPicker(styleForRelType.selector, styleForRelType),
+        this.widthPicker(styleForRelType.selector, styleForRelType),
+        this.captionPicker(
+          styleForRelType.selector,
+          styleForRelType,
+          this.props.selectedRelType.propertyKeys,
+          true
+        )
+      ]
+      title = (
+        <StyledTokenRelationshipType
+          className='token token-relationship'
+          style={inlineStyle}
+        >
+          {this.props.selectedCondition.condition || '*'}
+        </StyledTokenRelationshipType>
+      )
     } else {
       return null
     }
