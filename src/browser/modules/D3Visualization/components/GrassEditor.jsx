@@ -303,13 +303,13 @@ export class GrassEditorComponent extends Component {
       }
       pickers = [
         this.colorPicker(styleForRelType.selector, styleForRelType),
-        this.widthPicker(styleForRelType.selector, styleForRelType),
-        this.captionPicker(
-          styleForRelType.selector,
-          styleForRelType,
-          this.props.selectedRelType.propertyKeys,
-          true
-        )
+        this.widthPicker(styleForRelType.selector, styleForRelType)
+        // this.captionPicker(
+        //  styleForRelType.selector,
+        //  styleForRelType,
+        //  this.props.selectedCondition.,
+        // true
+        // )
       ]
       title = (
         <StyledTokenRelationshipType
