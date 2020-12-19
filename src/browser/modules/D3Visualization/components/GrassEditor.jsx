@@ -56,11 +56,15 @@ export class GrassEditorComponent extends Component {
   }
 
   updateStyle (selector, styleProp) {
+    // This function updates Style rules.
     this.graphStyle.changeForSelector(selector, styleProp)
+    // In the current implementation of condition style selector,
+    // Instead of calling the function in line  358
+    // It drops my newly added rule for conditions and stops at the end of line 63
     this.props.update(this.graphStyle.toSheet())
   }
 
-  circleSelector (
+  circleSelector ( // This updates styles of selected parts of the graph
     styleProps,
     styleProvider,
     activeProvider,
@@ -72,7 +76,7 @@ export class GrassEditorComponent extends Component {
   ) {
     return styleProps.map((styleProp, i) => {
       const onClick = () => {
-        this.updateStyle(selector, styleProp)
+        this.updateStyle(selector, styleProp) // onClick of circleSelector, goes to line 58. A click adds a style rule
       }
       const style = styleProvider(styleProp, i)
       const text = textProvider(styleProp)
@@ -237,9 +241,11 @@ export class GrassEditorComponent extends Component {
   }
 
   stylePicker () {
+    // Based on what type of graph components is selected, we add applicable style pickers
     let pickers
     let title
     if (this.props.selectedLabel) {
+      // If selected components are nodes
       const labelList =
         this.props.selectedLabel.label !== '*'
           ? [this.props.selectedLabel.label]
@@ -264,6 +270,7 @@ export class GrassEditorComponent extends Component {
         </StyledLabelToken>
       )
     } else if (this.props.selectedRelType) {
+      // If selected components are relationships
       const relTypeSelector =
         this.props.selectedRelType.relType !== '*'
           ? { type: this.props.selectedRelType.relType }
@@ -292,11 +299,12 @@ export class GrassEditorComponent extends Component {
         </StyledTokenRelationshipType>
       )
     } else if (this.props.selectedCondition) {
-      const conditionSelector =
+      // If selected components are conditions
+      const conditionSelector = // conditionSelector is the string users submitted from the text input box
         this.props.selectedCondition.relType !== '*'
           ? { type: this.props.selectedCondition.condition }
           : {}
-      const styleForRelType = this.graphStyle.forCondition(conditionSelector) // Create a function similar to this.graphStyle.forRelationship but takes a conditionSelector as an argument
+      const styleForRelType = this.graphStyle.forCondition(conditionSelector) // See graphStyle.js
       const inlineStyle = {
         backgroundColor: styleForRelType.get('color'),
         color: styleForRelType.get('text-color-internal')

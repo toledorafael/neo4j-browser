@@ -214,6 +214,7 @@ export default function neoGraphStyle () {
   })()
 
   const StyleElement = (function () {
+    // StyleElement combines a selector with a props which defines style
     function StyleElement (selector) {
       this.selector = selector
       this.props = {}
@@ -221,8 +222,9 @@ export default function neoGraphStyle () {
 
     StyleElement.prototype.applyRules = function (rules) {
       for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i]
+        const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
         if (rule.matches(this.selector)) {
+          // find style based on tag of selector (whether it's a node or a relationship)
           this.props = { ...this.props, ...rule.props }
           this.props.caption = this.props.caption || this.props.defaultCaption
         }
@@ -275,6 +277,10 @@ export default function neoGraphStyle () {
     const conditionSelector = function (cond) {
       cond = cond || null
       const classes = cond != null ? [cond] : []
+      // conditionSelector is almost the same as relationshipSelector: both under the tag "relationship"
+      // and both have classes, an array of length 0 or 1
+      // However, while the classes of relationshipSelector stores relationship types
+      // classes of conditionSelector stores condition name
       return new Selector('relationship', classes)
     }
 
