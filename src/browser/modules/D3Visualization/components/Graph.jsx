@@ -240,7 +240,7 @@ export class GraphComponent extends Component {
   handleSubmit (event) {
     if (this.state.conditionTypes) {
       if (
-        this.state.conditionTypes.indexOf(this.state.newConditionType) == -1
+        this.state.conditionTypes.indexOf(this.state.newConditionType) === -1
       ) {
         this.setState(prevState => ({
           conditionTypes: [
