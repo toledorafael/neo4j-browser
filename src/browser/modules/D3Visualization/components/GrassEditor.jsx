@@ -302,8 +302,8 @@ export class GrassEditorComponent extends Component {
       // If selected components are conditions
       const conditionSelector = // conditionSelector is the string users submitted from the text input box
         this.props.selectedCondition.relType !== '*'
-          ? { type: this.props.selectedCondition.condition }
-          : {}
+          ? this.props.selectedCondition.condition
+          : ''
       const styleForRelType = this.graphStyle.forCondition(conditionSelector) // See graphStyle.js
       const inlineStyle = {
         backgroundColor: styleForRelType.get('color'),
