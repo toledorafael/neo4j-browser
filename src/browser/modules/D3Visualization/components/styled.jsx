@@ -455,7 +455,7 @@ export const StyleSubmitButton = styled.button`
 
 export const StyleInputDiv = styled.div`
   position: absolute;
-  top: 70px;
+  top: 100px;
   color: black;
   width: 300px;
   background: white;
