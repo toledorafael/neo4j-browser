@@ -238,39 +238,49 @@ export class GraphComponent extends Component {
   }
 
   handleSubmit (event) {
-    if (this.state.conditionTypes) {
-      if (
-        this.state.conditionTypes.indexOf(this.state.newConditionType) === -1
-      ) {
-        this.setState(prevState => ({
-          conditionTypes: [
-            ...prevState.conditionTypes,
+    // TODO: if clicked with the same label deletes the new bar
+    if (this.state.newConditionType) {
+      let conditionTypes
+      if (this.state.conditionTypes) {
+        if (
+          this.state.conditionTypes.indexOf(this.state.newConditionType) === -1
+        ) {
+          this.setState(prevState => ({
+            conditionTypes: [
+              ...prevState.conditionTypes,
+              this.state.newConditionType
+            ]
+          }))
+          conditionTypes = [
+            ...this.state.conditionTypes,
             this.state.newConditionType
           ]
-        }))
+        } else {
+          conditionTypes = [...this.state.conditionTypes]
+        }
+      } else {
+        this.setState({ conditionTypes: [this.state.newConditionType] })
+        conditionTypes = [this.state.newConditionType]
       }
-    } else {
-      this.setState({ conditionTypes: [this.state.newConditionType] })
-    }
-    let stats = getGraphStats(this.graph)
-    let conditionTypes
-    if (this.state.conditionTypes) {
-      conditionTypes = this.state.conditionTypes
-    } else {
-      conditionTypes = []
-    }
-    let newstats = {
-      labels: stats.labels,
-      relTypes: stats.relTypes,
-      conditionTypes: conditionTypes
-    }
-    // this.props.onGraphModelChange(getGraphStats(this.graph))
-    this.props.onGraphModelChange(newstats)
+      let stats = getGraphStats(this.graph)
+      // if (!this.state.conditionTypes) {
+      // conditionTypes = this.state.conditionTypes
+      // } else {
+      //   conditionTypes = []
+      // }
+      let newstats = {
+        labels: stats.labels,
+        relTypes: stats.relTypes,
+        conditionTypes: conditionTypes
+      }
+      // this.props.onGraphModelChange(getGraphStats(this.graph))
+      this.props.onGraphModelChange(newstats)
 
-    // This command triggers the highlighting of edges based on a feature expression
-    // submitted by the user. Since we are using the button for a different purpose
-    // and the highlighting will be done in a different way, this feature should be refactored.
-    // this.graphView.highlightPresenceConditions(this.state.featureExpression)
+      // This command triggers the highlighting of edges based on a feature expression
+      // submitted by the user. Since we are using the button for a different purpose
+      // and the highlighting will be done in a different way, this feature should be refactored.
+      // this.graphView.highlightPresenceConditions(this.state.featureExpression)
+    }
   }
 
   checkPropertyList (propertyList, propertyName) {
@@ -285,6 +295,7 @@ export class GraphComponent extends Component {
 
   inputFeatureExpression () {
     if (this.props.fullscreen) {
+      // TODO: Add condition to only show PC form if the user is interested in learn about that
       if (
         this.checkPropertyList(
           this.graph._relationships[0].propertyList,
@@ -311,13 +322,15 @@ export class GraphComponent extends Component {
 
   render () {
     return (
+      // <div>
       <StyledSvgWrapper>
         <svg className='neod3viz' ref={this.graphInit.bind(this)} />
-        {this.inputSlider()}
+        {/* {this.inputSlider()} */}
         {this.zoomButtons()}
         {/* {this.inputToggle()} */}
         {this.inputFeatureExpression()}
       </StyledSvgWrapper>
+      // </div>
     )
   }
 }
