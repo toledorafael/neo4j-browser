@@ -232,6 +232,54 @@ export default function neoGraphStyle () {
       return this
     }
 
+    StyleElement.prototype.applyCondRules = function (rules) {
+      for (let i = 0; i < rules.length; i++) {
+        const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
+        // if rule concerns a condition
+        if (rule.selector.classes.includes('condRule')) {
+          // TODO: Setup satSolver for that condRule, or featureExpression
+          // if (featureExpression !== '') {
+          //   var formula = parse(featureExpression)
+          //   var solver = new Logic.Solver()
+          //   solver.require(formula)
+          //   var solutions = []
+          //   var curSol
+          //   while ((curSol = solver.solve())) {
+          //     curSol.ignoreUnknownVariables()
+          //     solutions.push(curSol)
+          //     solver.forbid(curSol.getFormula())
+          //   }
+          // }
+
+          // TODO: if the selector satisfies that condition then
+
+          // if (featureExpression !== '') {
+          //   var presenceCondition = ''
+          //   if (checkPropertyList(rel.propertyList, 'condition')) {
+          //     for (let index = 0; index < rel.propertyList.length; index++) {
+          //       const element = rel.propertyList[index]
+          //       if (element.key === 'condition') {
+          //         presenceCondition = rel.propertyList[index].value
+          //       }
+          //     }
+          //     if (presenceCondition !== 'true') {
+          //       if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
+          //         return 'red'
+          //       }
+          //     } else {
+          //       return 'red'
+          //     }
+          //     return 'none'
+          //   }
+          //   // return 'red'
+          // }
+          this.props = { ...this.props, ...rule.props }
+          this.props.caption = this.props.caption || this.props.defaultCaption
+        }
+      }
+      return this
+    }
+
     StyleElement.prototype.get = function (attr) {
       return this.props[attr] || ''
     }
@@ -276,7 +324,13 @@ export default function neoGraphStyle () {
 
     const conditionSelector = function (cond) {
       cond = cond || null
-      const classes = cond != null ? [cond] : []
+      let classes
+      if (typeof cond === 'string' || cond instanceof String) {
+        classes = cond != null ? [cond, 'condRule'] : []
+      } else {
+        classes = cond != null ? [cond] : []
+      }
+      // TODO: add cond tag to classes
       // conditionSelector is almost the same as relationshipSelector: both under the tag "relationship"
       // and both have classes, an array of length 0 or 1
       // However, while the classes of relationshipSelector stores relationship types
@@ -345,6 +399,10 @@ export default function neoGraphStyle () {
 
     GraphStyle.prototype.calculateStyle = function (selector) {
       return new StyleElement(selector).applyRules(this.rules)
+    }
+
+    GraphStyle.prototype.calculateCondStyle = function (selector) {
+      return new StyleElement(selector).applyCondRules(this.rules)
     }
 
     GraphStyle.prototype.forEntity = function (item) {
@@ -567,6 +625,11 @@ export default function neoGraphStyle () {
     GraphStyle.prototype.forCondition = function (cond) {
       const selector = conditionSelector(cond)
       return this.calculateStyle(selector)
+    }
+
+    GraphStyle.prototype.forCondRel = function (rel) {
+      const selector = conditionSelector(rel)
+      return this.calculateCondStyle(selector)
     }
     return GraphStyle
   })()

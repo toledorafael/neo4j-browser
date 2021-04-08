@@ -158,7 +158,7 @@ const split = (expression, operator) => {
   return result
 }
 // this will only take strings containing * operator [ no + ]
-const parseDisjunctionSeparatedExpression = (expression) => {
+const parseDisjunctionSeparatedExpression = expression => {
   const operandsString = split(expression, '+')
   const operands = operandsString.map(noStr => {
     if (noStr[0] === '(') {
@@ -180,7 +180,7 @@ const parseDisjunctionSeparatedExpression = (expression) => {
   }
 }
 // both * -
-const parseConjunctionSeparatedExpression = (expression) => {
+const parseConjunctionSeparatedExpression = expression => {
   const operandsString = split(expression, '*')
   const operands = operandsString.map(operandStr => {
     if (operandStr[0] === '-') {
@@ -197,17 +197,26 @@ const parseConjunctionSeparatedExpression = (expression) => {
   }
 }
 
-const parseNegation = (expression) => {
+const parseNegation = expression => {
   if (expression[0] === '-') {
-    return Logic.not(parseConjunctionSeparatedExpression(expression.substr(1, expression.length - 1)))
+    return Logic.not(
+      parseConjunctionSeparatedExpression(
+        expression.substr(1, expression.length - 1)
+      )
+    )
   } else {
     return parseConjunctionSeparatedExpression(expression)
   }
 }
 
-const parse = (featureExpression) => {
-  var newFeatureExpression = featureExpression.replaceAll(/\s/g, '').replaceAll('!', '-')
-  if (newFeatureExpression.includes('/\\') || newFeatureExpression.includes('\\/')) {
+const parse = featureExpression => {
+  var newFeatureExpression = featureExpression
+    .replaceAll(/\s/g, '')
+    .replaceAll('!', '-')
+  if (
+    newFeatureExpression.includes('/\\') ||
+    newFeatureExpression.includes('\\/')
+  ) {
     newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
     newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
     // return parseConjunctionSeparatedExpression(newFeatureExpression)
@@ -261,8 +270,20 @@ const arrowPath = new Renderer({
       }
     }
 
+    // TODO: fill based on condition entered by user(see in styleRules) with color (in the respective styleRule for that condition)
     paths
-      .attr('fill', rel => viz.style.forRelationship(rel).get('color'))
+      .attr('fill', function (rel) {
+        let color
+        if (checkPropertyList(rel.propertyList, 'condition')) {
+          color = viz.style.forCondRel(rel).get('color')
+        } else {
+          color = '#A5ABB6'
+        }
+        return color
+        // #F16667
+        // if no condition -> forRelationship
+        // else if condition -> forCondition
+      })
       .attr('stroke-width', '3px')
       .attr('stroke', function (rel) {
         if (featureExpression !== '') {
