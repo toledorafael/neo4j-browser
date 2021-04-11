@@ -22,6 +22,7 @@ import {
   selectorStringToArray,
   selectorArrayToString
 } from 'services/grassUtils'
+import SatSolver from './lib/visualization/utils/satSolver'
 
 export default function neoGraphStyle () {
   const defaultStyle = {
@@ -233,50 +234,71 @@ export default function neoGraphStyle () {
     }
 
     StyleElement.prototype.applyCondRules = function (rules) {
-      for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
-        // if rule concerns a condition
-        if (rule.selector.classes.includes('condRule')) {
-          // TODO: Setup satSolver for that condRule, or featureExpression
-          // if (featureExpression !== '') {
-          //   var formula = parse(featureExpression)
-          //   var solver = new Logic.Solver()
-          //   solver.require(formula)
-          //   var solutions = []
-          //   var curSol
-          //   while ((curSol = solver.solve())) {
-          //     curSol.ignoreUnknownVariables()
-          //     solutions.push(curSol)
-          //     solver.forbid(curSol.getFormula())
-          //   }
-          // }
+      if (this.selector.tag === 'relationship') {
+        var presenceCondition = ''
+        if ('condition' in this.selector.classes[0].propertyMap) {
+          presenceCondition = this.selector.classes[0].propertyMap['condition']
+        }
 
-          // TODO: if the selector satisfies that condition then
+        for (let i = 0; i < rules.length; i++) {
+          const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
+          // if rule concerns a condition
+          if (rule.selector.classes.includes('condRule')) {
+            // if (featureExpression !== '') {
+            //   var formula = parse(featureExpression)
+            //   var solver = new Logic.Solver()
+            //   solver.require(formula)
+            //   var solutions = []
+            //   var curSol
+            //   while ((curSol = solver.solve())) {
+            //     curSol.ignoreUnknownVariables()
+            //     solutions.push(curSol)
+            //     solver.forbid(curSol.getFormula())
+            //   }
+            // }
 
-          // if (featureExpression !== '') {
-          //   var presenceCondition = ''
-          //   if (checkPropertyList(rel.propertyList, 'condition')) {
-          //     for (let index = 0; index < rel.propertyList.length; index++) {
-          //       const element = rel.propertyList[index]
-          //       if (element.key === 'condition') {
-          //         presenceCondition = rel.propertyList[index].value
-          //       }
-          //     }
-          //     if (presenceCondition !== 'true') {
-          //       if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
-          //         return 'red'
-          //       }
-          //     } else {
-          //       return 'red'
-          //     }
-          //     return 'none'
-          //   }
-          //   // return 'red'
-          // }
-          this.props = { ...this.props, ...rule.props }
-          this.props.caption = this.props.caption || this.props.defaultCaption
+            // TODO: if the selector satisfies that condition then
+
+            if (presenceCondition !== '' && presenceCondition !== 'true') {
+              // TODO: Setup satSolver for that condRule, or featureExpression
+              var solver = new SatSolver(rule.selector.classes[0])
+              if (solver.evaluateUnderAllSolutions(presenceCondition)) {
+                this.props = { ...this.props, ...rule.props }
+                this.props.caption =
+                  this.props.caption || this.props.defaultCaption
+              }
+            } else {
+              // if condition = true or empty the rule will apply
+              this.props = { ...this.props, ...rule.props }
+              this.props.caption =
+                this.props.caption || this.props.defaultCaption
+            }
+
+            // if (featureExpression !== '') {
+            //   var presenceCondition = ''
+            //   if (checkPropertyList(rel.propertyList, 'condition')) {
+            //     for (let index = 0; index < rel.propertyList.length; index++) {
+            //       const element = rel.propertyList[index]
+            //       if (element.key === 'condition') {
+            //         presenceCondition = rel.propertyList[index].value
+            //       }
+            //     }
+            //     if (presenceCondition !== 'true') {
+            //       if (solver.evaluateUnderAllSolutions(presenceCondition)) {
+            //         return 'red'
+            //       }
+            //     } else {
+            //       return 'red'
+            //     }
+            //     return 'none'
+            //   }
+            //   // return 'red'
+            // }
+            // this.selector.classes[0].propertyMap['condition']
+          }
         }
       }
+
       return this
     }
 
@@ -298,7 +320,14 @@ export default function neoGraphStyle () {
     }
 
     const parseSelector = function (key) {
-      let tokens = selectorStringToArray(key)
+      let tokens
+      if (key.includes('isCond')) {
+        tokens = key.split('.')
+        // replace /. with /\\g
+        // tokens = tokens.map(r => r.replace(/\, '/\\g'))
+      } else {
+        tokens = selectorStringToArray(key)
+      }
       return new Selector(tokens[0], tokens.slice(1))
     }
 
