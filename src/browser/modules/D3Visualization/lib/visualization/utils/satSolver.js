@@ -1,4 +1,6 @@
 import Logic from 'logic-solver'
+import 'regenerator-runtime/runtime.js'
+import * as sat from '@aureooms/js-sat'
 
 export default class SatSolver {
   constructor (featureExpression) {
@@ -7,7 +9,7 @@ export default class SatSolver {
       this.solver = new Logic.Solver()
       this.solver.require(formula)
       this.solutions = []
-      var curSol
+      var curSol = null
       while ((curSol = this.solver.solve())) {
         curSol.ignoreUnknownVariables()
         this.solutions.push(curSol)
@@ -47,7 +49,7 @@ export default class SatSolver {
         // recursive call to the main function
         // return parseConjunctionSeparatedExpression(expr)
         return this.parseNegation(expr)
-      } else if (noStr[0] === '-') {
+      } else if (noStr[0] === '-' && noStr[1] === '(') {
         return this.parseNegation(noStr)
       }
       return noStr
@@ -64,7 +66,7 @@ export default class SatSolver {
   parseConjunctionSeparatedExpression = expression => {
     const operandsString = this.split(expression, '*')
     const operands = operandsString.map(operandStr => {
-      if (operandStr[0] === '-') {
+      if (expression[0] === '-' && expression[1] === '(') {
         return this.parseNegation(operandStr)
       }
       return this.parseDisjunctionSeparatedExpression(operandStr)
@@ -79,7 +81,7 @@ export default class SatSolver {
   }
 
   parseNegation = expression => {
-    if (expression[0] === '-') {
+    if (expression[0] === '-' && expression[1] === '(') {
       return Logic.not(
         this.parseConjunctionSeparatedExpression(
           expression.substr(1, expression.length - 1)
