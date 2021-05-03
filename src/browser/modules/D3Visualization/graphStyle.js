@@ -189,6 +189,9 @@ export default function neoGraphStyle () {
     function StyleRule (selector1, props1) {
       this.selector = selector1
       this.props = props1
+      if (selector1.classes.includes('condRule')) {
+        this.solver = new SatSolver(selector1.classes[0])
+      }
     }
 
     StyleRule.prototype.matches = function (selector) {
@@ -234,6 +237,7 @@ export default function neoGraphStyle () {
     }
 
     StyleElement.prototype.applyCondRules = function (rules) {
+      // TODO: Ignore prior rules
       if (this.selector.tag === 'relationship') {
         var presenceCondition = ''
         if ('condition' in this.selector.classes[0].propertyMap) {
@@ -241,7 +245,7 @@ export default function neoGraphStyle () {
         }
 
         for (let i = 0; i < rules.length; i++) {
-          const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
+          let rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
           // if rule concerns a condition
           if (rule.selector.classes.includes('condRule')) {
             // if (featureExpression !== '') {
@@ -257,21 +261,22 @@ export default function neoGraphStyle () {
             //   }
             // }
 
-            // TODO: if the selector satisfies that condition then
-
             if (presenceCondition !== '' && presenceCondition !== 'true') {
-              // TODO: Setup satSolver for that condRule, or featureExpression
-              var solver = new SatSolver(rule.selector.classes[0])
-              if (solver.evaluateUnderAllSolutions(presenceCondition)) {
+              // TODO: if array includes a solver set solver to ruleSolver and skip to 266
+              // TODO: save solver with rule Array [tag,condition,isCond flag, solver]
+              // var solver
+              // if (!('solver' in rule.selector)) {
+              //   rule.selector['solver'] = new SatSolver(rule.selector.classes[0])
+              // }
+              // solver = rule.selector['solver']
+              if (rule.solver.evaluateUnderAllSolutions(presenceCondition)) {
                 this.props = { ...this.props, ...rule.props }
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
               }
             } else {
-              // if condition = true or empty the rule will apply
-              this.props = { ...this.props, ...rule.props }
-              this.props.caption =
-                this.props.caption || this.props.defaultCaption
+              // if condition = true or empty
+              // All rules regarding any condition should apply
             }
 
             // if (featureExpression !== '') {
@@ -321,10 +326,8 @@ export default function neoGraphStyle () {
 
     const parseSelector = function (key) {
       let tokens
-      if (key.includes('isCond')) {
+      if (key.includes('condRule')) {
         tokens = key.split('.')
-        // replace /. with /\\g
-        // tokens = tokens.map(r => r.replace(/\, '/\\g'))
       } else {
         tokens = selectorStringToArray(key)
       }
@@ -359,7 +362,7 @@ export default function neoGraphStyle () {
       } else {
         classes = cond != null ? [cond] : []
       }
-      // TODO: add cond tag to classes
+
       // conditionSelector is almost the same as relationshipSelector: both under the tag "relationship"
       // and both have classes, an array of length 0 or 1
       // However, while the classes of relationshipSelector stores relationship types
