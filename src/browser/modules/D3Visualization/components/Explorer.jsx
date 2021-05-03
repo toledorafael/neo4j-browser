@@ -67,6 +67,7 @@ export class ExplorerComponent extends Component {
         this.defaultStyle,
         this.props.graphStyleData
       )
+      // const rebasedStyle = this.defaultStyle
       graphStyle.loadRules(rebasedStyle)
     }
     this.state = {
@@ -167,6 +168,7 @@ export class ExplorerComponent extends Component {
     if (!deepEquals(props.graphStyleData, this.props.graphStyleData)) {
       if (props.graphStyleData) {
         const rebasedStyle = deepmerge(this.defaultStyle, props.graphStyleData)
+        // const rebasedStyle = this.defaultStyle
         this.state.graphStyle.loadRules(rebasedStyle)
         this.setState({
           graphStyle: this.state.graphStyle,
