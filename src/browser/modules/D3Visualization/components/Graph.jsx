@@ -234,11 +234,11 @@ export class GraphComponent extends Component {
       this.setState({conditionTypes: [event.target.value]})
     } */
     this.setState({ newConditionType: event.target.value })
-    this.setState({ featureExpression: event.target.value })
+
+    // this.setState({ featureExpression: event.target.value })
   }
 
   handleSubmit (event) {
-    // TODO: if clicked with the same label deletes the new bar
     if (this.state.newConditionType) {
       let conditionTypes
       if (this.state.conditionTypes) {
@@ -263,6 +263,9 @@ export class GraphComponent extends Component {
         conditionTypes = [this.state.newConditionType]
       }
       let stats = getGraphStats(this.graph)
+      Array.from(document.querySelectorAll('textArea')).forEach(
+        input => (input.value = '')
+      )
       // if (!this.state.conditionTypes) {
       // conditionTypes = this.state.conditionTypes
       // } else {
@@ -304,7 +307,7 @@ export class GraphComponent extends Component {
       ) {
         // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
         return (
-          // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}>
+          // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}></StyleInputForm>
           <StyleInputDiv>
             <StyleTextArea
               value={this.state.value}
