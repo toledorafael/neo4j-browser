@@ -1,6 +1,5 @@
 import Logic from 'logic-solver'
 import 'regenerator-runtime/runtime.js'
-import * as sat from '@aureooms/js-sat'
 
 export default class SatSolver {
   constructor (featureExpression) {
