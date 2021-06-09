@@ -28,41 +28,38 @@ const layout = {
       init: render => {
         const forceLayout = {}
 
-        const linkDistance = 20
+        const linkDistance = 150
 
         const d3force = d3.layout
           .force()
-          .linkDistance(
-            relationship => {
-              const sourceFilename = relationship.source.propertyMap.filename
-              const targetFilename = relationship.target.propertyMap.filename
-              if (sourceFilename === targetFilename) {
-                return relationship.source.radius +
-                       relationship.target.radius +
-                       linkDistance
-              } else {
-                return (relationship.source.radius +
-                       relationship.target.radius +
-                       4 * linkDistance)
-              }
-              // return relationship.source.radius +
-              // relationship.target.radius +
-              // linkDistance
-            }
-
-          )
+          .linkDistance(relationship => {
+            // const sourceFilename = relationship.source.propertyMap.filename
+            // const targetFilename = relationship.target.propertyMap.filename
+            // if (sourceFilename === targetFilename) {
+            //   return relationship.source.radius +
+            //          relationship.target.radius +
+            //          linkDistance
+            // } else {
+            //   return (relationship.source.radius +
+            //          relationship.target.radius +
+            //          4 * linkDistance)
+            // }
+            return (
+              relationship.source.radius +
+              relationship.target.radius +
+              linkDistance
+            )
+          })
           .charge(-1000)
-          .linkStrength(
-            relationship => {
-              const sourceFilename = relationship.source.propertyMap.filename
-              const targetFilename = relationship.target.propertyMap.filename
-              if (sourceFilename === targetFilename) {
-                return 0.2
-              } else {
-                return 1
-              }
+          .linkStrength(relationship => {
+            const sourceFilename = relationship.source.propertyMap.filename
+            const targetFilename = relationship.target.propertyMap.filename
+            if (sourceFilename === targetFilename) {
+              return 0.2
+            } else {
+              return 1
             }
-          )
+          })
 
         const newStatsBucket = function () {
           const bucket = {
