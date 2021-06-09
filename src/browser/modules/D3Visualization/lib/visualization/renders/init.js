@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Renderer from '../components/renderer'
+import d3 from 'd3'
 import Logic from 'logic-solver'
 const noop = function () {}
 
@@ -248,6 +249,34 @@ const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
   return false
 }
 
+function gradient (colors) {
+  // TODO: have the x,y of the source and target of the arrow as arguments
+  // defines the gradient
+  // TODO: if gradient not already defined
+  const svg = d3.select('.neod3viz')
+  const id = 'gradient' + colors[0].slice(1) + colors[1].slice(1)
+  svg
+    .append('defs')
+    .append('linearGradient')
+    .attr('id', id)
+    .attr('x1', '0%')
+    .attr('y1', '0%')
+    .attr('x2', '100%')
+    .attr('y2', '0%')
+  // // defines the start
+  d3.select('#' + id)
+    .append('stop')
+    .attr('stop-color', colors[0])
+    .attr('offset', '50%')
+    .attr('stop-opacity', 1)
+  //   // and the finish
+  d3.select('#' + id)
+    .append('stop')
+    .attr('stop-color', colors[1])
+    .attr('offset', '50%')
+    .attr('stop-opacity', 1)
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
   onGraphChange (selection, viz, featureExpression) {
@@ -273,13 +302,19 @@ const arrowPath = new Renderer({
     // TODO: fill based on condition entered by user(see in styleRules) with color (in the respective styleRule for that condition)
     paths
       .attr('fill', function (rel) {
-        let color
+        let colors
         if (checkPropertyList(rel.propertyList, 'condition')) {
-          color = viz.style.forCondRel(rel).get('color')
+          colors = viz.style.forCondRel(rel).get('color')
+          if (Array.isArray(colors)) {
+            gradient(colors)
+            return (
+              'url(#gradient' + colors[0].slice(1) + colors[1].slice(1) + ')'
+            )
+          }
+          return colors
         } else {
-          color = '#A5ABB6'
+          return '#A5ABB6'
         }
-        return color
         // #F16667
         // if no condition -> forRelationship
         // else if condition -> forCondition
