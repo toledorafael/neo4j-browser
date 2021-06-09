@@ -32,12 +32,12 @@ export default function neoGraphStyle () {
       'border-color': '#9AA1AC',
       'border-width': '2px',
       'text-color-internal': '#FFFFFF',
-      'font-size': '10px'
+      'font-size': '14px'
     },
     relationship: {
       color: '#A5ABB6',
-      'shaft-width': '1px',
-      'font-size': '8px',
+      'shaft-width': '5px', // Check if the link gets thicker
+      'font-size': '14px',
       padding: '3px',
       'text-color-external': '#000000',
       'text-color-internal': '#FFFFFF',
@@ -237,69 +237,49 @@ export default function neoGraphStyle () {
     }
 
     StyleElement.prototype.applyCondRules = function (rules) {
-      // TODO: Ignore prior rules
       if (this.selector.tag === 'relationship') {
         var presenceCondition = ''
+
         if ('condition' in this.selector.classes[0].propertyMap) {
           presenceCondition = this.selector.classes[0].propertyMap['condition']
         }
 
         for (let i = 0; i < rules.length; i++) {
-          let rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
+          let rule = rules[i]
           // if rule concerns a condition
-          if (rule.selector.classes.includes('condRule')) {
-            // if (featureExpression !== '') {
-            //   var formula = parse(featureExpression)
-            //   var solver = new Logic.Solver()
-            //   solver.require(formula)
-            //   var solutions = []
-            //   var curSol
-            //   while ((curSol = solver.solve())) {
-            //     curSol.ignoreUnknownVariables()
-            //     solutions.push(curSol)
-            //     solver.forbid(curSol.getFormula())
-            //   }
-            // }
-
-            if (presenceCondition !== '' && presenceCondition !== 'true') {
-              // TODO: if array includes a solver set solver to ruleSolver and skip to 266
-              // TODO: save solver with rule Array [tag,condition,isCond flag, solver]
-              // var solver
-              // if (!('solver' in rule.selector)) {
-              //   rule.selector['solver'] = new SatSolver(rule.selector.classes[0])
-              // }
-              // solver = rule.selector['solver']
-              if (rule.solver.evaluateUnderAllSolutions(presenceCondition)) {
+          if (
+            rule.selector.classes.includes('condRule') &&
+            presenceCondition !== '' &&
+            presenceCondition !== 'true'
+          ) {
+            if (rule.solver.evaluateUnderAllSolutions(presenceCondition)) {
+              // if this.props already includes a color
+              // then create gradient
+              // if this props is empty
+              if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
+              } else {
+                if (this.props.color !== rule.props.color) {
+                  // TODO: Include multiple colors them, d3 manages them in init.js
+                  for (const key in rule.props) {
+                    if (key === 'color') {
+                      this.props.color = [this.props.color, rule.props.color]
+                    } else {
+                      this.props[key] = rule.props[key]
+                    }
+                  }
+                } else {
+                  this.props = { ...this.props, ...rule.props }
+                  this.props.caption =
+                    this.props.caption || this.props.defaultCaption
+                }
               }
-            } else {
-              // if condition = true or empty
-              // All rules regarding any condition should apply
             }
-
-            // if (featureExpression !== '') {
-            //   var presenceCondition = ''
-            //   if (checkPropertyList(rel.propertyList, 'condition')) {
-            //     for (let index = 0; index < rel.propertyList.length; index++) {
-            //       const element = rel.propertyList[index]
-            //       if (element.key === 'condition') {
-            //         presenceCondition = rel.propertyList[index].value
-            //       }
-            //     }
-            //     if (presenceCondition !== 'true') {
-            //       if (solver.evaluateUnderAllSolutions(presenceCondition)) {
-            //         return 'red'
-            //       }
-            //     } else {
-            //       return 'red'
-            //     }
-            //     return 'none'
-            //   }
-            //   // return 'red'
-            // }
-            // this.selector.classes[0].propertyMap['condition']
+          } else {
+            // if condition = true or empty
+            // All rules regarding any condition should apply (?)
           }
         }
       }
