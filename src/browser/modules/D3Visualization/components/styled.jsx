@@ -453,6 +453,30 @@ export const StyleSubmitButton = styled.button`
   }
 `
 
+export const StyleToggleButton = styled.button`
+  position: absolute;
+  top: 100px;
+  right: 120px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: red;
+  border-color: white;
+  padding: 15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
 export const StyleInputDiv = styled.div`
   position: absolute;
   top: 100px;
