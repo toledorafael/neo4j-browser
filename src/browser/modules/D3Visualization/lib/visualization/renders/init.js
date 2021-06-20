@@ -249,37 +249,70 @@ const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
   return false
 }
 
-function gradient (colors) {
+function gradient (colors, toggleStripes) {
   // TODO: have the x,y of the source and target of the arrow as arguments
   // defines the gradient
   // TODO: if gradient not already defined
   const svg = d3.select('.neod3viz')
   const id = 'gradient' + colors[0].slice(1) + colors[1].slice(1)
-  svg
-    .append('defs')
-    .append('linearGradient')
-    .attr('id', id)
-    .attr('x1', '0%')
-    .attr('y1', '0%')
-    .attr('x2', '100%')
-    .attr('y2', '0%')
-  // // defines the start
-  d3.select('#' + id)
-    .append('stop')
-    .attr('stop-color', colors[0])
-    .attr('offset', '50%')
-    .attr('stop-opacity', 1)
-  //   // and the finish
-  d3.select('#' + id)
-    .append('stop')
-    .attr('stop-color', colors[1])
-    .attr('offset', '50%')
-    .attr('stop-opacity', 1)
+  const linearGradient = d3.select('#' + id)
+  if (linearGradient[0][0] === null) {
+    svg
+      .append('defs')
+      .append('linearGradient')
+      .attr('id', id)
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', function () {
+        if (toggleStripes) {
+          return '0%'
+        } else {
+          return '100%'
+        }
+      })
+      .attr('y2', function () {
+        if (toggleStripes) {
+          return '100%'
+        } else {
+          return '0%'
+        }
+      })
+    // // defines the start
+    d3.select('#' + id)
+      .append('stop')
+      .attr('stop-color', colors[0])
+      .attr('offset', '50%')
+      .attr('stop-opacity', 1)
+    //   // and the finish
+    d3.select('#' + id)
+      .append('stop')
+      .attr('stop-color', colors[1])
+      .attr('offset', '50%')
+      .attr('stop-opacity', 1)
+  } else {
+    d3.select('#' + id)
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', function () {
+        if (toggleStripes) {
+          return '0%'
+        } else {
+          return '100%'
+        }
+      })
+      .attr('y2', function () {
+        if (toggleStripes) {
+          return '100%'
+        } else {
+          return '0%'
+        }
+      })
+  }
 }
 
 const arrowPath = new Renderer({
   name: 'arrowPath',
-  onGraphChange (selection, viz, featureExpression) {
+  onGraphChange (selection, viz, featureExpression, toggleStripes) {
     const paths = selection.selectAll('path.outline').data(rel => [rel])
     paths
       .enter()
@@ -306,7 +339,7 @@ const arrowPath = new Renderer({
         if (checkPropertyList(rel.propertyList, 'condition')) {
           colors = viz.style.forCondRel(rel).get('color')
           if (Array.isArray(colors)) {
-            gradient(colors)
+            gradient(colors, toggleStripes)
             return (
               'url(#gradient' + colors[0].slice(1) + colors[1].slice(1) + ')'
             )
