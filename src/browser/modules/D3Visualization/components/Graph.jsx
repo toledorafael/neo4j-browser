@@ -31,7 +31,8 @@ import {
   StyleToggleGroupMarksButton,
   StyleInputDiv,
   StyleSubmitButton,
-  StyleTextArea
+  StyleTextArea,
+  StyleToggleButton
 } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
@@ -42,6 +43,7 @@ export class GraphComponent extends Component {
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
+    toggleStripes: false,
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...'
   }
@@ -112,7 +114,7 @@ export class GraphComponent extends Component {
       this.graphEH.bindEventHandlers()
       this.props.onGraphModelChange(getGraphStats(this.graph))
       this.graphView.resize()
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update(this.state.toggleStripes)
     }
   }
 
@@ -135,14 +137,14 @@ export class GraphComponent extends Component {
       }
       // this.props.onGraphModelChange(getGraphStats(this.graph))
       this.props.onGraphModelChange(newstats)
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update(this.state.toggleStripes)
       this.graphEH.onItemMouseOut()
     }
   }
 
   componentWillReceiveProps (props) {
     if (props.styleVersion !== this.props.styleVersion) {
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update(this.state.toggleStripes)
     }
     if (
       this.props.fullscreen !== props.fullscreen ||
@@ -191,11 +193,11 @@ export class GraphComponent extends Component {
     this.graphView.updateScaleFactor(event.target.value)
   }
 
-  toggleGroupMarks (event) {
-    const toggleGroupMarks = !this.state.showGroupMarks
-    this.setState({ showGroupMarks: toggleGroupMarks })
-    this.graphView.displayGroupMarks(toggleGroupMarks)
-  }
+  // toggleGroupMarks (event) {
+  //   const toggleGroupMarks = !this.state.toggleGroupMarks
+  //   this.setState({ showGroupMarks: toggleGroupMarks })
+  //   this.graphView.displayGroupMarks(toggleGroupMarks)
+  // }
 
   inputSlider () {
     if (this.props.fullscreen) {
@@ -286,6 +288,13 @@ export class GraphComponent extends Component {
     }
   }
 
+  handleToggleStripes (event) {
+    const newToggleStripes = !this.state.toggleStripes
+    this.setState({ toggleStripes: newToggleStripes })
+    // this.graphView.displayGroupMarks(toggleGroupMarks)
+    this.graphView.update(newToggleStripes)
+  }
+
   checkPropertyList (propertyList, propertyName) {
     if (propertyList.length > 0) {
       for (let index = 0; index < propertyList.length; index++) {
@@ -323,6 +332,16 @@ export class GraphComponent extends Component {
     }
   }
 
+  inputToggleStripes () {
+    if (this.props.fullscreen) {
+      return (
+        <StyleToggleButton onClick={this.handleToggleStripes.bind(this)}>
+          Stripes
+        </StyleToggleButton>
+      )
+    }
+  }
+
   render () {
     return (
       // <div>
@@ -332,6 +351,7 @@ export class GraphComponent extends Component {
         {this.zoomButtons()}
         {/* {this.inputToggle()} */}
         {this.inputFeatureExpression()}
+        {this.inputToggleStripes()}
       </StyledSvgWrapper>
       // </div>
     )
