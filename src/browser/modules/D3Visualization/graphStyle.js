@@ -253,19 +253,22 @@ export default function neoGraphStyle () {
             presenceCondition !== 'true'
           ) {
             if (rule.solver.evaluateUnderAllSolutions(presenceCondition)) {
-              // if this.props already includes a color
-              // then create gradient
-              // if this props is empty
               if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
               } else {
+                // Merge rules
                 if (this.props.color !== rule.props.color) {
-                  // TODO: Include multiple colors them, d3 manages them in init.js
                   for (const key in rule.props) {
                     if (key === 'color') {
-                      this.props.color = [this.props.color, rule.props.color]
+                      if (Array.isArray(this.props.color)) {
+                        // If there are multiple colors add one more
+                        this.props.color.push(rule.props.color)
+                      } else {
+                        // Else create an array with the two colors
+                        this.props.color = [this.props.color, rule.props.color]
+                      }
                     } else {
                       this.props[key] = rule.props[key]
                     }
