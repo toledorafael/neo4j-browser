@@ -24,7 +24,7 @@ import * as vizRenderers from '../renders/init'
 import { menu as menuRenderer } from '../renders/menu'
 import vizClickHandler from '../utils/clickHandler'
 
-const vizFn = function (el, measureSize, graph, layout, style) {
+const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
   const viz = { style }
 
   const root = d3.select(el)
@@ -64,14 +64,13 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     return viz.trigger('nodeClicked', node, drawGroupMarks)
   }
 
-  const onNodeDblClick = node => viz.trigger('nodeDblClicked', node, drawGroupMarks)
+  const onNodeDblClick = node =>
+    viz.trigger('nodeDblClicked', node, drawGroupMarks)
 
   const onNodeDragToggle = (node, groupIds) => {
     if (groupIds && drawGroupMarks) {
-      const groupPaths = container
-        .selectAll('g.fileGroup')
-      const nodeGroups = container
-        .selectAll('g.node')
+      const groupPaths = container.selectAll('g.fileGroup')
+      const nodeGroups = container.selectAll('g.node')
       updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
     }
     viz.trigger('nodeDragToggle', node)
@@ -219,6 +218,18 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       ? () => window.performance.now()
       : () => Date.now()
 
+  const isNodeHidden = function (d) {
+    return d.labels.every(label => localStyle.hiddenLabels.includes(label))
+  }
+
+  const isRelationshipHidden = function (d) {
+    return (
+      localStyle.hiddenRelTypes.includes(d.type) ||
+      isNodeHidden(d.source) ||
+      isNodeHidden(d.target)
+    )
+  }
+
   const render = function () {
     if (!currentStats.firstFrame) {
       currentStats.firstFrame = now()
@@ -232,9 +243,10 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       .selectAll('g.node')
       .attr('transform', d => `translate(${d.x},${d.y})`)
 
+    nodeGroups.classed('hidden', isNodeHidden)
+
     if (drawGroupMarks) {
-      const groupPaths = container
-        .selectAll('g.fileGroup')
+      const groupPaths = container.selectAll('g.fileGroup')
 
       updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
     }
@@ -249,8 +261,10 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         'transform',
         d =>
           `translate(${d.source.x} ${d.source.y}) rotate(${d.naturalAngle +
-              180})`
+            180})`
       )
+
+    relationshipGroups.classed('hidden', isRelationshipHidden)
 
     for (renderer of Array.from(vizRenderers.relationship)) {
       const startRenderer = now()
@@ -320,25 +334,36 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
         if (tip) tip.remove()
 
-        tip = container.append('g')
+        tip = container
+          .append('g')
           .attr('class', 'tip')
-          .attr('transform', 'translate(' + (d.source.x + 20) + ',' + (d.source.y + 20) + ')')
+          .attr(
+            'transform',
+            'translate(' + (d.source.x + 20) + ',' + (d.source.y + 20) + ')'
+          )
 
-        var textBox = tip.append('rect')
+        var textBox = tip
+          .append('rect')
           .style('fill', 'white')
           .style('stroke', 'steelblue')
 
         var yPos = 1
         for (var property in d.propertyList) {
           if (d.propertyList[property].key !== 'samplecode') {
-            tip.append('text')
-              .text(d.propertyList[property].key + ': ' + d.propertyList[property].value)
+            tip
+              .append('text')
+              .text(
+                d.propertyList[property].key +
+                  ': ' +
+                  d.propertyList[property].value
+              )
               .attr('dy', yPos + 'em')
               .attr('x', 5)
             yPos++
           } else {
             var sampleCodeArr = d.propertyList[property].value.split(/\r?\n/)
-            tip.append('text')
+            tip
+              .append('text')
               .text('samplecode: ')
               .attr('dy', yPos + 'em')
               .attr('x', 5)
@@ -347,14 +372,16 @@ const vizFn = function (el, measureSize, graph, layout, style) {
             for (var line in sampleCodeArr) {
               var currLine = +firstLine + +line
               if (currLine === +d.propertyMap['linenumber']) {
-                tip.append('text')
+                tip
+                  .append('text')
                   .text(currLine + ':' + sampleCodeArr[line])
                   .attr('dy', yPos + 'em')
                   .attr('x', 5)
                   .style('font-weight', 'bold')
                 yPos++
               } else {
-                tip.append('text')
+                tip
+                  .append('text')
                   .text(currLine + ':' + sampleCodeArr[line])
                   .attr('dy', yPos + 'em')
                   .attr('x', 5)
@@ -365,8 +392,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         }
 
         var bbox = tip.node().getBBox()
-        textBox.attr('width', bbox.width + 5)
-          .attr('height', bbox.height + 5)
+        textBox.attr('width', bbox.width + 5).attr('height', bbox.height + 5)
       })
 
     relationshipGroups.classed(
@@ -406,19 +432,22 @@ const vizFn = function (el, measureSize, graph, layout, style) {
 
         if (tip) tip.remove()
 
-        tip = container.append('g')
+        tip = container
+          .append('g')
           .attr('class', 'tip')
           .attr('transform', 'translate(' + (d.x + 10) + ',' + (d.y + 10) + ')')
 
         console.log(d.propertyMap)
-        var textBox = tip.append('rect')
+        var textBox = tip
+          .append('rect')
           .style('fill', 'white')
           .style('stroke', 'steelblue')
 
         var yPos = 1
         for (var property in d.propertyMap) {
           if (property !== 'label') {
-            tip.append('text')
+            tip
+              .append('text')
               .text(property + ': ' + d.propertyMap[property])
               .attr('dy', yPos + 'em')
               .attr('x', 5)
@@ -427,8 +456,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         }
 
         var bbox = tip.node().getBBox()
-        textBox.attr('width', bbox.width + 5)
-          .attr('height', bbox.height + 5)
+        textBox.attr('width', bbox.width + 5).attr('height', bbox.height + 5)
       })
 
     nodeGroups.classed('selected', node => node.selected)
@@ -449,7 +477,9 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       const groupPaths = container
         .select('g.layer.fileGroups')
         .selectAll('g.fileGroup')
-        .data(groupIds, function (d) { return d })
+        .data(groupIds, function (d) {
+          return d
+        })
 
       groupPaths
         .enter() // Update to path
@@ -457,8 +487,12 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .attr('class', 'fileGroup')
         .append('path')
         .attr('transform', `translate(0,0)`)
-        .attr('stroke', function (d) { return color(d) })
-        .attr('fill', function (d) { return color(d) })
+        .attr('stroke', function (d) {
+          return color(d)
+        })
+        .attr('fill', function (d) {
+          return color(d)
+        })
         .attr('fill-opacity', 0.2)
         .attr('stroke-opacity', 1)
         .attr('data-legend', function (d) {
@@ -472,7 +506,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
         .select('g.layer.fileGroups')
         .selectAll('g.fileGroup')
         .data({})
-        .exit().remove()
+        .exit()
+        .remove()
     }
 
     if (updateViz) {
@@ -500,7 +535,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       .map(function (d) {
         return [d.px, d.py]
       })
-    nodeCoords.forEach((d) => {
+    nodeCoords.forEach(d => {
       // console.log(d)
       if (d.length > 0) {
         hullCoords.push([d[0] - offset, d[1] - offset])
@@ -515,9 +550,14 @@ const vizFn = function (el, measureSize, graph, layout, style) {
     return d3.geom.polygon(d3.geom.hull(hullCoords))
   }
 
-  var valueline = d3.svg.line()
-    .x(function (d) { return d[0] })
-    .y(function (d) { return d[1] })
+  var valueline = d3.svg
+    .line()
+    .x(function (d) {
+      return d[0]
+    })
+    .y(function (d) {
+      return d[1]
+    })
     .interpolate('linear-closed')
 
   function updateGroups (groupIds, fileGroups, nodeGroups, scaleFactor) {
@@ -525,39 +565,56 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       var polygon
       var centroid = null
       groupIds.forEach(function (groupId) {
-        var path = fileGroups.filter(function (d) { return groupId === d })
+        var path = fileGroups
+          .filter(function (d) {
+            return groupId === d
+          })
           .select('path')
           .attr('transform', 'translate(0,0)')
           .attr('d', function (d) {
             polygon = polygonGenerator(d, nodeGroups)
             centroid = polygon.centroid()
 
-            return valueline(
-              polygon.map(function (point) {
-                return [ point[0] - centroid[0], point[1] - centroid[1] ]
-              })
-            ) + 'Z'
+            return (
+              valueline(
+                polygon.map(function (point) {
+                  return [point[0] - centroid[0], point[1] - centroid[1]]
+                })
+              ) + 'Z'
+            )
           })
-        d3.select(path.node().parentNode).attr('transform', `translate(${+centroid[0]},${+centroid[1]}) scale(${scaleFactor})`)
+        d3.select(path.node().parentNode).attr(
+          'transform',
+          `translate(${+centroid[0]},${+centroid[1]}) scale(${scaleFactor})`
+        )
       })
     }
   }
 
   function getGroupIDs (nodes) {
-    return d3.set(nodes.map(function (n) {
-      // if (n.propertyMap.hasOwnProperty('filename')) {
-      return n.propertyMap.filename
-      // }
-    }))
+    return d3
+      .set(
+        nodes.map(function (n) {
+          // if (n.propertyMap.hasOwnProperty('filename')) {
+          return n.propertyMap.filename
+          // }
+        })
+      )
       .values()
       .map(function (groupId) {
         return {
           groupId: groupId,
-          count: nodes.filter(function (n) { return groupId === n.propertyMap.filename }).length
+          count: nodes.filter(function (n) {
+            return groupId === n.propertyMap.filename
+          }).length
         }
       })
-      .filter(function (group) { return group.count > 0 })
-      .map(function (group) { return group.groupId })
+      .filter(function (group) {
+        return group.count > 0
+      })
+      .map(function (group) {
+        return group.groupId
+      })
   }
 
   viz.resize = function () {

@@ -112,6 +112,10 @@ export class InspectorComponent extends Component {
           <GrassEditor
             selectedLabel={item.selectedLabel}
             selectedRelType={item.selectedRelType}
+            hiddenNodeLabels={this.props.hiddenNodeLabels}
+            hiddenRelationshipTypes={this.props.hiddenRelationshipTypes}
+            setNodeLabelVisibility={this.props.setNodeLabelVisibility}
+            setRelTypeVisibility={this.props.setRelTypeVisibility}
           />
         )
       }

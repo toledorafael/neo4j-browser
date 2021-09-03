@@ -23,7 +23,13 @@ import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton, StyledSliderHolder, StyleToggleGroupMarksButton } from './styled'
+import {
+  StyledZoomHolder,
+  StyledSvgWrapper,
+  StyledZoomButton,
+  StyledSliderHolder,
+  StyleToggleGroupMarksButton
+} from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
@@ -89,7 +95,9 @@ export class GraphComponent extends Component {
         this.svgElement,
         measureSize,
         this.graph,
-        this.props.graphStyle
+        this.props.graphStyle,
+        this.props.hiddenNodeLabels,
+        this.props.hiddenRelTypes
       )
       this.graphEH = new GraphEventHandler(
         this.graph,
@@ -129,6 +137,14 @@ export class GraphComponent extends Component {
     } else {
       this.setState({ shouldResize: false })
     }
+    if (props.hiddenNodeLabels !== this.props.hiddenNodeLabels) {
+      this.graphView.localStyle.hiddenLabels = props.hiddenNodeLabels
+      this.graphView.update(this.state.showGroupMarks)
+    }
+    if (props.hiddenRelTypes !== this.props.hiddenRelTypes) {
+      this.graphView.localStyle.hiddenRelTypes = props.hiddenRelTypes
+      this.graphView.update(this.state.showGroupMarks)
+    }
   }
 
   componentDidUpdate () {
@@ -164,7 +180,7 @@ export class GraphComponent extends Component {
   }
 
   adjustGroupsScale (event) {
-    this.setState({scaleFactor: event.target.value})
+    this.setState({ scaleFactor: event.target.value })
     this.graphView.updateScaleFactor(event.target.value)
   }
 
@@ -178,7 +194,15 @@ export class GraphComponent extends Component {
     if (this.props.fullscreen) {
       return (
         <StyledSliderHolder>
-          <input type='range' id='scaleFactorLabel' min='1' max='3' value={this.state.scaleFactor} step='.1' onChange={this.adjustGroupsScale.bind(this)} />
+          <input
+            type='range'
+            id='scaleFactorLabel'
+            min='1'
+            max='3'
+            value={this.state.scaleFactor}
+            step='.1'
+            onChange={this.adjustGroupsScale.bind(this)}
+          />
         </StyledSliderHolder>
       )
     }
@@ -187,7 +211,7 @@ export class GraphComponent extends Component {
   inputToggle () {
     if (this.props.fullscreen) {
       return (
-        <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)} >
+        <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)}>
           Toggle File Marks
         </StyleToggleGroupMarksButton>
       )
