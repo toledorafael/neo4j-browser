@@ -243,8 +243,6 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
       .selectAll('g.node')
       .attr('transform', d => `translate(${d.x},${d.y})`)
 
-    nodeGroups.classed('hidden', isNodeHidden)
-
     if (drawGroupMarks) {
       const groupPaths = container.selectAll('g.fileGroup')
 
@@ -263,8 +261,6 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
           `translate(${d.source.x} ${d.source.y}) rotate(${d.naturalAngle +
             180})`
       )
-
-    relationshipGroups.classed('hidden', isRelationshipHidden)
 
     for (renderer of Array.from(vizRenderers.relationship)) {
       const startRenderer = now()
@@ -400,6 +396,8 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
       relationship => relationship.selected
     )
 
+    relationshipGroups.classed('hidden', isRelationshipHidden)
+
     geometry.onGraphChange(graph)
 
     for (var renderer of Array.from(vizRenderers.relationship)) {
@@ -460,6 +458,7 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
       })
 
     nodeGroups.classed('selected', node => node.selected)
+    nodeGroups.classed('hidden', isNodeHidden)
 
     for (renderer of Array.from(vizRenderers.node)) {
       nodeGroups.call(renderer.onGraphChange, viz)
