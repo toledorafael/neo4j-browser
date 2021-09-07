@@ -312,19 +312,21 @@ export class GrassEditorComponent extends Component {
     } else {
       return null
     }
+    const visibleToggle = (
+      <label>
+        Visible:
+        <input
+          type='checkbox'
+          checked={visible}
+          onChange={e => changeHandler(e.target.checked)}
+          style={{ marginLeft: '4px', accentColor: '#777777' }}
+        />
+      </label>
+    )
     return (
       <StyledInlineList className='style-picker'>
         {title}
-        {showVisibleToggle && (
-          <label>
-            Visible:
-            <input
-              type='checkbox'
-              checked={visible}
-              onChange={e => changeHandler(e.target.checked)}
-            />
-          </label>
-        )}
+        {showVisibleToggle && visibleToggle}
         {pickers}
       </StyledInlineList>
     )
