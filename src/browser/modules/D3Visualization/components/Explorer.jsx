@@ -229,6 +229,8 @@ export class ExplorerComponent extends Component {
         <LegendComponent
           stats={this.state.stats}
           graphStyle={neoGraphStyle()}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           onSelectedLabel={this.onSelectedLabel.bind(this)}
           onSelectedRelType={this.onSelectedRelType.bind(this)}
         />
@@ -238,6 +240,8 @@ export class ExplorerComponent extends Component {
         <LegendComponent
           stats={this.state.stats}
           graphStyle={this.state.graphStyle}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           onSelectedLabel={this.onSelectedLabel.bind(this)}
           onSelectedRelType={this.onSelectedRelType.bind(this)}
         />
