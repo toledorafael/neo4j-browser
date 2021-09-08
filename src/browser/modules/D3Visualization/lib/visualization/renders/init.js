@@ -316,7 +316,13 @@ function gradient (id, colors, toggleStripes) {
 const arrowPath = new Renderer({
   name: 'arrowPath',
   onGraphChange (selection, viz, featureExpression, toggleStripes) {
-    const paths = selection.selectAll('path.outline').data(rel => [rel])
+    const paths = selection.selectAll('path.outline').data(rel => {
+      if (rel.isLoop()) {
+        return [rel, rel, rel]
+      } else {
+        return [rel]
+      }
+    })
     paths
       .enter()
       .append('path')
@@ -385,9 +391,15 @@ const arrowPath = new Renderer({
   },
 
   onTick (selection) {
-    return selection
-      .selectAll('path')
-      .attr('d', d => d.arrow.outline(d.shortCaptionLength))
+    // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
+    return selection.selectAll('path.outline').attr('d', (d, i) => {
+      const outline = d.arrow.outline(d.shortCaptionLength)
+      if (Array.isArray(outline)) {
+        return outline[i]
+      } else {
+        return outline
+      }
+    })
   }
 })
 

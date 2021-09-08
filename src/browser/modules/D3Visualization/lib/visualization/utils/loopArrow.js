@@ -63,10 +63,19 @@ export default class LoopArrow {
     this.outline = function () {
       const inner = loopRadius - shaftRadius
       const outer = loopRadius + shaftRadius
-      return [
+      const section1 = [
         'M',
         startPoint(r1, shaftRadius),
         'L',
+        startPoint(r3, shaftRadius),
+        'L',
+        startPoint(r3, -shaftRadius),
+        'L',
+        startPoint(r1, -shaftRadius),
+        'Z'
+      ].join(' ')
+      const section2 = [
+        'M',
         startPoint(r3, shaftRadius),
         'A',
         outer,
@@ -74,6 +83,20 @@ export default class LoopArrow {
         0,
         1,
         1,
+        endPoint(r3, shaftRadius),
+        'L',
+        endPoint(r3, -shaftRadius),
+        'A',
+        inner,
+        inner,
+        0,
+        1,
+        0,
+        startPoint(r3, -shaftRadius),
+        'Z'
+      ].join(' ')
+      const section3 = [
+        'M',
         endPoint(r3, shaftRadius),
         'L',
         endPoint(r2, shaftRadius),
@@ -87,17 +110,9 @@ export default class LoopArrow {
         endPoint(r2, -shaftRadius),
         'L',
         endPoint(r3, -shaftRadius),
-        'A',
-        inner,
-        inner,
-        0,
-        1,
-        0,
-        startPoint(r3, -shaftRadius),
-        'L',
-        startPoint(r1, -shaftRadius),
         'Z'
       ].join(' ')
+      return [section1, section2, section3]
     }
 
     this.overlay = function (minWidth) {
