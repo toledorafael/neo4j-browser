@@ -59,6 +59,9 @@ export const StyledSvgWrapper = styled.div`
           opacity: 0.3;
         }
       }
+      &.hidden {
+        display: none;
+      }
       &:hover {
         > .ring {
           stroke: #6ac6ff;
@@ -71,9 +74,9 @@ export const StyledSvgWrapper = styled.div`
       pointer-events: none;
     }
     .legend rect {
-      fill:white;
-      stroke:black;
-      opacity:0.8;
+      fill: white;
+      stroke: black;
+      opacity: 0.8;
     }
 
     circle.node {
@@ -115,7 +118,7 @@ export const StyledSvgWrapper = styled.div`
       stroke-opacity: 0.7;
       pointer-events: none;
     }
-    
+
     .relationship {
       > .overlay {
         opacity: 0;
@@ -126,6 +129,9 @@ export const StyledSvgWrapper = styled.div`
           fill: #fdcc59;
           opacity: 0.3;
         }
+      }
+      &.hidden {
+        display: none;
       }
       &:hover {
         > .overlay {
@@ -416,7 +422,7 @@ export const StyleToggleGroupMarksButton = styled.button`
   color: white;
   background: blue;
   border-color: black;
-  padding:  15px 32px;
+  padding: 15px 32px;
   &:focus {
     outline: none;
   }

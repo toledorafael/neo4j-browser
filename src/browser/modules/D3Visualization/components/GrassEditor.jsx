@@ -239,6 +239,9 @@ export class GrassEditorComponent extends Component {
   stylePicker () {
     let pickers
     let title
+    let visible
+    let changeHandler
+    let showVisibleToggle
     if (this.props.selectedLabel) {
       const labelList =
         this.props.selectedLabel.label !== '*'
@@ -263,6 +266,12 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedLabel.label || '*'}
         </StyledLabelToken>
       )
+      visible = !this.props.hiddenNodeLabels.includes(
+        this.props.selectedLabel.label
+      )
+      changeHandler = value =>
+        this.props.setNodeLabelVisibility(this.props.selectedLabel.label, value)
+      showVisibleToggle = this.props.selectedLabel.label !== '*'
     } else if (this.props.selectedRelType) {
       const relTypeSelector =
         this.props.selectedRelType.relType !== '*'
@@ -291,12 +300,33 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedRelType.relType || '*'}
         </StyledTokenRelationshipType>
       )
+      visible = !this.props.hiddenRelationshipTypes.includes(
+        this.props.selectedRelType.relType
+      )
+      changeHandler = value =>
+        this.props.setRelTypeVisibility(
+          this.props.selectedRelType.relType,
+          value
+        )
+      showVisibleToggle = this.props.selectedRelType.relType !== '*'
     } else {
       return null
     }
+    const visibleToggle = (
+      <label>
+        Visible:
+        <input
+          type='checkbox'
+          checked={visible}
+          onChange={e => changeHandler(e.target.checked)}
+          style={{ marginLeft: '4px', accentColor: '#777777' }}
+        />
+      </label>
+    )
     return (
       <StyledInlineList className='style-picker'>
         {title}
+        {showVisibleToggle && visibleToggle}
         {pickers}
       </StyledInlineList>
     )
