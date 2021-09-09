@@ -60,9 +60,33 @@ export default class LoopArrow {
     const endPoint = (radius, displacement) =>
       normalPoint(-(Math.PI + spread) / 2, radius, displacement)
 
+    this.gradient = function (id, colors, toggleStrips, segment) {
+      const type = segment === 1 ? 'radialGradient' : 'linearGradient'
+      const attrs = {}
+      if (segment === 1) {
+        attrs.cx = 0
+        attrs.cy = r3 / Math.cos(spread / 2)
+        attrs.fr = loopRadius - shaftRadius
+        attrs.r = loopRadius + shaftRadius
+      } else {
+        const p1 = (segment ? endPoint : startPoint)(r1, -shaftRadius)
+        const p2 = (segment ? endPoint : startPoint)(r1, shaftRadius)
+        attrs.x1 = p1.x
+        attrs.y1 = p1.y
+        attrs.x2 = p2.x
+        attrs.y2 = p2.y
+      }
+      const gradientId = `${id}-loop-${segment}-${
+        toggleStrips ? 1 : 0
+      }-${shaftWidth}`
+      return { type, attrs, gradientId }
+    }
+
     this.outline = function () {
       const inner = loopRadius - shaftRadius
       const outer = loopRadius + shaftRadius
+
+      // TODO make arrow tips circular to fix a visual glitch
       const section1 = [
         'M',
         startPoint(r1, shaftRadius),

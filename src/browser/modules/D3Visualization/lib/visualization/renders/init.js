@@ -342,7 +342,7 @@ const arrowPath = new Renderer({
     }
 
     paths
-      .attr('fill', function (rel) {
+      .attr('fill', function (rel, i) {
         let colors
         if (checkPropertyList(rel.propertyList, 'condition')) {
           colors = viz.style.forCondRel(rel).get('color')
@@ -351,6 +351,46 @@ const arrowPath = new Renderer({
             colors.forEach(function (color) {
               id += color.slice(1)
             })
+            console.log(rel.arrow)
+            if (rel.arrow && rel.arrow.gradient) {
+              const g = rel.arrow.gradient(id, colors, toggleStripes, i)
+
+              // TODO render gradient properly
+              const svg = d3.select('.neod3viz')
+              let el = svg.select(`#${g.gradientId}`)
+              if (el.empty()) {
+                el = svg.append('defs').append(g.type)
+                el.attr('id', g.gradientId)
+                el.attr('gradientUnits', 'userSpaceOnUse')
+
+                for (let attr in g.attrs) {
+                  el.attr(attr, g.attrs[attr])
+                }
+
+                // extract into function
+                const offsetPercent = Math.trunc(100 / colors.length)
+                for (let colorId = 0; colorId < colors.length; colorId++) {
+                  if (colorId > 0) {
+                    el.append('stop')
+                      .attr('stop-color', colors[colorId - 1])
+                      .attr(
+                        'offset',
+                        (offsetPercent * colorId).toString() + '% '
+                      )
+                      .attr('stop-opacity', 1)
+                    el.append('stop')
+                      .attr('stop-color', colors[colorId])
+                      .attr(
+                        'offset',
+                        (offsetPercent * colorId).toString() + '%'
+                      )
+                      .attr('stop-opacity', 1)
+                  }
+                }
+              }
+
+              return `url(#${g.gradientId})`
+            }
             gradient(id, colors, toggleStripes)
             return 'url(#' + id + ')'
           }
