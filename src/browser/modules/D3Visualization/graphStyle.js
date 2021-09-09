@@ -189,9 +189,6 @@ export default function neoGraphStyle () {
     function StyleRule (selector1, props1) {
       this.selector = selector1
       this.props = props1
-      if (selector1.classes.includes('condRule')) {
-        this.solver = new SatSolver(selector1.classes[0])
-      }
     }
 
     StyleRule.prototype.matches = function (selector) {
@@ -252,7 +249,17 @@ export default function neoGraphStyle () {
             presenceCondition !== '' &&
             presenceCondition !== 'true'
           ) {
-            if (rule.solver.evaluateUnderAllSolutions(presenceCondition)) {
+            // If no solver was created for this presence condition then create one
+            if (!this.selector.classes[0].solver) {
+              this.selector.classes[0].solver = new SatSolver(presenceCondition)
+            }
+
+            // Check if presence condition is satisfiable assuming the feature expression of interest
+            if (
+              this.selector.classes[0].solver.solveAssuming(
+                rule.selector.classes[0]
+              )
+            ) {
               if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
                 this.props.caption =
