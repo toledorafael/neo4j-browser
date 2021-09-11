@@ -151,6 +151,27 @@ export default class ArcArrow {
     const positiveSweep = startAttach.y > 0 ? 0 : 1
     const negativeSweep = startAttach.y < 0 ? 0 : 1
 
+    this.gradient = function (id, colors, toggleStrips, segment) {
+      const type = toggleStrips ? 'radialGradient' : 'linearGradient'
+      const attrs = {}
+      if (toggleStrips) {
+        attrs.cx = cx
+        attrs.cy = cy
+        attrs.fr = arcRadius - shaftRadius
+        attrs.r = arcRadius + shaftRadius
+      } else {
+        attrs.x1 = '0%'
+        attrs.y1 = '0%'
+        attrs.x2 = '100%'
+        attrs.y2 = '0%'
+        attrs.gradientUnits = 'objectBoundingBox'
+      }
+      const gradientId = `${id}-arc-${segment}-${
+        toggleStrips ? 1 : 0
+      }-${deflection}-${arcRadius}-${arrowWidth}`
+      return { type, attrs, gradientId }
+    }
+
     this.outline = function (shortCaptionLength) {
       if (startAngle > endAngle) {
         return [

@@ -313,6 +313,63 @@ function gradient (id, colors, toggleStripes) {
   }
 }
 
+function updateGradient (paths, viz) {
+  const toggleStripes = document.getElementById('toggleStripes').__data__
+  return paths.attr('fill', function (rel, i) {
+    let colors
+    if (checkPropertyList(rel.propertyList, 'condition')) {
+      colors = viz.style.forCondRel(rel).get('color')
+      if (Array.isArray(colors)) {
+        let id = 'gradient'
+        colors.forEach(function (color) {
+          id += color.slice(1)
+        })
+        if (rel.arrow && rel.arrow.gradient) {
+          const g = rel.arrow.gradient(id, colors, toggleStripes, i)
+
+          // TODO render gradient properly
+          const svg = d3.select('.neod3viz')
+          let el = svg.select(`#${g.gradientId.replace(/\./g, '\\.')}`)
+          if (el.empty()) {
+            el = svg.append('defs').append(g.type)
+            el.attr('id', g.gradientId)
+            el.attr('gradientUnits', 'userSpaceOnUse')
+
+            for (let attr in g.attrs) {
+              el.attr(attr, g.attrs[attr])
+            }
+
+            // extract into function
+            const offsetPercent = Math.trunc(100 / colors.length)
+            for (let colorId = 0; colorId < colors.length; colorId++) {
+              if (colorId > 0) {
+                el.append('stop')
+                  .attr('stop-color', colors[colorId - 1])
+                  .attr('offset', (offsetPercent * colorId).toString() + '% ')
+                  .attr('stop-opacity', 1)
+                el.append('stop')
+                  .attr('stop-color', colors[colorId])
+                  .attr('offset', (offsetPercent * colorId).toString() + '%')
+                  .attr('stop-opacity', 1)
+              }
+            }
+          }
+
+          return `url(#${g.gradientId})`
+        }
+        gradient(id, colors, toggleStripes)
+        return 'url(#' + id + ')'
+      }
+      return colors
+    } else {
+      return '#A5ABB6'
+    }
+    // #F16667
+    // if no condition -> forRelationship
+    // else if condition -> forCondition
+  })
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
   onGraphChange (selection, viz, featureExpression, toggleStripes) {
@@ -341,67 +398,7 @@ const arrowPath = new Renderer({
       }
     }
 
-    paths
-      .attr('fill', function (rel, i) {
-        let colors
-        if (checkPropertyList(rel.propertyList, 'condition')) {
-          colors = viz.style.forCondRel(rel).get('color')
-          if (Array.isArray(colors)) {
-            let id = 'gradient'
-            colors.forEach(function (color) {
-              id += color.slice(1)
-            })
-            console.log(rel.arrow)
-            if (rel.arrow && rel.arrow.gradient) {
-              const g = rel.arrow.gradient(id, colors, toggleStripes, i)
-
-              // TODO render gradient properly
-              const svg = d3.select('.neod3viz')
-              let el = svg.select(`#${g.gradientId}`)
-              if (el.empty()) {
-                el = svg.append('defs').append(g.type)
-                el.attr('id', g.gradientId)
-                el.attr('gradientUnits', 'userSpaceOnUse')
-
-                for (let attr in g.attrs) {
-                  el.attr(attr, g.attrs[attr])
-                }
-
-                // extract into function
-                const offsetPercent = Math.trunc(100 / colors.length)
-                for (let colorId = 0; colorId < colors.length; colorId++) {
-                  if (colorId > 0) {
-                    el.append('stop')
-                      .attr('stop-color', colors[colorId - 1])
-                      .attr(
-                        'offset',
-                        (offsetPercent * colorId).toString() + '% '
-                      )
-                      .attr('stop-opacity', 1)
-                    el.append('stop')
-                      .attr('stop-color', colors[colorId])
-                      .attr(
-                        'offset',
-                        (offsetPercent * colorId).toString() + '%'
-                      )
-                      .attr('stop-opacity', 1)
-                  }
-                }
-              }
-
-              return `url(#${g.gradientId})`
-            }
-            gradient(id, colors, toggleStripes)
-            return 'url(#' + id + ')'
-          }
-          return colors
-        } else {
-          return '#A5ABB6'
-        }
-        // #F16667
-        // if no condition -> forRelationship
-        // else if condition -> forCondition
-      })
+    updateGradient(paths, viz, toggleStripes)
       .attr('stroke-width', '3px')
       .attr('stroke', function (rel) {
         if (featureExpression !== '') {
@@ -430,16 +427,19 @@ const arrowPath = new Renderer({
     return paths.exit().remove()
   },
 
-  onTick (selection) {
+  onTick (selection, viz, toggleStripes) {
     // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
-    return selection.selectAll('path.outline').attr('d', (d, i) => {
-      const outline = d.arrow.outline(d.shortCaptionLength)
-      if (Array.isArray(outline)) {
-        return outline[i]
-      } else {
-        return outline
+    return updateGradient(selection.selectAll('path.outline'), viz).attr(
+      'd',
+      (d, i) => {
+        const outline = d.arrow.outline(d.shortCaptionLength)
+        if (Array.isArray(outline)) {
+          return outline[i]
+        } else {
+          return outline
+        }
       }
-    })
+    )
   }
 })
 

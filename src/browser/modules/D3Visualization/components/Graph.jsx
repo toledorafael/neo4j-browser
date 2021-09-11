@@ -289,10 +289,13 @@ export class GraphComponent extends Component {
   }
 
   handleToggleStripes (event) {
-    const newToggleStripes = !this.state.toggleStripes
-    this.setState({ toggleStripes: newToggleStripes })
+    // const newToggleStripes = !this.state.toggleStripes
+    // this.setState({ toggleStripes: newToggleStripes })
+    const el = document.getElementById('toggleStripes')
+    el.__data__ = !el.__data__
     // this.graphView.displayGroupMarks(toggleGroupMarks)
-    this.graphView.update(newToggleStripes)
+    // this.graphView.update(newToggleStripes)
+    this.graphView.update()
   }
 
   checkPropertyList (propertyList, propertyName) {

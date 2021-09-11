@@ -97,6 +97,7 @@ const AppInit = () => {
               window && window.neo4jDesktopApi ? window.neo4jDesktopApi : null
             }
           />
+          <div id='toggleStripes' style={{ display: 'none' }} />
         </React.Fragment>
       </BusProvider>
     </Provider>
