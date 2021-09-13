@@ -7,14 +7,11 @@ export default class SatSolver {
       var formula = this.parse(featureExpression)
       this.solver = new Logic.Solver()
       this.solver.require(formula)
-      this.solutions = []
-      var curSol = null
-      while ((curSol = this.solver.solve())) {
-        curSol.ignoreUnknownVariables()
-        this.solutions.push(curSol)
-        this.solver.forbid(curSol.getFormula())
-      }
     }
+  }
+
+  solveAssuming = expression => {
+    return this.solver.solveAssuming(this.parse(expression))
   }
 
   // split expression by operator considering parentheses
@@ -46,15 +43,12 @@ export default class SatSolver {
       if (noStr[0] === '(') {
         const expr = noStr.substr(1, noStr.length - 2)
         // recursive call to the main function
-        // return parseConjunctionSeparatedExpression(expr)
         return this.parseNegation(expr)
       } else if (noStr[0] === '-' && noStr[1] === '(') {
         return this.parseNegation(noStr)
       }
       return noStr
     })
-    // const initialValue = 1.0
-    // const result = operands.reduce((acc, no) => acc * no, initialValue)
     if (operands.length > 1) {
       return Logic.or(operands)
     } else {
@@ -70,8 +64,6 @@ export default class SatSolver {
       }
       return this.parseDisjunctionSeparatedExpression(operandStr)
     })
-    // const initialValue = numbers[0]
-    // const result = numbers.slice(1).reduce((acc, no) => acc - no, initialValue)
     if (operands.length > 1) {
       return Logic.and(operands)
     } else {
@@ -101,62 +93,9 @@ export default class SatSolver {
     ) {
       newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
       newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
-      // return parseConjunctionSeparatedExpression(newFeatureExpression)
-      const parsedExpression = this.parseNegation(newFeatureExpression)
-      return parsedExpression
+      return this.parseNegation(newFeatureExpression)
     } else {
       return newFeatureExpression
     }
   }
-
-  evaluateUnderAllSolutions = presenceCondition => {
-    var newPresenceCondition = this.parse(presenceCondition)
-    for (let solutionId = 0; solutionId < this.solutions.length; solutionId++) {
-      const solution = this.solutions[solutionId]
-      if (solution.evaluate(newPresenceCondition)) {
-        return true
-      }
-    }
-    return false
-  }
-
-  initSolver = function (featureExpression) {
-    var variables = featureExpression.split('/\\')
-    this.solver = new Logic.Solver()
-    this.solver.require(Logic.and(variables))
-    return this.solver.solve()
-  }
-
-  evaluateClause = function (presenceCondition) {
-    var PCvariables = presenceCondition.split('/\\')
-    return this.solver.evaluate(Logic.and(PCvariables))
-  }
 }
-
-// const getVariables = function (clause) {
-//   return clause.split('/\\')
-// }
-
-// export default function satSolver () {
-//   var solver
-
-//   const initSolver = function (featureExpression) {
-//     var variables = featureExpression.split('/\\')
-//     solver = new Logic.Solver()
-//     solver.require(Logic.and(variables))
-//     return solver.solve()
-//   }
-
-//   const evaluateClause = function (presenceCondition) {
-//     var PCvariables = presenceCondition.split('/\\')
-//     return solver.evaluate(Logic.and(PCvariables))
-//   }
-// }
-
-//
-//   var solver = initSolver(featureExpression)
-//   //For each link
-//   // evaluate link's presence condition
-//   //return links that returned true to their evaluation
-//   return true
-// }
