@@ -75,10 +75,11 @@ export class LegendComponent extends Component {
                 style={style}
                 className='token token-label'
               >
+                {this.props.hiddenNodeLabels.includes(legendItemKey)
+                  ? '(x) '
+                  : ''}
                 {legendItemKey}
-                <StyledTokenCount className='count'>{`(${
-                  labels[legendItemKey].count
-                })`}</StyledTokenCount>
+                <StyledTokenCount className='count'>{`(${labels[legendItemKey].count})`}</StyledTokenCount>
               </StyledLabelToken>
             </StyledLegendContents>
           </StyledLegendInlineListItem>
@@ -185,6 +186,9 @@ export class LegendComponent extends Component {
                 style={style}
                 className='token token-relationship-type'
               >
+                {this.props.hiddenRelationshipTypes.includes(legendItemKey)
+                  ? '(x) '
+                  : ''}
                 {legendItemKey}
                 <StyledTokenCount className='count'>
                   {`(${legendItems[legendItemKey].count})`}

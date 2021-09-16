@@ -24,7 +24,7 @@ import * as vizRenderers from '../renders/init'
 import { menu as menuRenderer } from '../renders/menu'
 import vizClickHandler from '../utils/clickHandler'
 
-const vizFn = function (el, measureSize, graph, layout, style) {
+const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
   const viz = { style }
 
   const root = d3.select(el)
@@ -218,6 +218,18 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       ? () => window.performance.now()
       : () => Date.now()
 
+  const isNodeHidden = function (d) {
+    return d.labels.every(label => localStyle.hiddenLabels.includes(label))
+  }
+
+  const isRelationshipHidden = function (d) {
+    return (
+      localStyle.hiddenRelTypes.includes(d.type) ||
+      isNodeHidden(d.source) ||
+      isNodeHidden(d.target)
+    )
+  }
+
   const render = function () {
     if (!currentStats.firstFrame) {
       currentStats.firstFrame = now()
@@ -384,6 +396,8 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       relationship => relationship.selected
     )
 
+    relationshipGroups.classed('hidden', isRelationshipHidden)
+
     geometry.onGraphChange(graph)
 
     for (var renderer of Array.from(vizRenderers.relationship)) {
@@ -448,6 +462,7 @@ const vizFn = function (el, measureSize, graph, layout, style) {
       })
 
     nodeGroups.classed('selected', node => node.selected)
+    nodeGroups.classed('hidden', isNodeHidden)
 
     for (renderer of Array.from(vizRenderers.node)) {
       nodeGroups.call(renderer.onGraphChange, viz)

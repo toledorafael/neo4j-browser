@@ -21,11 +21,29 @@ import viz from './visualization'
 import layout from './layout'
 
 export default class graphView {
-  constructor (element, measureSize, graph, style) {
+  constructor (
+    element,
+    measureSize,
+    graph,
+    style,
+    hiddenLabels,
+    hiddenRelTypes
+  ) {
     this.graph = graph
     this.style = style
+    this.localStyle = {
+      hiddenLabels,
+      hiddenRelTypes
+    }
     const forceLayout = layout.force()
-    this.viz = viz(element, measureSize, this.graph, forceLayout, this.style)
+    this.viz = viz(
+      element,
+      measureSize,
+      this.graph,
+      forceLayout,
+      this.style,
+      this.localStyle
+    )
     this.callbacks = {}
     const { callbacks } = this
     this.viz.trigger = (() => (event, ...args) =>

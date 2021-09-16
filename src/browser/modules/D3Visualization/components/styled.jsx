@@ -59,6 +59,9 @@ export const StyledSvgWrapper = styled.div`
           opacity: 0.3;
         }
       }
+      &.hidden {
+        display: none;
+      }
       &:hover {
         > .ring {
           stroke: #6ac6ff;
@@ -126,6 +129,9 @@ export const StyledSvgWrapper = styled.div`
           fill: #fdcc59;
           opacity: 0.3;
         }
+      }
+      &.hidden {
+        display: none;
       }
       &:hover {
         > .overlay {

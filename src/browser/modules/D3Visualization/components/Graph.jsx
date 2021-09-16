@@ -101,7 +101,9 @@ export class GraphComponent extends Component {
         this.svgElement,
         measureSize,
         this.graph,
-        this.props.graphStyle
+        this.props.graphStyle,
+        this.props.hiddenNodeLabels,
+        this.props.hiddenRelTypes
       )
       this.graphEH = new GraphEventHandler(
         this.graph,
@@ -153,6 +155,14 @@ export class GraphComponent extends Component {
       this.setState({ shouldResize: true })
     } else {
       this.setState({ shouldResize: false })
+    }
+    if (props.hiddenNodeLabels !== this.props.hiddenNodeLabels) {
+      this.graphView.localStyle.hiddenLabels = props.hiddenNodeLabels
+      this.graphView.update(this.state.showGroupMarks)
+    }
+    if (props.hiddenRelTypes !== this.props.hiddenRelTypes) {
+      this.graphView.localStyle.hiddenRelTypes = props.hiddenRelTypes
+      this.graphView.update(this.state.showGroupMarks)
     }
   }
 

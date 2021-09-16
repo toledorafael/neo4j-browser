@@ -244,6 +244,9 @@ export class GrassEditorComponent extends Component {
     // Based on what type of graph components is selected, we add applicable style pickers
     let pickers
     let title
+    let visible
+    let changeHandler
+    let showVisibleToggle
     if (this.props.selectedLabel) {
       // If selected components are nodes
       const labelList =
@@ -269,6 +272,12 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedLabel.label || '*'}
         </StyledLabelToken>
       )
+      visible = !this.props.hiddenNodeLabels.includes(
+        this.props.selectedLabel.label
+      )
+      changeHandler = value =>
+        this.props.setNodeLabelVisibility(this.props.selectedLabel.label, value)
+      showVisibleToggle = this.props.selectedLabel.label !== '*'
     } else if (this.props.selectedRelType) {
       // If selected components are relationships
       const relTypeSelector =
@@ -327,12 +336,33 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedCondition.condition || '*'}
         </StyledTokenRelationshipType>
       )
+      visible = !this.props.hiddenRelationshipTypes.includes(
+        this.props.selectedRelType.relType
+      )
+      changeHandler = value =>
+        this.props.setRelTypeVisibility(
+          this.props.selectedRelType.relType,
+          value
+        )
+      showVisibleToggle = this.props.selectedRelType.relType !== '*'
     } else {
       return null
     }
+    const visibleToggle = (
+      <label>
+        Visible:
+        <input
+          type='checkbox'
+          checked={visible}
+          onChange={e => changeHandler(e.target.checked)}
+          style={{ marginLeft: '4px', accentColor: '#777777' }}
+        />
+      </label>
+    )
     return (
       <StyledInlineList className='style-picker'>
         {title}
+        {showVisibleToggle && visibleToggle}
         {pickers}
       </StyledInlineList>
     )

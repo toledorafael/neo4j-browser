@@ -57,9 +57,7 @@ export class ExplorerComponent extends Component {
       })
       selectedItem = {
         type: 'status-item',
-        item: `Not all return nodes are being displayed due to Initial Node Display setting. Only ${
-          this.props.initialNodeDisplay
-        } of ${nodes.length} nodes are being displayed`
+        item: `Not all return nodes are being displayed due to Initial Node Display setting. Only ${this.props.initialNodeDisplay} of ${nodes.length} nodes are being displayed`
       }
     }
     if (this.props.graphStyleData) {
@@ -76,7 +74,52 @@ export class ExplorerComponent extends Component {
       styleVersion: 0,
       nodes,
       relationships,
-      selectedItem
+      selectedItem,
+      hiddenNodeLabels: [],
+      hiddenRelationshipTypes: []
+    }
+  }
+
+  setNodeLabelVisibility (label, value) {
+    if (!value) {
+      if (!this.state.hiddenNodeLabels.includes(label)) {
+        this.setState({
+          hiddenNodeLabels: [...this.state.hiddenNodeLabels, label]
+        })
+      }
+    } else {
+      const index = this.state.hiddenNodeLabels.indexOf(label)
+      if (index >= 0) {
+        this.setState({
+          hiddenNodeLabels: [
+            ...this.state.hiddenNodeLabels.slice(0, index),
+            ...this.state.hiddenNodeLabels.slice(index + 1)
+          ]
+        })
+      }
+    }
+  }
+
+  setRelTypeVisibility (relType, value) {
+    if (!value) {
+      if (!this.state.hiddenRelationshipTypes.includes(relType)) {
+        this.setState({
+          hiddenRelationshipTypes: [
+            ...this.state.hiddenRelationshipTypes,
+            relType
+          ]
+        })
+      }
+    } else {
+      const index = this.state.hiddenRelationshipTypes.indexOf(relType)
+      if (index >= 0) {
+        this.setState({
+          hiddenRelationshipTypes: [
+            ...this.state.hiddenRelationshipTypes.slice(0, index),
+            ...this.state.hiddenRelationshipTypes.slice(index + 1)
+          ]
+        })
+      }
     }
   }
 
@@ -204,6 +247,8 @@ export class ExplorerComponent extends Component {
         <LegendComponent
           stats={this.state.stats}
           graphStyle={neoGraphStyle()}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           onSelectedLabel={this.onSelectedLabel.bind(this)}
           onSelectedRelType={this.onSelectedRelType.bind(this)}
           onSelectedCondition={this.onSelectedCondition.bind(this)}
@@ -214,6 +259,8 @@ export class ExplorerComponent extends Component {
         <LegendComponent
           stats={this.state.stats}
           graphStyle={this.state.graphStyle}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           onSelectedLabel={this.onSelectedLabel.bind(this)}
           onSelectedRelType={this.onSelectedRelType.bind(this)}
           onSelectedCondition={this.onSelectedCondition.bind(this)}
@@ -250,12 +297,18 @@ export class ExplorerComponent extends Component {
           assignVisElement={this.props.assignVisElement}
           getAutoCompleteCallback={this.props.getAutoCompleteCallback}
           setGraph={this.props.setGraph}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelTypes={this.state.hiddenRelationshipTypes}
         />
         <InspectorComponent
           fullscreen={this.props.fullscreen}
           hoveredItem={this.state.hoveredItem}
           selectedItem={this.state.selectedItem}
           graphStyle={this.state.graphStyle}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
+          setNodeLabelVisibility={this.setNodeLabelVisibility.bind(this)}
+          setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
           onExpandToggled={this.onInspectorExpandToggled.bind(this)}
         />
       </StyledFullSizeContainer>
