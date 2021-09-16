@@ -307,6 +307,15 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedRelType.relType || '*'}
         </StyledTokenRelationshipType>
       )
+      visible = !this.props.hiddenRelationshipTypes.includes(
+        this.props.selectedRelType.relType
+      )
+      changeHandler = value =>
+        this.props.setRelTypeVisibility(
+          this.props.selectedRelType.relType,
+          value
+        )
+      showVisibleToggle = this.props.selectedRelType.relType !== '*'
     } else if (this.props.selectedCondition) {
       // If selected components are conditions
       const conditionSelector = // conditionSelector is the string users submitted from the text input box
@@ -336,15 +345,6 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedCondition.condition || '*'}
         </StyledTokenRelationshipType>
       )
-      visible = !this.props.hiddenRelationshipTypes.includes(
-        this.props.selectedRelType.relType
-      )
-      changeHandler = value =>
-        this.props.setRelTypeVisibility(
-          this.props.selectedRelType.relType,
-          value
-        )
-      showVisibleToggle = this.props.selectedRelType.relType !== '*'
     } else {
       return null
     }
