@@ -172,15 +172,14 @@ export default class ArcArrow {
       return { type, attrs, gradientId }
     }
 
-    this.outline = function (shortCaptionLength) {
+    this.outline = function (shortCaptionLength, segmentCount, toggleStripes) {
+      let path
       if (startAngle > endAngle) {
-        return [
-          'M',
-          coord(endTangent(-headRadius)),
-          'L',
-          coord(endNormal(headLength)),
-          'L',
-          coord(endTangent(headRadius)),
+        // prettier-ignore
+        path = [
+          'M', coord(endTangent(-headRadius)),
+          'L', coord(endNormal(headLength)),
+          'L', coord(endTangent(headRadius)),
           'Z'
         ].join(' ')
       }
@@ -194,85 +193,65 @@ export default class ArcArrow {
         const startBreak = midShaftAngle - captionSweep / 2
         const endBreak = midShaftAngle + captionSweep / 2
 
-        return [
-          'M',
-          coord(startTangent(shaftRadius)),
-          'L',
-          coord(startTangent(-shaftRadius)),
-          'A',
-          arcRadius - shaftRadius,
-          arcRadius - shaftRadius,
-          0,
-          0,
-          positiveSweep,
-          coord(angleTangent(startBreak, -shaftRadius)),
-          'L',
-          coord(angleTangent(startBreak, shaftRadius)),
-          'A',
-          arcRadius + shaftRadius,
-          arcRadius + shaftRadius,
-          0,
-          0,
-          negativeSweep,
-          coord(startTangent(shaftRadius)),
+        // prettier-ignore
+        path = [
+          'M', coord(startTangent(shaftRadius)),
+          'L', coord(startTangent(-shaftRadius)),
+          'A', arcRadius - shaftRadius, arcRadius - shaftRadius, 0, 0, positiveSweep, coord(angleTangent(startBreak, -shaftRadius)),
+          'L', coord(angleTangent(startBreak, shaftRadius)),
+          'A', arcRadius + shaftRadius, arcRadius + shaftRadius, 0, 0, negativeSweep, coord(startTangent(shaftRadius)),
           'Z',
-          'M',
-          coord(angleTangent(endBreak, shaftRadius)),
-          'L',
-          coord(angleTangent(endBreak, -shaftRadius)),
-          'A',
-          arcRadius - shaftRadius,
-          arcRadius - shaftRadius,
-          0,
-          0,
-          positiveSweep,
-          coord(endTangent(-shaftRadius)),
-          'L',
-          coord(endTangent(-headRadius)),
-          'L',
-          coord(endNormal(headLength)),
-          'L',
-          coord(endTangent(headRadius)),
-          'L',
-          coord(endTangent(shaftRadius)),
-          'A',
-          arcRadius + shaftRadius,
-          arcRadius + shaftRadius,
-          0,
-          0,
-          negativeSweep,
-          coord(angleTangent(endBreak, shaftRadius))
+          'M', coord(angleTangent(endBreak, shaftRadius)),
+          'L', coord(angleTangent(endBreak, -shaftRadius)),
+          'A', arcRadius - shaftRadius, arcRadius - shaftRadius, 0, 0, positiveSweep, coord(endTangent(-shaftRadius)),
+          'L', coord(endTangent(-headRadius)),
+          'L', coord(endNormal(headLength)),
+          'L', coord(endTangent(headRadius)),
+          'L', coord(endTangent(shaftRadius)),
+          'A', arcRadius + shaftRadius, arcRadius + shaftRadius, 0, 0, negativeSweep, coord(angleTangent(endBreak, shaftRadius))
         ].join(' ')
       } else {
-        return [
-          'M',
-          coord(startTangent(shaftRadius)),
-          'L',
-          coord(startTangent(-shaftRadius)),
-          'A',
-          arcRadius - shaftRadius,
-          arcRadius - shaftRadius,
-          0,
-          0,
-          positiveSweep,
-          coord(endTangent(-shaftRadius)),
-          'L',
-          coord(endTangent(-headRadius)),
-          'L',
-          coord(endNormal(headLength)),
-          'L',
-          coord(endTangent(headRadius)),
-          'L',
-          coord(endTangent(shaftRadius)),
-          'A',
-          arcRadius + shaftRadius,
-          arcRadius + shaftRadius,
-          0,
-          0,
-          negativeSweep,
-          coord(startTangent(shaftRadius))
+        // prettier-ignore
+        path = [
+          'M', coord(startTangent(shaftRadius)),
+          'L', coord(startTangent(-shaftRadius)),
+          'A', arcRadius - shaftRadius, arcRadius - shaftRadius, 0, 0, positiveSweep, coord(endTangent(-shaftRadius)),
+          'L', coord(endTangent(-headRadius)),
+          'L', coord(endNormal(headLength)),
+          'L', coord(endTangent(headRadius)),
+          'L', coord(endTangent(shaftRadius)),
+          'A', arcRadius + shaftRadius, arcRadius + shaftRadius, 0, 0, negativeSweep, coord(startTangent(shaftRadius))
         ].join(' ')
       }
+
+      const type = toggleStripes ? 'radialGradient' : 'linearGradient'
+      const attrs = {}
+      if (toggleStripes) {
+        attrs.cx = cx
+        attrs.cy = cy
+        attrs.fr = arcRadius - shaftRadius
+        attrs.r = arcRadius + shaftRadius
+      } else {
+        attrs.x1 = '0%'
+        attrs.y1 = '0%'
+        attrs.x2 = '100%'
+        attrs.y2 = '0%'
+        attrs.gradientUnits = 'objectBoundingBox'
+      }
+      const id = `arc-${
+        toggleStripes ? 1 : 0
+      }-${deflection}-${arcRadius}-${arrowWidth}`
+
+      return [
+        {
+          path,
+          gradient: {
+            type,
+            id,
+            attrs
+          }
+        }
+      ]
     }
 
     this.overlay = function (minWidth) {

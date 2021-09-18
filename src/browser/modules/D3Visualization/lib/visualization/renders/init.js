@@ -370,19 +370,94 @@ function updateGradient (paths, viz) {
   })
 }
 
+function setupGradient (id, g, colors) {
+  const svg = d3.select('.neod3viz')
+  let el = svg.select(`#${id.replace(/\./g, '\\.')}`)
+  if (el.empty()) {
+    el = svg.append('defs').append(g.type)
+    el.attr('id', id)
+    el.attr('gradientUnits', 'userSpaceOnUse')
+
+    for (let attr in g.attrs) {
+      el.attr(attr, g.attrs[attr])
+    }
+
+    // extract into function
+    const offsetPercent = Math.trunc(100 / colors.length)
+    for (let colorId = 0; colorId < colors.length; colorId++) {
+      if (colorId > 0) {
+        el.append('stop')
+          .attr('stop-color', colors[colorId - 1])
+          .attr('offset', (offsetPercent * colorId).toString() + '% ')
+          .attr('stop-opacity', 1)
+        el.append('stop')
+          .attr('stop-color', colors[colorId])
+          .attr('offset', (offsetPercent * colorId).toString() + '%')
+          .attr('stop-opacity', 1)
+      }
+    }
+  }
+}
+
+function getColors (rel, viz) {
+  let colors
+  if (checkPropertyList(rel.propertyList, 'condition')) {
+    colors = viz.style.forCondRel(rel).get('color')
+    if (Array.isArray(colors)) {
+      return colors
+    }
+    return [colors]
+  } else {
+    return ['#A5ABB6']
+  }
+}
+
+function updateArrow (pathGroups, viz) {
+  const toggleStripes = document.getElementById('toggleStripes').__data__
+  console.log('updateArrow')
+  const paths = pathGroups.selectAll('path').data(rel => {
+    if (rel.arrow) {
+      const colors = getColors(rel, viz)
+      return rel.arrow
+        .outline(rel.shortCaptionLength, colors.length, toggleStripes)
+        .map(a => ({ pathDef: a, colors }))
+    } else {
+      return []
+    }
+  })
+  paths.enter().append('path')
+  paths.exit().remove()
+
+  pathGroups
+    .selectAll('path')
+    .attr('d', d => d.pathDef.path)
+    .attr('fill', (d, i) => {
+      if (d.pathDef.gradient && d.colors.length > 1) {
+        const id =
+          'gradient' +
+          d.colors.map(x => x.slice(1)).join('') +
+          d.pathDef.gradient.id
+        setupGradient(id, d.pathDef.gradient, d.colors)
+        return 'url(#' + id + ')'
+      } else {
+        return d.colors[Math.min(i, d.colors.length - 1)]
+      }
+    })
+
+  return pathGroups
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
   onGraphChange (selection, viz, featureExpression, toggleStripes) {
-    const paths = selection.selectAll('path.outline').data(rel => {
-      if (rel.isLoop()) {
-        return [rel, rel, rel]
-      } else {
-        return [rel]
-      }
-    })
+    const paths = selection.selectAll('g.outline').data(rel => [rel])
+    // paths
+    //   .enter()
+    //   .append('path')
+    //   .classed('outline', true)
     paths
       .enter()
-      .append('path')
+      .append('g')
       .classed('outline', true)
 
     if (featureExpression !== '') {
@@ -398,37 +473,40 @@ const arrowPath = new Renderer({
       }
     }
 
-    updateGradient(paths, viz, toggleStripes)
-      .attr('stroke-width', '3px')
-      .attr('stroke', function (rel) {
-        if (featureExpression !== '') {
-          var presenceCondition = ''
-          if (checkPropertyList(rel.propertyList, 'condition')) {
-            for (let index = 0; index < rel.propertyList.length; index++) {
-              const element = rel.propertyList[index]
-              if (element.key === 'condition') {
-                presenceCondition = rel.propertyList[index].value
-              }
-            }
-            if (presenceCondition !== 'true') {
-              if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
-                return 'red'
-              }
-            } else {
-              return 'red'
-            }
-            return 'none'
-          }
-          // return 'red'
-        }
-        return 'none'
-      })
+    updateArrow(paths, viz)
+    // updateGradient(paths, viz)
+    // this feature needs to be redone
+    // .attr('stroke-width', '3px')
+    // .attr('stroke', function (rel) {
+    //   if (featureExpression !== '') {
+    //     var presenceCondition = ''
+    //     if (checkPropertyList(rel.propertyList, 'condition')) {
+    //       for (let index = 0; index < rel.propertyList.length; index++) {
+    //         const element = rel.propertyList[index]
+    //         if (element.key === 'condition') {
+    //           presenceCondition = rel.propertyList[index].value
+    //         }
+    //       }
+    //       if (presenceCondition !== 'true') {
+    //         if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
+    //           return 'red'
+    //         }
+    //       } else {
+    //         return 'red'
+    //       }
+    //       return 'none'
+    //     }
+    //     // return 'red'
+    //   }
+    //   return 'none'
+    // })
 
     return paths.exit().remove()
   },
 
   onTick (selection, viz, toggleStripes) {
     // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
+    return updateArrow(selection.selectAll('g.outline'), viz)
     return updateGradient(selection.selectAll('path.outline'), viz).attr(
       'd',
       (d, i) => {
@@ -476,9 +554,7 @@ const relationshipType = new Renderer({
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint.x} ${
-            rel.arrow.midShaftPoint.y
-          })`
+          return `rotate(180 ${rel.arrow.midShaftPoint.x} ${rel.arrow.midShaftPoint.y})`
         } else {
           return null
         }

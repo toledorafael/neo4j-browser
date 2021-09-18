@@ -82,61 +82,295 @@ export default class LoopArrow {
       return { type, attrs, gradientId }
     }
 
-    this.outline = function () {
+    const arcPoint = (radius, angle) => {
+      const cy = r3 / Math.cos(spread / 2)
+      return new Point(-Math.sin(angle) * radius, Math.cos(angle) * radius + cy)
+    }
+
+    this.outline = function (_, colorCount, toggleStripes) {
       const inner = loopRadius - shaftRadius
       const outer = loopRadius + shaftRadius
 
-      // TODO make arrow tips circular to fix a visual glitch
-      const section1 = [
+      const startLength = r3 - r1
+      const endLength = r3 - r2
+      const arcLength = loopRadius * (Math.PI + spread)
+      const totalLength = startLength + endLength + arcLength
+
+      const sections = []
+
+      if (toggleStripes) {
+        const section1 = [
+          'M',
+          startPoint(r1, shaftRadius),
+          'L',
+          startPoint(r3, shaftRadius),
+          'L',
+          startPoint(r3, -shaftRadius),
+          'L',
+          startPoint(r1, -shaftRadius),
+          'Z'
+        ].join(' ')
+        const section2 = [
+          'M',
+          startPoint(r3, shaftRadius),
+          'A',
+          outer,
+          outer,
+          0,
+          1,
+          1,
+          endPoint(r3, shaftRadius),
+          'L',
+          endPoint(r3, -shaftRadius),
+          'A',
+          inner,
+          inner,
+          0,
+          1,
+          0,
+          startPoint(r3, -shaftRadius),
+          'Z'
+        ].join(' ')
+        const section3 = [
+          'M',
+          endPoint(r3, shaftRadius),
+          'L',
+          endPoint(r2, shaftRadius),
+          'L',
+          endPoint(r2, -headWidth / 2),
+          'L',
+          endPoint(r1, 0),
+          'L',
+          endPoint(r2, headWidth / 2),
+          'L',
+          endPoint(r2, -shaftRadius),
+          'L',
+          endPoint(r3, -shaftRadius),
+          'Z'
+        ].join(' ')
+        const p1 = startPoint(r1, -shaftRadius)
+        const p2 = startPoint(r1, shaftRadius)
+        const p3 = endPoint(r1, -shaftRadius)
+        const p4 = endPoint(r1, shaftRadius)
+        return [
+          {
+            path: section1,
+            gradient: {
+              type: 'linearGradient',
+              id: `loop-1-${r3}-${spread}-${shaftWidth}`,
+              attrs: {
+                x1: p1.x,
+                y1: p1.y,
+                x2: p2.x,
+                y2: p2.y
+              }
+            }
+          },
+          {
+            path: section2,
+            gradient: {
+              type: 'radialGradient',
+              id: `loop-2-${r3}-${spread}-${shaftWidth}`,
+              attrs: {
+                cx: 0,
+                cy: r3 / Math.cos(spread / 2),
+                fr: inner,
+                r: outer
+              }
+            }
+          },
+          {
+            path: section3,
+            gradient: {
+              type: 'linearGradient',
+              id: `loop-3-${r3}-${spread}-${shaftWidth}`,
+              attrs: {
+                x1: p3.x,
+                y1: p3.y,
+                x2: p4.x,
+                y2: p4.y
+              }
+            }
+          }
+        ]
+      }
+
+      for (let i = 0; i < colorCount; ++i) {
+        let start = (i * totalLength) / colorCount
+        let end = ((i + 1) * totalLength) / colorCount
+
+        let section
+
+        if (end < startLength) {
+          section = [
+            'M',
+            startPoint(r1 + start, shaftRadius),
+            'L',
+            startPoint(r1 + end, shaftRadius),
+            'L',
+            startPoint(r1 + end, -shaftRadius),
+            'L',
+            startPoint(r1 + start, -shaftRadius),
+            'Z'
+          ].join(' ')
+        } else if (start < startLength && end < startLength + arcLength) {
+          let endR = (end - startLength) / loopRadius - (Math.PI + spread) / 2
+          if (Math.abs(endR - (Math.PI - spread) / 2) < 0.0001) {
+            endR += 0.001 // prevent being too close to semicircle
+          }
+          let isLargeArc = endR > (Math.PI - spread) / 2
+          section = [
+            'M',
+            startPoint(r1 + start, shaftRadius),
+            'L',
+            startPoint(r3, shaftRadius),
+            'A',
+            outer,
+            outer,
+            0,
+            isLargeArc ? 1 : 0,
+            1,
+            arcPoint(outer, endR),
+            'L',
+            arcPoint(inner, endR),
+            'A',
+            inner,
+            inner,
+            0,
+            isLargeArc ? 1 : 0,
+            0,
+            startPoint(r3, -shaftRadius),
+            'L',
+            startPoint(r1 + start, -shaftRadius),
+            'Z'
+          ].join(' ')
+        } else if (start < startLength) {
+          end = end - startLength - arcLength
+          section = [
+            'M',
+            startPoint(r1 + start, shaftRadius),
+            'L',
+            startPoint(r3, shaftRadius),
+            'A',
+            outer,
+            outer,
+            0,
+            1,
+            1,
+            endPoint(r3, shaftRadius),
+            'L',
+            endPoint(r3 - end, shaftRadius),
+            'L',
+            endPoint(r3 - end, -shaftRadius),
+            'L',
+            endPoint(r3, -shaftRadius),
+            'A',
+            inner,
+            inner,
+            0,
+            1,
+            0,
+            startPoint(r3, -shaftRadius),
+            'L',
+            startPoint(r1 + start, -shaftRadius),
+            'Z'
+          ].join(' ')
+        } else if (end < startLength + arcLength) {
+          let startR =
+            (start - startLength) / loopRadius - (Math.PI + spread) / 2
+          let endR = (end - startLength) / loopRadius - (Math.PI + spread) / 2
+          if (Math.abs(endR - startR - Math.PI / 2) < 0.0001) {
+            endR += 0.001
+          }
+          let isLargeArc = endR - startR > Math.PI
+          section = [
+            'M',
+            arcPoint(outer, startR),
+            'A',
+            outer,
+            outer,
+            0,
+            isLargeArc ? 1 : 0,
+            1,
+            arcPoint(outer, endR),
+            'L',
+            arcPoint(inner, endR),
+            'A',
+            inner,
+            inner,
+            0,
+            isLargeArc ? 1 : 0,
+            0,
+            arcPoint(inner, startR),
+            'Z'
+          ].join(' ')
+        } else if (start < startLength + arcLength) {
+          let startR =
+            (start - startLength) / loopRadius - (Math.PI + spread) / 2
+          end = end - startLength - arcLength
+          if (Math.abs(startR + (Math.PI - spread) / 2) < 0.0001) {
+            startR -= 0.001 // prevent being too close to semicircle
+          }
+          let isLargeArc = startR < -(Math.PI - spread) / 2
+          console.log(startR)
+
+          section = [
+            'M',
+            arcPoint(outer, startR),
+            'A',
+            outer,
+            outer,
+            0,
+            isLargeArc ? 1 : 0,
+            1,
+            endPoint(r3, shaftRadius),
+            'L',
+            endPoint(r3 - end, shaftRadius),
+            'L',
+            endPoint(r3 - end, -shaftRadius),
+            'L',
+            endPoint(r3, -shaftRadius),
+            'A',
+            inner,
+            inner,
+            0,
+            isLargeArc ? 1 : 0,
+            0,
+            arcPoint(inner, startR),
+            'Z'
+          ].join(' ')
+        } else {
+          start = start - startLength - arcLength
+          end = end - startLength - arcLength
+
+          section = [
+            'M',
+            endPoint(r3 - start, shaftRadius),
+            'L',
+            endPoint(r3 - end, shaftRadius),
+            'L',
+            endPoint(r3 - end, -shaftRadius),
+            'L',
+            endPoint(r3 - start, -shaftRadius),
+            'Z'
+          ].join(' ')
+        }
+
+        sections.push({ path: section })
+      }
+      const arrowTip = [
         'M',
-        startPoint(r1, shaftRadius),
-        'L',
-        startPoint(r3, shaftRadius),
-        'L',
-        startPoint(r3, -shaftRadius),
-        'L',
-        startPoint(r1, -shaftRadius),
-        'Z'
-      ].join(' ')
-      const section2 = [
-        'M',
-        startPoint(r3, shaftRadius),
-        'A',
-        outer,
-        outer,
-        0,
-        1,
-        1,
-        endPoint(r3, shaftRadius),
-        'L',
-        endPoint(r3, -shaftRadius),
-        'A',
-        inner,
-        inner,
-        0,
-        1,
-        0,
-        startPoint(r3, -shaftRadius),
-        'Z'
-      ].join(' ')
-      const section3 = [
-        'M',
-        endPoint(r3, shaftRadius),
-        'L',
-        endPoint(r2, shaftRadius),
-        'L',
         endPoint(r2, -headWidth / 2),
         'L',
         endPoint(r1, 0),
         'L',
         endPoint(r2, headWidth / 2),
-        'L',
-        endPoint(r2, -shaftRadius),
-        'L',
-        endPoint(r3, -shaftRadius),
         'Z'
       ].join(' ')
-      return [section1, section2, section3]
+      sections.push({ path: arrowTip })
+      return sections
+
+      // TODO make arrow tips circular to fix a visual glitch
     }
 
     this.overlay = function (minWidth) {
