@@ -28,7 +28,8 @@ export default class StraightArrow {
     shaftWidth,
     headWidth,
     headHeight,
-    captionLayout
+    captionLayout,
+    captionHeight
   ) {
     this.length = centreDistance - (startRadius + endRadius)
 
@@ -39,14 +40,19 @@ export default class StraightArrow {
     const shaftRadius = shaftWidth / 2
     const headRadius = headWidth / 2
 
-    this.midShaftPoint = {
+    this.midShaftPoint = captionsAbove => ({
       x: startArrow + this.shaftLength / 2,
-      y: 0
-    }
+      y: captionsAbove ? -captionHeight * 0.625 - shaftRadius : 0
+    })
 
-    this.outline = function (shortCaptionLength, colorCount, toggleStripes) {
+    this.outline = function (
+      shortCaptionLength,
+      colorCount,
+      toggleStripes,
+      captionsAbove
+    ) {
       let path
-      if (captionLayout === 'external') {
+      if (captionLayout === 'external' && !captionsAbove) {
         const startBreak =
           startArrow + (this.shaftLength - shortCaptionLength) / 2
         const endBreak = endShaft - (this.shaftLength - shortCaptionLength) / 2

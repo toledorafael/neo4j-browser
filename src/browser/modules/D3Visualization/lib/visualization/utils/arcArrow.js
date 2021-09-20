@@ -27,7 +27,8 @@ export default class ArcArrow {
     arrowWidth,
     headWidth,
     headLength,
-    captionLayout
+    captionLayout,
+    captionHeight
   ) {
     this.deflection = deflection
     const square = l => l * l
@@ -97,10 +98,13 @@ export default class ArcArrow {
     if (this.deflection > 0) {
       midShaftAngle += Math.PI
     }
-    this.midShaftPoint = {
+    this.midShaftPoint = captionsAbove => ({
       x: cx + arcRadius * Math.sin(midShaftAngle),
-      y: cy - arcRadius * Math.cos(midShaftAngle)
-    }
+      y:
+        cy -
+        arcRadius * Math.cos(midShaftAngle) -
+        (captionsAbove ? captionHeight * 0.625 + shaftRadius : 0)
+    })
 
     const startTangent = function (dr) {
       const dx = (dr < 0 ? 1 : -1) * Math.sqrt(square(dr) / (1 + square(g1)))
@@ -197,7 +201,12 @@ export default class ArcArrow {
       return instructions.join(' ')
     }
 
-    this.outline = function (shortCaptionLength, segmentCount, toggleStripes) {
+    this.outline = function (
+      shortCaptionLength,
+      segmentCount,
+      toggleStripes,
+      captionsAbove
+    ) {
       let paths = []
       if (startAngle > endAngle || shaftRadius >= arcRadius) {
         if (toggleStripes) {
@@ -229,7 +238,7 @@ export default class ArcArrow {
         }
       }
 
-      if (captionLayout === 'external') {
+      if (captionLayout === 'external' && !captionsAbove) {
         let captionSweep = shortCaptionLength / arcRadius
         if (this.deflection > 0) {
           captionSweep *= -1

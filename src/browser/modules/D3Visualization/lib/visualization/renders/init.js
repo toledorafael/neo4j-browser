@@ -418,7 +418,12 @@ function updateArrow (pathGroups, viz) {
     if (rel.arrow) {
       const colors = getColors(rel, viz)
       return rel.arrow
-        .outline(rel.shortCaptionLength, colors.length, toggleStripes)
+        .outline(
+          rel.shortCaptionLength,
+          colors.length,
+          toggleStripes,
+          !toggleStripes
+        )
         .map(a => ({ pathDef: a, colors }))
     } else {
       return []
@@ -524,6 +529,7 @@ const relationshipType = new Renderer({
   name: 'relationshipType',
   onGraphChange (selection, viz) {
     const texts = selection.selectAll('text').data(rel => [rel])
+    const toggleStripes = document.getElementById('toggleStripes').__data__
 
     texts
       .enter()
@@ -534,26 +540,31 @@ const relationshipType = new Renderer({
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel =>
-        viz.style.forRelationship(rel).get(`text-color-${rel.captionLayout}`)
+        viz.style
+          .forRelationship(rel)
+          .get(`text-color-${toggleStripes ? rel.captionLayout : 'external'}`)
       )
 
     return texts.exit().remove()
   },
 
   onTick (selection, viz) {
+    const toggleStripes = document.getElementById('toggleStripes').__data__
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint.x)
+      .attr('x', rel => rel.arrow.midShaftPoint(!toggleStripes).x)
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint.y +
+          rel.arrow.midShaftPoint(!toggleStripes).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint.x} ${rel.arrow.midShaftPoint.y})`
+          return `rotate(180 ${rel.arrow.midShaftPoint(!toggleStripes).x} ${
+            rel.arrow.midShaftPoint(!toggleStripes).y
+          })`
         } else {
           return null
         }

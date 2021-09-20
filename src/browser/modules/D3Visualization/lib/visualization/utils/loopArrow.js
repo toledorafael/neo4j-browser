@@ -54,7 +54,8 @@ export default class LoopArrow {
         cy + (localLoopRadius + displacement) * Math.cos(sweep)
       )
     }
-    this.midShaftPoint = normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
+    this.midShaftPoint = () =>
+      normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
     const startPoint = (radius, displacement) =>
       normalPoint((Math.PI + spread) / 2, radius, displacement)
     const endPoint = (radius, displacement) =>
