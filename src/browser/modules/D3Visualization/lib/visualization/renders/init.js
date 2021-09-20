@@ -414,7 +414,6 @@ function getColors (rel, viz) {
 
 function updateArrow (pathGroups, viz) {
   const toggleStripes = document.getElementById('toggleStripes').__data__
-  console.log('updateArrow')
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
       const colors = getColors(rel, viz)

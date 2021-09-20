@@ -312,7 +312,6 @@ export default class LoopArrow {
             startR -= 0.001 // prevent being too close to semicircle
           }
           let isLargeArc = startR < -(Math.PI - spread) / 2
-          console.log(startR)
 
           section = [
             'M',
