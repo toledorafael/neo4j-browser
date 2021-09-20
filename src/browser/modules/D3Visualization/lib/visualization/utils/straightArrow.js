@@ -44,27 +44,6 @@ export default class StraightArrow {
       y: 0
     }
 
-    this.gradient = function (id, colors, toggleStrips, segment) {
-      const type = 'linearGradient'
-      const attrs = {}
-      if (toggleStrips) {
-        attrs.x1 = 0
-        attrs.y1 = shaftRadius
-        attrs.x2 = 0
-        attrs.y2 = -shaftRadius
-      } else {
-        attrs.x1 = '0%'
-        attrs.y1 = '0%'
-        attrs.x2 = '100%'
-        attrs.y2 = '0%'
-        attrs.gradientUnits = 'objectBoundingBox'
-      }
-      const gradientId = `${id}-straight-${segment}-${
-        toggleStrips ? 1 : 0
-      }-${shaftWidth}`
-      return { type, attrs, gradientId }
-    }
-
     this.outline = function (shortCaptionLength, colorCount, toggleStripes) {
       let path
       if (captionLayout === 'external') {
