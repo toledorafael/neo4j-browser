@@ -22,6 +22,7 @@ import {
   selectorStringToArray,
   selectorArrayToString
 } from 'services/grassUtils'
+import SatSolver from './lib/visualization/utils/satSolver'
 
 export default function neoGraphStyle () {
   const defaultStyle = {
@@ -31,12 +32,12 @@ export default function neoGraphStyle () {
       'border-color': '#9AA1AC',
       'border-width': '2px',
       'text-color-internal': '#FFFFFF',
-      'font-size': '10px'
+      'font-size': '14px'
     },
     relationship: {
       color: '#A5ABB6',
-      'shaft-width': '1px',
-      'font-size': '8px',
+      'shaft-width': '5px', // Check if the link gets thicker
+      'font-size': '14px',
       padding: '3px',
       'text-color-external': '#000000',
       'text-color-internal': '#FFFFFF',
@@ -214,6 +215,7 @@ export default function neoGraphStyle () {
   })()
 
   const StyleElement = (function () {
+    // StyleElement combines a selector with a props which defines style
     function StyleElement (selector) {
       this.selector = selector
       this.props = {}
@@ -221,12 +223,77 @@ export default function neoGraphStyle () {
 
     StyleElement.prototype.applyRules = function (rules) {
       for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i]
+        const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
         if (rule.matches(this.selector)) {
+          // find style based on tag of selector (whether it's a node or a relationship)
           this.props = { ...this.props, ...rule.props }
           this.props.caption = this.props.caption || this.props.defaultCaption
         }
       }
+      return this
+    }
+
+    StyleElement.prototype.applyCondRules = function (rules) {
+      if (this.selector.tag === 'relationship') {
+        var presenceCondition = ''
+
+        if ('condition' in this.selector.classes[0].propertyMap) {
+          presenceCondition = this.selector.classes[0].propertyMap['condition']
+        }
+
+        for (let i = 0; i < rules.length; i++) {
+          let rule = rules[i]
+          // if rule concerns a condition
+          if (
+            rule.selector.classes.includes('condRule') &&
+            presenceCondition !== '' &&
+            presenceCondition !== 'true'
+          ) {
+            // If no solver was created for this presence condition then create one
+            if (!this.selector.classes[0].solver) {
+              this.selector.classes[0].solver = new SatSolver(presenceCondition)
+            }
+
+            // Check if presence condition is satisfiable assuming the feature expression of interest
+            if (
+              this.selector.classes[0].solver.solveAssuming(
+                rule.selector.classes[0]
+              )
+            ) {
+              if (Object.keys(this.props).length === 0) {
+                this.props = { ...this.props, ...rule.props }
+                this.props.caption =
+                  this.props.caption || this.props.defaultCaption
+              } else {
+                // Merge rules
+                if (this.props.color !== rule.props.color) {
+                  for (const key in rule.props) {
+                    if (key === 'color') {
+                      if (Array.isArray(this.props.color)) {
+                        // If there are multiple colors add one more
+                        this.props.color.push(rule.props.color)
+                      } else {
+                        // Else create an array with the two colors
+                        this.props.color = [this.props.color, rule.props.color]
+                      }
+                    } else {
+                      this.props[key] = rule.props[key]
+                    }
+                  }
+                } else {
+                  this.props = { ...this.props, ...rule.props }
+                  this.props.caption =
+                    this.props.caption || this.props.defaultCaption
+                }
+              }
+            }
+          } else {
+            // if condition = true or empty
+            // All rules regarding any condition should apply (?)
+          }
+        }
+      }
+
       return this
     }
 
@@ -248,7 +315,12 @@ export default function neoGraphStyle () {
     }
 
     const parseSelector = function (key) {
-      let tokens = selectorStringToArray(key)
+      let tokens
+      if (key.includes('condRule')) {
+        tokens = key.split('.')
+      } else {
+        tokens = selectorStringToArray(key)
+      }
       return new Selector(tokens[0], tokens.slice(1))
     }
 
@@ -269,6 +341,22 @@ export default function neoGraphStyle () {
     const relationshipSelector = function (rel) {
       rel = rel || {}
       const classes = rel.type != null ? [rel.type] : []
+      return new Selector('relationship', classes)
+    }
+
+    const conditionSelector = function (cond) {
+      cond = cond || null
+      let classes
+      if (typeof cond === 'string' || cond instanceof String) {
+        classes = cond != null ? [cond, 'condRule'] : []
+      } else {
+        classes = cond != null ? [cond] : []
+      }
+
+      // conditionSelector is almost the same as relationshipSelector: both under the tag "relationship"
+      // and both have classes, an array of length 0 or 1
+      // However, while the classes of relationshipSelector stores relationship types
+      // classes of conditionSelector stores condition name
       return new Selector('relationship', classes)
     }
 
@@ -333,6 +421,10 @@ export default function neoGraphStyle () {
 
     GraphStyle.prototype.calculateStyle = function (selector) {
       return new StyleElement(selector).applyRules(this.rules)
+    }
+
+    GraphStyle.prototype.calculateCondStyle = function (selector) {
+      return new StyleElement(selector).applyCondRules(this.rules)
     }
 
     GraphStyle.prototype.forEntity = function (item) {
@@ -552,6 +644,15 @@ export default function neoGraphStyle () {
       return this.calculateStyle(selector)
     }
 
+    GraphStyle.prototype.forCondition = function (cond) {
+      const selector = conditionSelector(cond)
+      return this.calculateStyle(selector)
+    }
+
+    GraphStyle.prototype.forCondRel = function (rel) {
+      const selector = conditionSelector(rel)
+      return this.calculateCondStyle(selector)
+    }
     return GraphStyle
   })()
   return new GraphStyle()

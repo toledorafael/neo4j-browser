@@ -28,7 +28,11 @@ import {
   StyledSvgWrapper,
   StyledZoomButton,
   StyledSliderHolder,
-  StyleToggleGroupMarksButton
+  StyleToggleGroupMarksButton,
+  StyleInputDiv,
+  StyleSubmitButton,
+  StyleTextArea,
+  StyleToggleButton
 } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
@@ -39,7 +43,9 @@ export class GraphComponent extends Component {
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
-    scaleFactor: 1
+    toggleStripes: false,
+    scaleFactor: 1,
+    featureExpression: 'Enter feature expression...'
   }
 
   graphInit (el) {
@@ -110,7 +116,7 @@ export class GraphComponent extends Component {
       this.graphEH.bindEventHandlers()
       this.props.onGraphModelChange(getGraphStats(this.graph))
       this.graphView.resize()
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update(this.state.toggleStripes)
     }
   }
 
@@ -119,15 +125,28 @@ export class GraphComponent extends Component {
       this.graph.addInternalRelationships(
         mapRelationships(internalRelationships, this.graph)
       )
-      this.props.onGraphModelChange(getGraphStats(this.graph))
-      this.graphView.update(this.state.showGroupMarks)
+      let stats = getGraphStats(this.graph)
+      let conditionTypes
+      if (this.state.conditionTypes) {
+        conditionTypes = this.state.conditionTypes
+      } else {
+        conditionTypes = []
+      }
+      let newstats = {
+        labels: stats.labels,
+        relTypes: stats.relTypes,
+        conditionTypes: conditionTypes
+      }
+      // this.props.onGraphModelChange(getGraphStats(this.graph))
+      this.props.onGraphModelChange(newstats)
+      this.graphView.update(this.state.toggleStripes)
       this.graphEH.onItemMouseOut()
     }
   }
 
   componentWillReceiveProps (props) {
     if (props.styleVersion !== this.props.styleVersion) {
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update(this.state.toggleStripes)
     }
     if (
       this.props.fullscreen !== props.fullscreen ||
@@ -184,11 +203,11 @@ export class GraphComponent extends Component {
     this.graphView.updateScaleFactor(event.target.value)
   }
 
-  toggleGroupMarks (event) {
-    const toggleGroupMarks = !this.state.showGroupMarks
-    this.setState({ showGroupMarks: toggleGroupMarks })
-    this.graphView.displayGroupMarks(toggleGroupMarks)
-  }
+  // toggleGroupMarks (event) {
+  //   const toggleGroupMarks = !this.state.toggleGroupMarks
+  //   this.setState({ showGroupMarks: toggleGroupMarks })
+  //   this.graphView.displayGroupMarks(toggleGroupMarks)
+  // }
 
   inputSlider () {
     if (this.props.fullscreen) {
@@ -218,14 +237,136 @@ export class GraphComponent extends Component {
     }
   }
 
+  updateFeatureExpressionState (event) {
+    /* if(this.state.conditionTypes) {
+      this.setState(prevState => ({
+        conditionTypes: [...prevState.conditionTypes, event.target.value]
+      }))
+    } else {
+      this.setState({conditionTypes: [event.target.value]})
+    } */
+    this.setState({ newConditionType: event.target.value })
+
+    // this.setState({ featureExpression: event.target.value })
+  }
+
+  handleSubmit (event) {
+    if (this.state.newConditionType) {
+      let conditionTypes
+      if (this.state.conditionTypes) {
+        if (
+          this.state.conditionTypes.indexOf(this.state.newConditionType) === -1
+        ) {
+          this.setState(prevState => ({
+            conditionTypes: [
+              ...prevState.conditionTypes,
+              this.state.newConditionType
+            ]
+          }))
+          conditionTypes = [
+            ...this.state.conditionTypes,
+            this.state.newConditionType
+          ]
+        } else {
+          conditionTypes = [...this.state.conditionTypes]
+        }
+      } else {
+        this.setState({ conditionTypes: [this.state.newConditionType] })
+        conditionTypes = [this.state.newConditionType]
+      }
+      let stats = getGraphStats(this.graph)
+      Array.from(document.querySelectorAll('textArea')).forEach(
+        input => (input.value = '')
+      )
+      // if (!this.state.conditionTypes) {
+      // conditionTypes = this.state.conditionTypes
+      // } else {
+      //   conditionTypes = []
+      // }
+      let newstats = {
+        labels: stats.labels,
+        relTypes: stats.relTypes,
+        conditionTypes: conditionTypes
+      }
+      // this.props.onGraphModelChange(getGraphStats(this.graph))
+      this.props.onGraphModelChange(newstats)
+
+      // This command triggers the highlighting of edges based on a feature expression
+      // submitted by the user. Since we are using the button for a different purpose
+      // and the highlighting will be done in a different way, this feature should be refactored.
+      // this.graphView.highlightPresenceConditions(this.state.featureExpression)
+    }
+  }
+
+  handleToggleStripes (event) {
+    // const newToggleStripes = !this.state.toggleStripes
+    // this.setState({ toggleStripes: newToggleStripes })
+    const el = document.getElementById('toggleStripes')
+    el.__data__ = !el.__data__
+    // this.graphView.displayGroupMarks(toggleGroupMarks)
+    // this.graphView.update(newToggleStripes)
+    this.graphView.update()
+  }
+
+  checkPropertyList (propertyList, propertyName) {
+    if (propertyList.length > 0) {
+      for (let index = 0; index < propertyList.length; index++) {
+        const element = propertyList[index]
+        if (element.key === propertyName) return true
+      }
+      return false
+    }
+  }
+
+  inputFeatureExpression () {
+    if (this.props.fullscreen) {
+      // TODO: Add condition to only show PC form if the user is interested in learn about that
+      if (
+        this.checkPropertyList(
+          this.graph._relationships[0].propertyList,
+          'condition'
+        )
+      ) {
+        // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
+        return (
+          // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}></StyleInputForm>
+          <StyleInputDiv>
+            <StyleTextArea
+              value={this.state.value}
+              placeholder='Feature expression'
+              onChange={this.updateFeatureExpressionState.bind(this)}
+            />
+            <StyleSubmitButton onClick={this.handleSubmit.bind(this)}>
+              Filter
+            </StyleSubmitButton>
+          </StyleInputDiv>
+        )
+      }
+    }
+  }
+
+  inputToggleStripes () {
+    if (this.props.fullscreen) {
+      return (
+        <StyleToggleButton onClick={this.handleToggleStripes.bind(this)}>
+          Stripes
+        </StyleToggleButton>
+      )
+    }
+  }
+
   render () {
     return (
+      // <div>
       <StyledSvgWrapper>
         <svg className='neod3viz' ref={this.graphInit.bind(this)} />
-        {this.inputSlider()}
+        {/* {this.inputSlider()} */}
         {this.zoomButtons()}
-        {this.inputToggle()}
+        {/* {this.inputToggle()} */}
+        {this.inputFeatureExpression()}
+        {this.inputToggleStripes()}
       </StyledSvgWrapper>
+      // </div>
     )
   }
 }

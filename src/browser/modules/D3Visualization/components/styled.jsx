@@ -317,7 +317,7 @@ export const StyledLegendContents = styled.ul`
   float: left;
   line-height: 1em;
   position: relative;
-  top: 3px;
+  top: 1px;
   top: -1px;
 `
 
@@ -433,6 +433,73 @@ export const StyleToggleGroupMarksButton = styled.button`
       color: #9b9da2;
     }
   }
+`
+
+export const StyleSubmitButton = styled.button`
+  position: absolute;
+  top: 60px;
+  right: 100px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: green;
+  border-color: white;
+  padding: 15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
+export const StyleToggleButton = styled.button`
+  position: absolute;
+  top: 100px;
+  right: 120px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: red;
+  border-color: white;
+  padding: 15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
+export const StyleInputDiv = styled.div`
+  position: absolute;
+  top: 100px;
+  color: black;
+  width: 300px;
+  background: white;
+  border: none;
+  border-radius: 3px;
+`
+
+export const StyleTextArea = styled.textarea`
+  position: relative;
+  width: 300px;
+  height: 4em;
+  line-height: 1.2em;
+  resize: none;
+  padding: 3px;
 `
 
 export const StyledZoomHolder = styled.div`

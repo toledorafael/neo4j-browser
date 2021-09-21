@@ -41,9 +41,8 @@ import { RowExpandToggleComponent } from './RowExpandToggle'
 
 const mapItemProperties = itemProperties =>
   itemProperties
-    .sort(
-      ({ key: keyA }, { key: keyB }) =>
-        keyA < keyB ? -1 : keyA === keyB ? 0 : 1
+    .sort(({ key: keyA }, { key: keyB }) =>
+      keyA < keyB ? -1 : keyA === keyB ? 0 : 1
     )
     .map((prop, i) => (
       <StyledInspectorFooterRowListPair className='pair' key={'prop' + i}>
@@ -112,6 +111,7 @@ export class InspectorComponent extends Component {
           <GrassEditor
             selectedLabel={item.selectedLabel}
             selectedRelType={item.selectedRelType}
+            selectedCondition={item.selectedCondition}
             hiddenNodeLabels={this.props.hiddenNodeLabels}
             hiddenRelationshipTypes={this.props.hiddenRelationshipTypes}
             setNodeLabelVisibility={this.props.setNodeLabelVisibility}
@@ -145,9 +145,7 @@ export class InspectorComponent extends Component {
           </StyledInlineList>
         )
       } else if (type === 'canvas') {
-        const description = `Displaying ${item.nodeCount} nodes, ${
-          item.relationshipCount
-        } relationships.`
+        const description = `Displaying ${item.nodeCount} nodes, ${item.relationshipCount} relationships.`
         inspectorContent = (
           <StyledInlineList className='list-inline'>
             <StyledInspectorFooterRowListPair className='pair' key='pair'>

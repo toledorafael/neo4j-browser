@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Renderer from '../components/renderer'
+import d3 from 'd3'
+import Logic from 'logic-solver'
 const noop = function () {}
 
 const nodeRingStrokeSize = 8
@@ -134,27 +136,392 @@ const nodeRing = new Renderer({
   onTick: noop
 })
 
+// split expression by operator considering parentheses
+const split = (expression, operator) => {
+  const result = []
+  let braces = 0
+  let currentChunk = ''
+  for (let i = 0; i < expression.length; ++i) {
+    const curCh = expression[i]
+    if (curCh === '(') {
+      braces++
+    } else if (curCh === ')') {
+      braces--
+    }
+    if (braces === 0 && operator === curCh) {
+      result.push(currentChunk)
+      currentChunk = ''
+    } else currentChunk += curCh
+  }
+  if (currentChunk !== '') {
+    result.push(currentChunk)
+  }
+  return result
+}
+// this will only take strings containing * operator [ no + ]
+const parseDisjunctionSeparatedExpression = expression => {
+  const operandsString = split(expression, '+')
+  const operands = operandsString.map(noStr => {
+    if (noStr[0] === '(') {
+      const expr = noStr.substr(1, noStr.length - 2)
+      // recursive call to the main function
+      // return parseConjunctionSeparatedExpression(expr)
+      return parseNegation(expr)
+    } else if (noStr[0] === '-') {
+      return parseNegation(noStr)
+    }
+    return noStr
+  })
+  // const initialValue = 1.0
+  // const result = operands.reduce((acc, no) => acc * no, initialValue)
+  if (operands.length > 1) {
+    return Logic.or(operands)
+  } else {
+    return operands[0]
+  }
+}
+// both * -
+const parseConjunctionSeparatedExpression = expression => {
+  const operandsString = split(expression, '*')
+  const operands = operandsString.map(operandStr => {
+    if (operandStr[0] === '-') {
+      return parseNegation(operandStr)
+    }
+    return parseDisjunctionSeparatedExpression(operandStr)
+  })
+  // const initialValue = numbers[0]
+  // const result = numbers.slice(1).reduce((acc, no) => acc - no, initialValue)
+  if (operands.length > 1) {
+    return Logic.and(operands)
+  } else {
+    return operands[0]
+  }
+}
+
+const parseNegation = expression => {
+  if (expression[0] === '-') {
+    return Logic.not(
+      parseConjunctionSeparatedExpression(
+        expression.substr(1, expression.length - 1)
+      )
+    )
+  } else {
+    return parseConjunctionSeparatedExpression(expression)
+  }
+}
+
+const parse = featureExpression => {
+  var newFeatureExpression = featureExpression
+    .replaceAll(/\s/g, '')
+    .replaceAll('!', '-')
+  if (
+    newFeatureExpression.includes('/\\') ||
+    newFeatureExpression.includes('\\/')
+  ) {
+    newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
+    newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
+    // return parseConjunctionSeparatedExpression(newFeatureExpression)
+    const parsedExpression = parseNegation(newFeatureExpression)
+    return parsedExpression
+  } else {
+    return newFeatureExpression
+  }
+}
+
+const checkPropertyList = (propertyList, propertyName) => {
+  if (propertyList.length > 0) {
+    for (let index = 0; index < propertyList.length; index++) {
+      const element = propertyList[index]
+      if (element.key === propertyName) return true
+    }
+    return false
+  }
+}
+
+const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
+  var newPresenceCondition = parse(presenceCondition)
+  for (let solutionId = 0; solutionId < solutions.length; solutionId++) {
+    const solution = solutions[solutionId]
+    if (solution.evaluate(newPresenceCondition)) {
+      return true
+    }
+  }
+  return false
+}
+
+function gradient (id, colors, toggleStripes) {
+  // TODO: have the x,y of the source and target of the arrow as arguments
+  // defines the gradient
+  // TODO: if gradient not already defined
+  const svg = d3.select('.neod3viz')
+  const linearGradient = d3.select('#' + id)
+  if (linearGradient[0][0] === null) {
+    svg
+      .append('defs')
+      .append('linearGradient')
+      .attr('id', id)
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', function () {
+        if (toggleStripes) {
+          return '0%'
+        } else {
+          return '100%'
+        }
+      })
+      .attr('y2', function () {
+        if (toggleStripes) {
+          return '100%'
+        } else {
+          return '0%'
+        }
+      })
+
+    const offsetPercent = Math.trunc(100 / colors.length)
+    for (let colorId = 0; colorId < colors.length; colorId++) {
+      if (colorId > 0) {
+        d3.select('#' + id)
+          .append('stop')
+          .attr('stop-color', colors[colorId - 1])
+          .attr('offset', (offsetPercent * colorId).toString() + '% ')
+          .attr('stop-opacity', 1)
+        d3.select('#' + id)
+          .append('stop')
+          .attr('stop-color', colors[colorId])
+          .attr('offset', (offsetPercent * colorId).toString() + '%')
+          .attr('stop-opacity', 1)
+      }
+    }
+  } else {
+    d3.select('#' + id)
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', function () {
+        if (toggleStripes) {
+          return '0%'
+        } else {
+          return '100%'
+        }
+      })
+      .attr('y2', function () {
+        if (toggleStripes) {
+          return '100%'
+        } else {
+          return '0%'
+        }
+      })
+  }
+}
+
+function updateGradient (paths, viz) {
+  const toggleStripes = document.getElementById('toggleStripes').__data__
+  return paths.attr('fill', function (rel, i) {
+    let colors
+    if (checkPropertyList(rel.propertyList, 'condition')) {
+      colors = viz.style.forCondRel(rel).get('color')
+      if (Array.isArray(colors)) {
+        let id = 'gradient'
+        colors.forEach(function (color) {
+          id += color.slice(1)
+        })
+        if (rel.arrow && rel.arrow.gradient) {
+          const g = rel.arrow.gradient(id, colors, toggleStripes, i)
+
+          // TODO render gradient properly
+          const svg = d3.select('.neod3viz')
+          let el = svg.select(`#${g.gradientId.replace(/\./g, '\\.')}`)
+          if (el.empty()) {
+            el = svg.append('defs').append(g.type)
+            el.attr('id', g.gradientId)
+            el.attr('gradientUnits', 'userSpaceOnUse')
+
+            for (let attr in g.attrs) {
+              el.attr(attr, g.attrs[attr])
+            }
+
+            // extract into function
+            const offsetPercent = Math.trunc(100 / colors.length)
+            for (let colorId = 0; colorId < colors.length; colorId++) {
+              if (colorId > 0) {
+                el.append('stop')
+                  .attr('stop-color', colors[colorId - 1])
+                  .attr('offset', (offsetPercent * colorId).toString() + '% ')
+                  .attr('stop-opacity', 1)
+                el.append('stop')
+                  .attr('stop-color', colors[colorId])
+                  .attr('offset', (offsetPercent * colorId).toString() + '%')
+                  .attr('stop-opacity', 1)
+              }
+            }
+          }
+
+          return `url(#${g.gradientId})`
+        }
+        gradient(id, colors, toggleStripes)
+        return 'url(#' + id + ')'
+      }
+      return colors
+    } else {
+      return '#A5ABB6'
+    }
+    // #F16667
+    // if no condition -> forRelationship
+    // else if condition -> forCondition
+  })
+}
+
+function setupGradient (id, g, colors) {
+  const svg = d3.select('.neod3viz')
+  let el = svg.select(`#${id.replace(/\./g, '\\.')}`)
+  if (el.empty()) {
+    el = svg.append('defs').append(g.type)
+    el.attr('id', id)
+    el.attr('gradientUnits', 'userSpaceOnUse')
+
+    for (let attr in g.attrs) {
+      el.attr(attr, g.attrs[attr])
+    }
+
+    // extract into function
+    const offsetPercent = Math.trunc(100 / colors.length)
+    for (let colorId = 0; colorId < colors.length; colorId++) {
+      if (colorId > 0) {
+        el.append('stop')
+          .attr('stop-color', colors[colorId - 1])
+          .attr('offset', (offsetPercent * colorId).toString() + '% ')
+          .attr('stop-opacity', 1)
+        el.append('stop')
+          .attr('stop-color', colors[colorId])
+          .attr('offset', (offsetPercent * colorId).toString() + '%')
+          .attr('stop-opacity', 1)
+      }
+    }
+  }
+}
+
+function getColors (rel, viz) {
+  let colors
+  if (checkPropertyList(rel.propertyList, 'condition')) {
+    colors = viz.style.forCondRel(rel).get('color')
+    if (Array.isArray(colors)) {
+      return colors
+    }
+    return [colors]
+  } else {
+    return ['#A5ABB6']
+  }
+}
+
+function updateArrow (pathGroups, viz) {
+  const toggleStripes = document.getElementById('toggleStripes').__data__
+  const paths = pathGroups.selectAll('path').data(rel => {
+    if (rel.arrow) {
+      const colors = getColors(rel, viz)
+      return rel.arrow
+        .outline(
+          rel.shortCaptionLength,
+          colors.length,
+          toggleStripes,
+          !toggleStripes
+        )
+        .map(a => ({ pathDef: a, colors }))
+    } else {
+      return []
+    }
+  })
+  paths.enter().append('path')
+  paths.exit().remove()
+
+  pathGroups
+    .selectAll('path')
+    .attr('d', d => d.pathDef.path)
+    .attr('fill', (d, i) => {
+      if (d.pathDef.gradient && d.colors.length > 1) {
+        const id =
+          'gradient' +
+          d.colors.map(x => x.slice(1)).join('') +
+          d.pathDef.gradient.id
+        setupGradient(id, d.pathDef.gradient, d.colors)
+        return 'url(#' + id + ')'
+      } else {
+        return d.colors[Math.min(i, d.colors.length - 1)]
+      }
+    })
+
+  return pathGroups
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
-  onGraphChange (selection, viz) {
-    const paths = selection.selectAll('path.outline').data(rel => [rel])
-
+  onGraphChange (selection, viz, featureExpression, toggleStripes) {
+    const paths = selection.selectAll('g.outline').data(rel => [rel])
+    // paths
+    //   .enter()
+    //   .append('path')
+    //   .classed('outline', true)
     paths
       .enter()
-      .append('path')
+      .append('g')
       .classed('outline', true)
 
-    paths
-      .attr('fill', rel => viz.style.forRelationship(rel).get('color'))
-      .attr('stroke', 'none')
+    if (featureExpression !== '') {
+      var formula = parse(featureExpression)
+      var solver = new Logic.Solver()
+      solver.require(formula)
+      var solutions = []
+      var curSol
+      while ((curSol = solver.solve())) {
+        curSol.ignoreUnknownVariables()
+        solutions.push(curSol)
+        solver.forbid(curSol.getFormula())
+      }
+    }
+
+    updateArrow(paths, viz)
+    // updateGradient(paths, viz)
+    // this feature needs to be redone
+    // .attr('stroke-width', '3px')
+    // .attr('stroke', function (rel) {
+    //   if (featureExpression !== '') {
+    //     var presenceCondition = ''
+    //     if (checkPropertyList(rel.propertyList, 'condition')) {
+    //       for (let index = 0; index < rel.propertyList.length; index++) {
+    //         const element = rel.propertyList[index]
+    //         if (element.key === 'condition') {
+    //           presenceCondition = rel.propertyList[index].value
+    //         }
+    //       }
+    //       if (presenceCondition !== 'true') {
+    //         if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
+    //           return 'red'
+    //         }
+    //       } else {
+    //         return 'red'
+    //       }
+    //       return 'none'
+    //     }
+    //     // return 'red'
+    //   }
+    //   return 'none'
+    // })
 
     return paths.exit().remove()
   },
 
-  onTick (selection) {
-    return selection
-      .selectAll('path')
-      .attr('d', d => d.arrow.outline(d.shortCaptionLength))
+  onTick (selection, viz, toggleStripes) {
+    // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
+    return updateArrow(selection.selectAll('g.outline'), viz)
+    return updateGradient(selection.selectAll('path.outline'), viz).attr(
+      'd',
+      (d, i) => {
+        const outline = d.arrow.outline(d.shortCaptionLength)
+        if (Array.isArray(outline)) {
+          return outline[i]
+        } else {
+          return outline
+        }
+      }
+    )
   }
 })
 
@@ -162,6 +529,7 @@ const relationshipType = new Renderer({
   name: 'relationshipType',
   onGraphChange (selection, viz) {
     const texts = selection.selectAll('text').data(rel => [rel])
+    const toggleStripes = document.getElementById('toggleStripes').__data__
 
     texts
       .enter()
@@ -172,27 +540,30 @@ const relationshipType = new Renderer({
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel =>
-        viz.style.forRelationship(rel).get(`text-color-${rel.captionLayout}`)
+        viz.style
+          .forRelationship(rel)
+          .get(`text-color-${toggleStripes ? rel.captionLayout : 'external'}`)
       )
 
     return texts.exit().remove()
   },
 
   onTick (selection, viz) {
+    const toggleStripes = document.getElementById('toggleStripes').__data__
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint.x)
+      .attr('x', rel => rel.arrow.midShaftPoint(!toggleStripes).x)
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint.y +
+          rel.arrow.midShaftPoint(!toggleStripes).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint.x} ${
-            rel.arrow.midShaftPoint.y
+          return `rotate(180 ${rel.arrow.midShaftPoint(!toggleStripes).x} ${
+            rel.arrow.midShaftPoint(!toggleStripes).y
           })`
         } else {
           return null

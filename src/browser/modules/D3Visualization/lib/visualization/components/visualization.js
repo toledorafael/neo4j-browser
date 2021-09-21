@@ -99,7 +99,7 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
 
   var zoomBehavior = d3.behavior
     .zoom()
-    .scaleExtent([0.2, 1])
+    .scaleExtent([0.2, 2])
     .on('zoom', zoomed)
 
   const interpolateZoom = (translate, scale) =>
@@ -286,12 +286,12 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
     return latestStats
   }
 
-  viz.update = function (showGroupMarks) {
+  viz.update = function (toggleStripes, featureExpression = '') {
     if (!graph) {
       return
     }
 
-    drawGroupMarks = showGroupMarks
+    // drawGroupMarks = showGroupMarks
 
     const layers = container
       .selectAll('g.layer')
@@ -304,7 +304,7 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
     const nodes = graph.nodes()
     const relationships = graph.relationships()
 
-    var groupIds
+    // var groupIds
 
     const relationshipGroups = container
       .select('g.layer.relationships')
@@ -401,7 +401,12 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
     geometry.onGraphChange(graph)
 
     for (var renderer of Array.from(vizRenderers.relationship)) {
-      relationshipGroups.call(renderer.onGraphChange, viz)
+      relationshipGroups.call(
+        renderer.onGraphChange,
+        viz,
+        featureExpression,
+        toggleStripes
+      )
     }
 
     relationshipGroups.exit().remove()
@@ -428,33 +433,32 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
         d3.event.preventDefault()
         d3.event.stopPropagation()
 
-        if (tip) tip.remove()
+        // Code for creating a pop-up with attribute information
+        // if (tip) tip.remove()
 
-        tip = container
-          .append('g')
-          .attr('class', 'tip')
-          .attr('transform', 'translate(' + (d.x + 10) + ',' + (d.y + 10) + ')')
+        // tip = container.append('g')
+        //   .attr('class', 'tip')
+        //   .attr('transform', 'translate(' + (d.x + 10) + ',' + (d.y + 10) + ')')
 
-        console.log(d.propertyMap)
-        var textBox = tip
-          .append('rect')
-          .style('fill', 'white')
-          .style('stroke', 'steelblue')
+        // console.log(d.propertyMap)
+        // var textBox = tip.append('rect')
+        //   .style('fill', 'white')
+        //   .style('stroke', 'steelblue')
 
-        var yPos = 1
-        for (var property in d.propertyMap) {
-          if (property !== 'label') {
-            tip
-              .append('text')
-              .text(property + ': ' + d.propertyMap[property])
-              .attr('dy', yPos + 'em')
-              .attr('x', 5)
-            yPos++
-          }
-        }
+        // var yPos = 1
+        // for (var property in d.propertyMap) {
+        //   if (property !== 'label') {
+        //     tip.append('text')
+        //       .text(property + ': ' + d.propertyMap[property])
+        //       .attr('dy', yPos + 'em')
+        //       .attr('x', 5)
+        //     yPos++
+        //   }
+        // }
 
-        var bbox = tip.node().getBBox()
-        textBox.attr('width', bbox.width + 5).attr('height', bbox.height + 5)
+        // var bbox = tip.node().getBBox()
+        // textBox.attr('width', bbox.width + 5)
+        //   .attr('height', bbox.height + 5)
       })
 
     nodeGroups.classed('selected', node => node.selected)
@@ -470,44 +474,44 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
 
     nodeGroups.exit().remove()
 
-    if (drawGroupMarks) {
-      groupIds = getGroupIDs(nodes)
+    // if (drawGroupMarks) {
+    //   groupIds = getGroupIDs(nodes)
 
-      const groupPaths = container
-        .select('g.layer.fileGroups')
-        .selectAll('g.fileGroup')
-        .data(groupIds, function (d) {
-          return d
-        })
+    //   const groupPaths = container
+    //     .select('g.layer.fileGroups')
+    //     .selectAll('g.fileGroup')
+    //     .data(groupIds, function (d) {
+    //       return d
+    //     })
 
-      groupPaths
-        .enter() // Update to path
-        .append('g')
-        .attr('class', 'fileGroup')
-        .append('path')
-        .attr('transform', `translate(0,0)`)
-        .attr('stroke', function (d) {
-          return color(d)
-        })
-        .attr('fill', function (d) {
-          return color(d)
-        })
-        .attr('fill-opacity', 0.2)
-        .attr('stroke-opacity', 1)
-        .attr('data-legend', function (d) {
-          return d
-        })
+    //   groupPaths
+    //     .enter() // Update to path
+    //     .append('g')
+    //     .attr('class', 'fileGroup')
+    //     .append('path')
+    //     .attr('transform', `translate(0,0)`)
+    //     .attr('stroke', function (d) {
+    //       return color(d)
+    //     })
+    //     .attr('fill', function (d) {
+    //       return color(d)
+    //     })
+    //     .attr('fill-opacity', 0.2)
+    //     .attr('stroke-opacity', 1)
+    //     .attr('data-legend', function (d) {
+    //       return d
+    //     })
 
-      groupPaths.exit().remove()
-      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
-    } else {
-      container
-        .select('g.layer.fileGroups')
-        .selectAll('g.fileGroup')
-        .data({})
-        .exit()
-        .remove()
-    }
+    //   groupPaths.exit().remove()
+    //   updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+    // } else {
+    //   container
+    //     .select('g.layer.fileGroups')
+    //     .selectAll('g.fileGroup')
+    //     .data({})
+    //     .exit()
+    //     .remove()
+    // }
 
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])

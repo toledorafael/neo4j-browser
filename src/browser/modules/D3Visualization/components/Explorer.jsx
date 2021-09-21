@@ -57,9 +57,7 @@ export class ExplorerComponent extends Component {
       })
       selectedItem = {
         type: 'status-item',
-        item: `Not all return nodes are being displayed due to Initial Node Display setting. Only ${
-          this.props.initialNodeDisplay
-        } of ${nodes.length} nodes are being displayed`
+        item: `Not all return nodes are being displayed due to Initial Node Display setting. Only ${this.props.initialNodeDisplay} of ${nodes.length} nodes are being displayed`
       }
     }
     if (this.props.graphStyleData) {
@@ -67,6 +65,7 @@ export class ExplorerComponent extends Component {
         this.defaultStyle,
         this.props.graphStyleData
       )
+      // const rebasedStyle = this.defaultStyle
       graphStyle.loadRules(rebasedStyle)
     }
     this.state = {
@@ -172,7 +171,8 @@ export class ExplorerComponent extends Component {
         type: 'legend-item',
         item: {
           selectedLabel: { label: label, propertyKeys: propertyKeys },
-          selectedRelType: null
+          selectedRelType: null,
+          selectedCondition: null
         }
       }
     })
@@ -184,7 +184,24 @@ export class ExplorerComponent extends Component {
         type: 'legend-item',
         item: {
           selectedLabel: null,
-          selectedRelType: { relType: relType, propertyKeys: propertyKeys }
+          selectedRelType: { relType: relType, propertyKeys: propertyKeys },
+          selectedCondition: null
+        }
+      }
+    })
+  }
+
+  onSelectedCondition (condition, propertyKeys) {
+    this.setState({
+      selectedItem: {
+        type: 'legend-item',
+        item: {
+          selectedLabel: null,
+          selectedRelType: null,
+          selectedCondition: {
+            condition: condition,
+            propertyKeys: propertyKeys
+          }
         }
       }
     })
@@ -194,6 +211,7 @@ export class ExplorerComponent extends Component {
     if (!deepEquals(props.graphStyleData, this.props.graphStyleData)) {
       if (props.graphStyleData) {
         const rebasedStyle = deepmerge(this.defaultStyle, props.graphStyleData)
+        // const rebasedStyle = this.defaultStyle
         this.state.graphStyle.loadRules(rebasedStyle)
         this.setState({
           graphStyle: this.state.graphStyle,
@@ -233,6 +251,7 @@ export class ExplorerComponent extends Component {
           hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           onSelectedLabel={this.onSelectedLabel.bind(this)}
           onSelectedRelType={this.onSelectedRelType.bind(this)}
+          onSelectedCondition={this.onSelectedCondition.bind(this)}
         />
       )
     } else {
@@ -244,6 +263,7 @@ export class ExplorerComponent extends Component {
           hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           onSelectedLabel={this.onSelectedLabel.bind(this)}
           onSelectedRelType={this.onSelectedRelType.bind(this)}
+          onSelectedCondition={this.onSelectedCondition.bind(this)}
         />
       )
     }

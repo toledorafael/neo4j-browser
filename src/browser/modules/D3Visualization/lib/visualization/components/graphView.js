@@ -91,6 +91,12 @@ export default class graphView {
     return this
   }
 
+  highlightPresenceConditions (featureExpression) {
+    // Disable groupMarks and update featureExpression
+    this.viz.update(false, featureExpression)
+    return this
+  }
+
   resize () {
     this.viz.resize()
     return this
