@@ -28,7 +28,8 @@ export default class StraightArrow {
     shaftWidth,
     headWidth,
     headHeight,
-    captionLayout
+    captionLayout,
+    captionHeight
   ) {
     this.length = centreDistance - (startRadius + endRadius)
 
@@ -39,80 +40,76 @@ export default class StraightArrow {
     const shaftRadius = shaftWidth / 2
     const headRadius = headWidth / 2
 
-    this.midShaftPoint = {
+    this.midShaftPoint = captionsAbove => ({
       x: startArrow + this.shaftLength / 2,
-      y: 0
-    }
+      y: captionsAbove ? -captionHeight * 0.625 - shaftRadius : 0
+    })
 
-    this.outline = function (shortCaptionLength) {
-      if (captionLayout === 'external') {
+    this.outline = function (
+      shortCaptionLength,
+      colorCount,
+      toggleStripes,
+      captionsAbove
+    ) {
+      let path
+      if (captionLayout === 'external' && !captionsAbove) {
         const startBreak =
           startArrow + (this.shaftLength - shortCaptionLength) / 2
         const endBreak = endShaft - (this.shaftLength - shortCaptionLength) / 2
 
-        return [
-          'M',
-          startArrow,
-          shaftRadius,
-          'L',
-          startBreak,
-          shaftRadius,
-          'L',
-          startBreak,
-          -shaftRadius,
-          'L',
-          startArrow,
-          -shaftRadius,
+        // prettier-ignore
+        path = [
+          'M', startArrow, shaftRadius,
+          'L', startBreak, shaftRadius,
+          'L', startBreak, -shaftRadius,
+          'L', startArrow, -shaftRadius,
           'Z',
-          'M',
-          endBreak,
-          shaftRadius,
-          'L',
-          endShaft,
-          shaftRadius,
-          'L',
-          endShaft,
-          headRadius,
-          'L',
-          endArrow,
-          0,
-          'L',
-          endShaft,
-          -headRadius,
-          'L',
-          endShaft,
-          -shaftRadius,
-          'L',
-          endBreak,
-          -shaftRadius,
+          'M', endBreak, shaftRadius,
+          'L', endShaft, shaftRadius,
+          'L', endShaft, headRadius,
+          'L', endArrow, 0,
+          'L', endShaft, -headRadius,
+          'L', endShaft, -shaftRadius,
+          'L', endBreak, -shaftRadius,
           'Z'
         ].join(' ')
       } else {
-        return [
-          'M',
-          startArrow,
-          shaftRadius,
-          'L',
-          endShaft,
-          shaftRadius,
-          'L',
-          endShaft,
-          headRadius,
-          'L',
-          endArrow,
-          0,
-          'L',
-          endShaft,
-          -headRadius,
-          'L',
-          endShaft,
-          -shaftRadius,
-          'L',
-          startArrow,
-          -shaftRadius,
+        // prettier-ignore
+        path = [
+          'M', startArrow, shaftRadius,
+          'L', endShaft, shaftRadius,
+          'L', endShaft, headRadius,
+          'L', endArrow, 0,
+          'L', endShaft, -headRadius,
+          'L', endShaft, -shaftRadius,
+          'L', startArrow, -shaftRadius,
           'Z'
         ].join(' ')
       }
+      const attrs = {}
+      if (toggleStripes) {
+        attrs.x1 = 0
+        attrs.y1 = shaftRadius
+        attrs.x2 = 0
+        attrs.y2 = -shaftRadius
+      } else {
+        attrs.x1 = '0%'
+        attrs.y1 = '0%'
+        attrs.x2 = '100%'
+        attrs.y2 = '0%'
+        attrs.gradientUnits = 'objectBoundingBox'
+      }
+      const id = `straight-${toggleStripes ? 1 : 0}-${shaftWidth}`
+      return [
+        {
+          path,
+          gradient: {
+            type: 'linearGradient',
+            id,
+            attrs
+          }
+        }
+      ]
     }
 
     this.overlay = function (minWidth) {

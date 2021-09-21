@@ -313,13 +313,155 @@ function gradient (id, colors, toggleStripes) {
   }
 }
 
+function updateGradient (paths, viz) {
+  const toggleStripes = document.getElementById('toggleStripes').__data__
+  return paths.attr('fill', function (rel, i) {
+    let colors
+    if (checkPropertyList(rel.propertyList, 'condition')) {
+      colors = viz.style.forCondRel(rel).get('color')
+      if (Array.isArray(colors)) {
+        let id = 'gradient'
+        colors.forEach(function (color) {
+          id += color.slice(1)
+        })
+        if (rel.arrow && rel.arrow.gradient) {
+          const g = rel.arrow.gradient(id, colors, toggleStripes, i)
+
+          // TODO render gradient properly
+          const svg = d3.select('.neod3viz')
+          let el = svg.select(`#${g.gradientId.replace(/\./g, '\\.')}`)
+          if (el.empty()) {
+            el = svg.append('defs').append(g.type)
+            el.attr('id', g.gradientId)
+            el.attr('gradientUnits', 'userSpaceOnUse')
+
+            for (let attr in g.attrs) {
+              el.attr(attr, g.attrs[attr])
+            }
+
+            // extract into function
+            const offsetPercent = Math.trunc(100 / colors.length)
+            for (let colorId = 0; colorId < colors.length; colorId++) {
+              if (colorId > 0) {
+                el.append('stop')
+                  .attr('stop-color', colors[colorId - 1])
+                  .attr('offset', (offsetPercent * colorId).toString() + '% ')
+                  .attr('stop-opacity', 1)
+                el.append('stop')
+                  .attr('stop-color', colors[colorId])
+                  .attr('offset', (offsetPercent * colorId).toString() + '%')
+                  .attr('stop-opacity', 1)
+              }
+            }
+          }
+
+          return `url(#${g.gradientId})`
+        }
+        gradient(id, colors, toggleStripes)
+        return 'url(#' + id + ')'
+      }
+      return colors
+    } else {
+      return '#A5ABB6'
+    }
+    // #F16667
+    // if no condition -> forRelationship
+    // else if condition -> forCondition
+  })
+}
+
+function setupGradient (id, g, colors) {
+  const svg = d3.select('.neod3viz')
+  let el = svg.select(`#${id.replace(/\./g, '\\.')}`)
+  if (el.empty()) {
+    el = svg.append('defs').append(g.type)
+    el.attr('id', id)
+    el.attr('gradientUnits', 'userSpaceOnUse')
+
+    for (let attr in g.attrs) {
+      el.attr(attr, g.attrs[attr])
+    }
+
+    // extract into function
+    const offsetPercent = Math.trunc(100 / colors.length)
+    for (let colorId = 0; colorId < colors.length; colorId++) {
+      if (colorId > 0) {
+        el.append('stop')
+          .attr('stop-color', colors[colorId - 1])
+          .attr('offset', (offsetPercent * colorId).toString() + '% ')
+          .attr('stop-opacity', 1)
+        el.append('stop')
+          .attr('stop-color', colors[colorId])
+          .attr('offset', (offsetPercent * colorId).toString() + '%')
+          .attr('stop-opacity', 1)
+      }
+    }
+  }
+}
+
+function getColors (rel, viz) {
+  let colors
+  if (checkPropertyList(rel.propertyList, 'condition')) {
+    colors = viz.style.forCondRel(rel).get('color')
+    if (Array.isArray(colors)) {
+      return colors
+    }
+    return [colors]
+  } else {
+    return ['#A5ABB6']
+  }
+}
+
+function updateArrow (pathGroups, viz) {
+  const toggleStripes = document.getElementById('toggleStripes').__data__
+  const paths = pathGroups.selectAll('path').data(rel => {
+    if (rel.arrow) {
+      const colors = getColors(rel, viz)
+      return rel.arrow
+        .outline(
+          rel.shortCaptionLength,
+          colors.length,
+          toggleStripes,
+          !toggleStripes
+        )
+        .map(a => ({ pathDef: a, colors }))
+    } else {
+      return []
+    }
+  })
+  paths.enter().append('path')
+  paths.exit().remove()
+
+  pathGroups
+    .selectAll('path')
+    .attr('d', d => d.pathDef.path)
+    .attr('fill', (d, i) => {
+      if (d.pathDef.gradient && d.colors.length > 1) {
+        const id =
+          'gradient' +
+          d.colors.map(x => x.slice(1)).join('') +
+          d.pathDef.gradient.id
+        setupGradient(id, d.pathDef.gradient, d.colors)
+        return 'url(#' + id + ')'
+      } else {
+        return d.colors[Math.min(i, d.colors.length - 1)]
+      }
+    })
+
+  return pathGroups
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
   onGraphChange (selection, viz, featureExpression, toggleStripes) {
-    const paths = selection.selectAll('path.outline').data(rel => [rel])
+    const paths = selection.selectAll('g.outline').data(rel => [rel])
+    // paths
+    //   .enter()
+    //   .append('path')
+    //   .classed('outline', true)
     paths
       .enter()
-      .append('path')
+      .append('g')
       .classed('outline', true)
 
     if (featureExpression !== '') {
@@ -335,59 +477,51 @@ const arrowPath = new Renderer({
       }
     }
 
-    paths
-      .attr('fill', function (rel) {
-        let colors
-        if (checkPropertyList(rel.propertyList, 'condition')) {
-          colors = viz.style.forCondRel(rel).get('color')
-          if (Array.isArray(colors)) {
-            let id = 'gradient'
-            colors.forEach(function (color) {
-              id += color.slice(1)
-            })
-            gradient(id, colors, toggleStripes)
-            return 'url(#' + id + ')'
-          }
-          return colors
-        } else {
-          return '#A5ABB6'
-        }
-        // #F16667
-        // if no condition -> forRelationship
-        // else if condition -> forCondition
-      })
-      .attr('stroke-width', '3px')
-      .attr('stroke', function (rel) {
-        if (featureExpression !== '') {
-          var presenceCondition = ''
-          if (checkPropertyList(rel.propertyList, 'condition')) {
-            for (let index = 0; index < rel.propertyList.length; index++) {
-              const element = rel.propertyList[index]
-              if (element.key === 'condition') {
-                presenceCondition = rel.propertyList[index].value
-              }
-            }
-            if (presenceCondition !== 'true') {
-              if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
-                return 'red'
-              }
-            } else {
-              return 'red'
-            }
-            return 'none'
-          }
-          // return 'red'
-        }
-        return 'none'
-      })
+    updateArrow(paths, viz)
+    // updateGradient(paths, viz)
+    // this feature needs to be redone
+    // .attr('stroke-width', '3px')
+    // .attr('stroke', function (rel) {
+    //   if (featureExpression !== '') {
+    //     var presenceCondition = ''
+    //     if (checkPropertyList(rel.propertyList, 'condition')) {
+    //       for (let index = 0; index < rel.propertyList.length; index++) {
+    //         const element = rel.propertyList[index]
+    //         if (element.key === 'condition') {
+    //           presenceCondition = rel.propertyList[index].value
+    //         }
+    //       }
+    //       if (presenceCondition !== 'true') {
+    //         if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
+    //           return 'red'
+    //         }
+    //       } else {
+    //         return 'red'
+    //       }
+    //       return 'none'
+    //     }
+    //     // return 'red'
+    //   }
+    //   return 'none'
+    // })
 
     return paths.exit().remove()
   },
 
-  onTick (selection) {
-    return selection
-      .selectAll('path')
-      .attr('d', d => d.arrow.outline(d.shortCaptionLength))
+  onTick (selection, viz, toggleStripes) {
+    // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
+    return updateArrow(selection.selectAll('g.outline'), viz)
+    return updateGradient(selection.selectAll('path.outline'), viz).attr(
+      'd',
+      (d, i) => {
+        const outline = d.arrow.outline(d.shortCaptionLength)
+        if (Array.isArray(outline)) {
+          return outline[i]
+        } else {
+          return outline
+        }
+      }
+    )
   }
 })
 
@@ -395,6 +529,7 @@ const relationshipType = new Renderer({
   name: 'relationshipType',
   onGraphChange (selection, viz) {
     const texts = selection.selectAll('text').data(rel => [rel])
+    const toggleStripes = document.getElementById('toggleStripes').__data__
 
     texts
       .enter()
@@ -405,27 +540,30 @@ const relationshipType = new Renderer({
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel =>
-        viz.style.forRelationship(rel).get(`text-color-${rel.captionLayout}`)
+        viz.style
+          .forRelationship(rel)
+          .get(`text-color-${toggleStripes ? rel.captionLayout : 'external'}`)
       )
 
     return texts.exit().remove()
   },
 
   onTick (selection, viz) {
+    const toggleStripes = document.getElementById('toggleStripes').__data__
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint.x)
+      .attr('x', rel => rel.arrow.midShaftPoint(!toggleStripes).x)
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint.y +
+          rel.arrow.midShaftPoint(!toggleStripes).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint.x} ${
-            rel.arrow.midShaftPoint.y
+          return `rotate(180 ${rel.arrow.midShaftPoint(!toggleStripes).x} ${
+            rel.arrow.midShaftPoint(!toggleStripes).y
           })`
         } else {
           return null
