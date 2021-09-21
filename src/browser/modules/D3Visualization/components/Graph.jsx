@@ -50,6 +50,11 @@ export class GraphComponent extends Component {
 
   graphInit (el) {
     this.svgElement = el
+    if (this.svgElement && !this.svgElement.__graphStyle) {
+      this.svgElement.__graphStyle = {
+        toggleStripes: false
+      }
+    }
   }
 
   zoomInClicked (el) {
@@ -80,6 +85,11 @@ export class GraphComponent extends Component {
     if (this.svgElement != null) {
       this.initGraphView()
       this.graph && this.props.setGraph && this.props.setGraph(this.graph)
+      if (this.svgElement.__data__) {
+        this.svgElement.__data__.uid = this.graph.uid
+      } else {
+        this.svgElement.__data__ = { uid: this.graph.uid }
+      }
       this.props.getAutoCompleteCallback &&
         this.props.getAutoCompleteCallback(this.addInternalRelationships)
       this.props.assignVisElement &&
@@ -301,8 +311,10 @@ export class GraphComponent extends Component {
   handleToggleStripes (event) {
     // const newToggleStripes = !this.state.toggleStripes
     // this.setState({ toggleStripes: newToggleStripes })
-    const el = document.getElementById('toggleStripes')
-    el.__data__ = !el.__data__
+    if (this.svgElement) {
+      this.svgElement.__graphStyle.toggleStripes = !this.svgElement.__graphStyle
+        .toggleStripes
+    }
     // this.graphView.displayGroupMarks(toggleGroupMarks)
     // this.graphView.update(newToggleStripes)
     this.graphView.update()

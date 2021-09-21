@@ -196,8 +196,6 @@ export default class ArcArrow {
         instructions.push('L')
         instructions.push(coord(endTangent(headRadius)))
       }
-      console.log(index)
-      console.log(instructions)
       return instructions.join(' ')
     }
 

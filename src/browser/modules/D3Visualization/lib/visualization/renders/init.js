@@ -249,129 +249,8 @@ const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
   return false
 }
 
-function gradient (id, colors, toggleStripes) {
-  // TODO: have the x,y of the source and target of the arrow as arguments
-  // defines the gradient
-  // TODO: if gradient not already defined
-  const svg = d3.select('.neod3viz')
-  const linearGradient = d3.select('#' + id)
-  if (linearGradient[0][0] === null) {
-    svg
-      .append('defs')
-      .append('linearGradient')
-      .attr('id', id)
-      .attr('x1', '0%')
-      .attr('y1', '0%')
-      .attr('x2', function () {
-        if (toggleStripes) {
-          return '0%'
-        } else {
-          return '100%'
-        }
-      })
-      .attr('y2', function () {
-        if (toggleStripes) {
-          return '100%'
-        } else {
-          return '0%'
-        }
-      })
-
-    const offsetPercent = Math.trunc(100 / colors.length)
-    for (let colorId = 0; colorId < colors.length; colorId++) {
-      if (colorId > 0) {
-        d3.select('#' + id)
-          .append('stop')
-          .attr('stop-color', colors[colorId - 1])
-          .attr('offset', (offsetPercent * colorId).toString() + '% ')
-          .attr('stop-opacity', 1)
-        d3.select('#' + id)
-          .append('stop')
-          .attr('stop-color', colors[colorId])
-          .attr('offset', (offsetPercent * colorId).toString() + '%')
-          .attr('stop-opacity', 1)
-      }
-    }
-  } else {
-    d3.select('#' + id)
-      .attr('x1', '0%')
-      .attr('y1', '0%')
-      .attr('x2', function () {
-        if (toggleStripes) {
-          return '0%'
-        } else {
-          return '100%'
-        }
-      })
-      .attr('y2', function () {
-        if (toggleStripes) {
-          return '100%'
-        } else {
-          return '0%'
-        }
-      })
-  }
-}
-
-function updateGradient (paths, viz) {
-  const toggleStripes = document.getElementById('toggleStripes').__data__
-  return paths.attr('fill', function (rel, i) {
-    let colors
-    if (checkPropertyList(rel.propertyList, 'condition')) {
-      colors = viz.style.forCondRel(rel).get('color')
-      if (Array.isArray(colors)) {
-        let id = 'gradient'
-        colors.forEach(function (color) {
-          id += color.slice(1)
-        })
-        if (rel.arrow && rel.arrow.gradient) {
-          const g = rel.arrow.gradient(id, colors, toggleStripes, i)
-
-          // TODO render gradient properly
-          const svg = d3.select('.neod3viz')
-          let el = svg.select(`#${g.gradientId.replace(/\./g, '\\.')}`)
-          if (el.empty()) {
-            el = svg.append('defs').append(g.type)
-            el.attr('id', g.gradientId)
-            el.attr('gradientUnits', 'userSpaceOnUse')
-
-            for (let attr in g.attrs) {
-              el.attr(attr, g.attrs[attr])
-            }
-
-            // extract into function
-            const offsetPercent = Math.trunc(100 / colors.length)
-            for (let colorId = 0; colorId < colors.length; colorId++) {
-              if (colorId > 0) {
-                el.append('stop')
-                  .attr('stop-color', colors[colorId - 1])
-                  .attr('offset', (offsetPercent * colorId).toString() + '% ')
-                  .attr('stop-opacity', 1)
-                el.append('stop')
-                  .attr('stop-color', colors[colorId])
-                  .attr('offset', (offsetPercent * colorId).toString() + '%')
-                  .attr('stop-opacity', 1)
-              }
-            }
-          }
-
-          return `url(#${g.gradientId})`
-        }
-        gradient(id, colors, toggleStripes)
-        return 'url(#' + id + ')'
-      }
-      return colors
-    } else {
-      return '#A5ABB6'
-    }
-    // #F16667
-    // if no condition -> forRelationship
-    // else if condition -> forCondition
-  })
-}
-
-function setupGradient (id, g, colors) {
-  const svg = d3.select('.neod3viz')
+function setupGradient (svgEl, id, g, colors) {
+  const svg = d3.select(svgEl)
   let el = svg.select(`#${id.replace(/\./g, '\\.')}`)
   if (el.empty()) {
     el = svg.append('defs').append(g.type)
@@ -413,7 +292,9 @@ function getColors (rel, viz) {
 }
 
 function updateArrow (pathGroups, viz) {
-  const toggleStripes = document.getElementById('toggleStripes').__data__
+  const toggleStripes =
+    pathGroups.node() &&
+    pathGroups.node().closest('.neod3viz').__graphStyle.toggleStripes
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
       const colors = getColors(rel, viz)
@@ -432,6 +313,8 @@ function updateArrow (pathGroups, viz) {
   paths.enter().append('path')
   paths.exit().remove()
 
+  const svgEl = pathGroups.node() && pathGroups.node().closest('.neod3viz')
+
   pathGroups
     .selectAll('path')
     .attr('d', d => d.pathDef.path)
@@ -441,7 +324,7 @@ function updateArrow (pathGroups, viz) {
           'gradient' +
           d.colors.map(x => x.slice(1)).join('') +
           d.pathDef.gradient.id
-        setupGradient(id, d.pathDef.gradient, d.colors)
+        setupGradient(svgEl, id, d.pathDef.gradient, d.colors)
         return 'url(#' + id + ')'
       } else {
         return d.colors[Math.min(i, d.colors.length - 1)]
@@ -529,7 +412,6 @@ const relationshipType = new Renderer({
   name: 'relationshipType',
   onGraphChange (selection, viz) {
     const texts = selection.selectAll('text').data(rel => [rel])
-    const toggleStripes = document.getElementById('toggleStripes').__data__
 
     texts
       .enter()
@@ -537,19 +419,24 @@ const relationshipType = new Renderer({
       .attr({ 'text-anchor': 'middle' })
       .attr({ 'pointer-events': 'none' })
 
+    const toggleStripes =
+      texts.node() &&
+      texts.node().closest('.neod3viz').__graphStyle.toggleStripes
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
-      .attr('fill', rel =>
-        viz.style
+      .attr('fill', rel => {
+        return viz.style
           .forRelationship(rel)
           .get(`text-color-${toggleStripes ? rel.captionLayout : 'external'}`)
-      )
+      })
 
     return texts.exit().remove()
   },
 
   onTick (selection, viz) {
-    const toggleStripes = document.getElementById('toggleStripes').__data__
+    const toggleStripes =
+      selection.node() &&
+      selection.node().closest('.neod3viz').__graphStyle.toggleStripes
     return selection
       .selectAll('text')
       .attr('x', rel => rel.arrow.midShaftPoint(!toggleStripes).x)
