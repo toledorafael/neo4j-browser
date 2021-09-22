@@ -294,7 +294,7 @@ function getColors (rel, viz) {
 function updateArrow (pathGroups, viz) {
   const toggleStripes =
     pathGroups.node() &&
-    pathGroups.node().closest('.neod3viz').__graphStyle.toggleStripes
+    pathGroups.node().closest('.neod3viz').__graphStyle.layout === 'stripes'
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
       const colors = getColors(rel, viz)
@@ -394,17 +394,6 @@ const arrowPath = new Renderer({
   onTick (selection, viz, toggleStripes) {
     // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
     return updateArrow(selection.selectAll('g.outline'), viz)
-    return updateGradient(selection.selectAll('path.outline'), viz).attr(
-      'd',
-      (d, i) => {
-        const outline = d.arrow.outline(d.shortCaptionLength)
-        if (Array.isArray(outline)) {
-          return outline[i]
-        } else {
-          return outline
-        }
-      }
-    )
   }
 })
 
@@ -421,7 +410,7 @@ const relationshipType = new Renderer({
 
     const toggleStripes =
       texts.node() &&
-      texts.node().closest('.neod3viz').__graphStyle.toggleStripes
+      texts.node().closest('.neod3viz').__graphStyle.layout === 'stripes'
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel => {
@@ -436,7 +425,7 @@ const relationshipType = new Renderer({
   onTick (selection, viz) {
     const toggleStripes =
       selection.node() &&
-      selection.node().closest('.neod3viz').__graphStyle.toggleStripes
+      selection.node().closest('.neod3viz').__graphStyle.layout === 'stripes'
     return selection
       .selectAll('text')
       .attr('x', rel => rel.arrow.midShaftPoint(!toggleStripes).x)

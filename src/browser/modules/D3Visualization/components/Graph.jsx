@@ -32,7 +32,8 @@ import {
   StyleInputDiv,
   StyleSubmitButton,
   StyleTextArea,
-  StyleToggleButton
+  StyleRelationshipLayoutButton,
+  StyleRelationshipLayoutButtonGroup
 } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
@@ -43,7 +44,7 @@ export class GraphComponent extends Component {
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
-    toggleStripes: false,
+    currentLayout: 'segments',
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...'
   }
@@ -52,7 +53,7 @@ export class GraphComponent extends Component {
     this.svgElement = el
     if (this.svgElement && !this.svgElement.__graphStyle) {
       this.svgElement.__graphStyle = {
-        toggleStripes: false
+        layout: this.state.currentLayout
       }
     }
   }
@@ -358,11 +359,36 @@ export class GraphComponent extends Component {
   }
 
   inputToggleStripes () {
+    const relationshipLayouts = [
+      {
+        id: 'stripes',
+        display: 'Stripes'
+      },
+      {
+        id: 'segments',
+        display: 'Segments'
+      }
+    ]
     if (this.props.fullscreen) {
       return (
-        <StyleToggleButton onClick={this.handleToggleStripes.bind(this)}>
-          Stripes
-        </StyleToggleButton>
+        <StyleRelationshipLayoutButtonGroup>
+          {relationshipLayouts.map(({ id, display }) => (
+            <StyleRelationshipLayoutButton
+              className={id === this.state.currentLayout ? 'selected' : ''}
+              onClick={() => {
+                this.setState({
+                  currentLayout: id
+                })
+                this.svgElement &&
+                  this.svgElement.__graphStyle &&
+                  (this.svgElement.__graphStyle.layout = id)
+                this.graphView.update()
+              }}
+            >
+              {display}
+            </StyleRelationshipLayoutButton>
+          ))}
+        </StyleRelationshipLayoutButtonGroup>
       )
     }
   }
