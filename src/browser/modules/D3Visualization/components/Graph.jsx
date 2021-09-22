@@ -38,6 +38,17 @@ import {
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
+const relationshipLayouts = [
+  {
+    id: 'stripes',
+    display: 'Stripes'
+  },
+  {
+    id: 'segments',
+    display: 'Segments'
+  }
+]
+
 export class GraphComponent extends Component {
   state = {
     zoomInLimitReached: true,
@@ -362,16 +373,6 @@ export class GraphComponent extends Component {
   }
 
   inputToggleStripes () {
-    const relationshipLayouts = [
-      {
-        id: 'stripes',
-        display: 'Stripes'
-      },
-      {
-        id: 'segments',
-        display: 'Segments'
-      }
-    ]
     if (this.props.fullscreen) {
       return (
         <StyleRelationshipLayoutButtonGroup>
