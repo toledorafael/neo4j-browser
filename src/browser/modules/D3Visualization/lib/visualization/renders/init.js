@@ -322,6 +322,7 @@ function updateArrow (pathGroups, viz) {
       if (d.pathDef.gradient && d.colors.length > 1) {
         const id =
           'gradient' +
+          svgEl.__uid +
           d.colors.map(x => x.slice(1)).join('') +
           d.pathDef.gradient.id
         setupGradient(svgEl, id, d.pathDef.gradient, d.colors)

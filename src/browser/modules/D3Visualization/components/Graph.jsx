@@ -56,6 +56,9 @@ export class GraphComponent extends Component {
         layout: this.state.currentLayout
       }
     }
+    if (this.svgElement && !this.svgElement.__uid) {
+      this.svgElement.__uid = Math.floor(Math.random() * Math.pow(2, 52))
+    }
   }
 
   zoomInClicked (el) {
