@@ -32,6 +32,7 @@ export function createGraph (nodes, relationships) {
   graph.addNodes(mapNodes(nodes))
   graph.addRelationships(mapRelationships(relationships, graph))
   graph.display = { initialNodeDisplay: 300, nodeCount: 1 }
+  graph.uid = Math.floor(Math.random() * Math.pow(2, 52))
   return graph
 }
 

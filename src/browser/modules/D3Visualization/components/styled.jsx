@@ -459,6 +459,40 @@ export const StyleSubmitButton = styled.button`
   }
 `
 
+export const StyleRelationshipLayoutButtonGroup = styled.div`
+  position: absolute;
+  top: 100px;
+  right: 120px;
+  width: 200px;
+  border: none;
+  border-radius: 8px;
+  background: grey;
+  padding: 0 4px;
+`
+
+export const StyleRelationshipLayoutButton = styled.button`
+  width: 100%;
+  line-height: 32px;
+  height: 32px;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 4px;
+  background: grey;
+  color: white;
+  display: block;
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    background: darkgrey;
+  }
+  &.selected {
+    background: white;
+    color: grey;
+  }
+  margin: 4px 0;
+`
+
 export const StyleToggleButton = styled.button`
   position: absolute;
   top: 100px;

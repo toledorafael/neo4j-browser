@@ -32,10 +32,22 @@ import {
   StyleInputDiv,
   StyleSubmitButton,
   StyleTextArea,
-  StyleToggleButton
+  StyleRelationshipLayoutButton,
+  StyleRelationshipLayoutButtonGroup
 } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
+
+const relationshipLayouts = [
+  {
+    id: 'stripes',
+    display: 'Stripes'
+  },
+  {
+    id: 'segments',
+    display: 'Segments'
+  }
+]
 
 export class GraphComponent extends Component {
   state = {
@@ -43,13 +55,21 @@ export class GraphComponent extends Component {
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
-    toggleStripes: false,
+    currentLayout: 'segments',
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...'
   }
 
   graphInit (el) {
     this.svgElement = el
+    if (this.svgElement && !this.svgElement.__graphStyle) {
+      this.svgElement.__graphStyle = {
+        layout: this.state.currentLayout
+      }
+    }
+    if (this.svgElement && !this.svgElement.__uid) {
+      this.svgElement.__uid = Math.floor(Math.random() * Math.pow(2, 52))
+    }
   }
 
   zoomInClicked (el) {
@@ -80,6 +100,11 @@ export class GraphComponent extends Component {
     if (this.svgElement != null) {
       this.initGraphView()
       this.graph && this.props.setGraph && this.props.setGraph(this.graph)
+      if (this.svgElement.__data__) {
+        this.svgElement.__data__.uid = this.graph.uid
+      } else {
+        this.svgElement.__data__ = { uid: this.graph.uid }
+      }
       this.props.getAutoCompleteCallback &&
         this.props.getAutoCompleteCallback(this.addInternalRelationships)
       this.props.assignVisElement &&
@@ -301,8 +326,10 @@ export class GraphComponent extends Component {
   handleToggleStripes (event) {
     // const newToggleStripes = !this.state.toggleStripes
     // this.setState({ toggleStripes: newToggleStripes })
-    const el = document.getElementById('toggleStripes')
-    el.__data__ = !el.__data__
+    if (this.svgElement) {
+      this.svgElement.__graphStyle.toggleStripes = !this.svgElement.__graphStyle
+        .toggleStripes
+    }
     // this.graphView.displayGroupMarks(toggleGroupMarks)
     // this.graphView.update(newToggleStripes)
     this.graphView.update()
@@ -348,9 +375,24 @@ export class GraphComponent extends Component {
   inputToggleStripes () {
     if (this.props.fullscreen) {
       return (
-        <StyleToggleButton onClick={this.handleToggleStripes.bind(this)}>
-          Stripes
-        </StyleToggleButton>
+        <StyleRelationshipLayoutButtonGroup>
+          {relationshipLayouts.map(({ id, display }) => (
+            <StyleRelationshipLayoutButton
+              className={id === this.state.currentLayout ? 'selected' : ''}
+              onClick={() => {
+                this.setState({
+                  currentLayout: id
+                })
+                this.svgElement &&
+                  this.svgElement.__graphStyle &&
+                  (this.svgElement.__graphStyle.layout = id)
+                this.graphView.update()
+              }}
+            >
+              {display}
+            </StyleRelationshipLayoutButton>
+          ))}
+        </StyleRelationshipLayoutButtonGroup>
       )
     }
   }
