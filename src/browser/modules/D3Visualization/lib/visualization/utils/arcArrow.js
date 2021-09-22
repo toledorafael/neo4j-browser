@@ -199,15 +199,10 @@ export default class ArcArrow {
       return instructions.join(' ')
     }
 
-    this.outline = function (
-      shortCaptionLength,
-      segmentCount,
-      toggleStripes,
-      captionsAbove
-    ) {
+    this.outline = function (shortCaptionLength, segmentCount, layout) {
       let paths = []
       if (startAngle > endAngle || shaftRadius >= arcRadius) {
-        if (toggleStripes) {
+        if (layout === 'stripes') {
           paths = Array(segmentCount)
             .fill()
             .map((_, i) => {
@@ -236,7 +231,7 @@ export default class ArcArrow {
         }
       }
 
-      if (captionLayout === 'external' && !captionsAbove) {
+      if (captionLayout === 'external' && layout !== 'segments') {
         let captionSweep = shortCaptionLength / arcRadius
         if (this.deflection > 0) {
           captionSweep *= -1
@@ -245,7 +240,7 @@ export default class ArcArrow {
         const startBreak = midShaftAngle - captionSweep / 2
         const endBreak = midShaftAngle + captionSweep / 2
 
-        if (toggleStripes) {
+        if (layout === 'stripes') {
           paths = Array(segmentCount)
             .fill()
             .map((_, i) => {
@@ -320,7 +315,7 @@ export default class ArcArrow {
           ]
         }
       } else {
-        if (toggleStripes) {
+        if (layout === 'stripes') {
           paths = Array(segmentCount)
             .fill()
             .map((_, i) => {
@@ -367,9 +362,8 @@ export default class ArcArrow {
         }
       }
 
-      const type = toggleStripes ? 'radialGradient' : 'linearGradient'
       const attrs = {}
-      if (toggleStripes) {
+      if (layout === 'segments') {
         // attrs.cx = cx
         // attrs.cy = cy
         // attrs.fr = arcRadius - shaftRadius
@@ -385,7 +379,7 @@ export default class ArcArrow {
         return [
           {
             path: paths[0],
-            gradient: { type, id: 'arc', attrs }
+            gradient: { type: 'linearGradient', id: 'arc', attrs }
           }
         ]
       }

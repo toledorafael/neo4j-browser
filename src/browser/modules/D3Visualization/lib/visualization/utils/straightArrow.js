@@ -45,14 +45,9 @@ export default class StraightArrow {
       y: captionsAbove ? -captionHeight * 0.625 - shaftRadius : 0
     })
 
-    this.outline = function (
-      shortCaptionLength,
-      colorCount,
-      toggleStripes,
-      captionsAbove
-    ) {
+    this.outline = function (shortCaptionLength, colorCount, layout) {
       let path
-      if (captionLayout === 'external' && !captionsAbove) {
+      if (captionLayout === 'external' && layout !== 'segments') {
         const startBreak =
           startArrow + (this.shaftLength - shortCaptionLength) / 2
         const endBreak = endShaft - (this.shaftLength - shortCaptionLength) / 2
@@ -87,7 +82,7 @@ export default class StraightArrow {
         ].join(' ')
       }
       const attrs = {}
-      if (toggleStripes) {
+      if (layout === 'stripes') {
         attrs.x1 = 0
         attrs.y1 = shaftRadius
         attrs.x2 = 0
@@ -99,7 +94,7 @@ export default class StraightArrow {
         attrs.y2 = '0%'
         attrs.gradientUnits = 'objectBoundingBox'
       }
-      const id = `straight-${toggleStripes ? 1 : 0}-${shaftWidth}`
+      const id = `straight-${layout}-${shaftWidth}`
       return [
         {
           path,

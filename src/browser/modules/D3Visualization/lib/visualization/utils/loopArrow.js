@@ -88,7 +88,7 @@ export default class LoopArrow {
       return new Point(-Math.sin(angle) * radius, Math.cos(angle) * radius + cy)
     }
 
-    this.outline = function (_, colorCount, toggleStripes) {
+    this.outline = function (_, colorCount, layout) {
       const inner = loopRadius - shaftRadius
       const outer = loopRadius + shaftRadius
 
@@ -99,7 +99,7 @@ export default class LoopArrow {
 
       const sections = []
 
-      if (toggleStripes) {
+      if (layout === 'stripes') {
         const section1 = [
           'M',
           startPoint(r1, shaftRadius),

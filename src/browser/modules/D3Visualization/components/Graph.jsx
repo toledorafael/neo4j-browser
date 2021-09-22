@@ -46,6 +46,10 @@ const relationshipLayouts = [
   {
     id: 'segments',
     display: 'Segments'
+  },
+  {
+    id: 'separate',
+    display: 'Separate Links'
   }
 ]
 
