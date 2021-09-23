@@ -48,15 +48,17 @@ export default class StraightArrow {
       const sRadius = distance * 0.25
       const hRadius = distance * 0.4
 
+      const halfWidthOffset = Math.floor(colorCount / 2)
       var offset
+      
       if (index === 0 && colorCount > 1) {
-        offset = -Math.floor(colorCount / 2) * distance
-      } else if (index < Math.floor(colorCount / 2)) {
-        offset = -((Math.floor(colorCount / 2) - index) * distance)
-      } else if (index === Math.floor(colorCount / 2) || (index === 0 && colorCount <= 1)) {
+        offset = -halfWidthOffset * distance
+      } else if (index < halfWidthOffset) {
+        offset = -((halfWidthOffset - index) * distance)
+      } else if (index === halfWidthOffset || (index === 0 && colorCount <= 1)) {
         offset = 0
-      } else if (index > Math.floor(colorCount / 2)) {
-        offset = (index - Math.floor(colorCount / 2)) * distance
+      } else if (index > halfWidthOffset) {
+        offset = (index - halfWidthOffset) * distance
       }
 
       return [
