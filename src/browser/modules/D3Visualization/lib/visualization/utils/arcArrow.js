@@ -363,7 +363,7 @@ export default class ArcArrow {
       }
 
       const attrs = {}
-      if (layout === 'segments') {
+      if (layout === 'stripes') {
         // attrs.cx = cx
         // attrs.cy = cy
         // attrs.fr = arcRadius - shaftRadius
