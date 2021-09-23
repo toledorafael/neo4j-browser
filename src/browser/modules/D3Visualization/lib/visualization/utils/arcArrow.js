@@ -103,7 +103,12 @@ export default class ArcArrow {
       y:
         cy -
         arcRadius * Math.cos(midShaftAngle) -
-        (layout !== 'stripes' ? captionHeight * 0.625 + shaftRadius : 0)
+        (layout === 'segments'
+          ? captionHeight * 0.625 + shaftRadius
+          : layout === 'separate'
+            ? captionHeight * 0.625 +
+            (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
+            : 0)
     })
 
     const startTangent = function (dr) {
@@ -199,7 +204,63 @@ export default class ArcArrow {
       return instructions.join(' ')
     }
 
+    const separateOutline = (colorCount, index) => {
+      const distance = Math.min(
+        6,
+        Math.min(startRadius, endRadius) / colorCount
+      )
+      this.separateArrowWidth = distance * colorCount
+      const sRadius = distance * 0.25
+      const hRadius = distance * 0.4
+
+      const offset = (index - (colorCount - 1) / 2) * distance
+
+      const inner = -sRadius + offset
+      const outer = sRadius + offset
+      const extraLength =
+        endRadius - Math.sqrt(endRadius * endRadius - offset * offset)
+
+      const sAngle = -Math.atan(Math.abs(cx / cy))
+      // const r4 = Math.sqrt(r1 * r1 - offset * offset)
+      return [
+        'M',
+        coord(angleTangent(sAngle, outer)),
+        'L',
+        coord(angleTangent(sAngle, inner)),
+        'A',
+        arcRadius + inner,
+        arcRadius + inner,
+        0,
+        0,
+        positiveSweep,
+        coord(endTangent(inner)),
+        'L',
+        coord(endTangent(offset - hRadius)),
+        'L',
+        coord(endOverlayCorner(offset, headLength + extraLength)),
+        'L',
+        coord(endTangent(offset + hRadius)),
+        'L',
+        coord(endTangent(outer)),
+        'A',
+        arcRadius + outer,
+        arcRadius + outer,
+        0,
+        0,
+        negativeSweep,
+        coord(angleTangent(sAngle, outer))
+      ].join(' ')
+    }
+
     this.outline = function (shortCaptionLength, segmentCount, layout) {
+      if (layout === 'separate') {
+        return Array(segmentCount)
+          .fill()
+          .map((_, i) => ({
+            path: separateOutline(segmentCount, i)
+          }))
+      }
+
       let paths = []
       if (startAngle > endAngle || shaftRadius >= arcRadius) {
         if (layout === 'stripes') {
