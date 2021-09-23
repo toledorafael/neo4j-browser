@@ -98,12 +98,12 @@ export default class ArcArrow {
     if (this.deflection > 0) {
       midShaftAngle += Math.PI
     }
-    this.midShaftPoint = captionsAbove => ({
+    this.midShaftPoint = layout => ({
       x: cx + arcRadius * Math.sin(midShaftAngle),
       y:
         cy -
         arcRadius * Math.cos(midShaftAngle) -
-        (captionsAbove ? captionHeight * 0.625 + shaftRadius : 0)
+        (layout !== 'stripes' ? captionHeight * 0.625 + shaftRadius : 0)
     })
 
     const startTangent = function (dr) {

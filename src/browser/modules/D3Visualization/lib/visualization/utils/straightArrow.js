@@ -40,9 +40,9 @@ export default class StraightArrow {
     const shaftRadius = shaftWidth / 2
     const headRadius = headWidth / 2
 
-    this.midShaftPoint = captionsAbove => ({
+    this.midShaftPoint = layout => ({
       x: startArrow + this.shaftLength / 2,
-      y: captionsAbove ? -captionHeight * 0.625 - shaftRadius : 0
+      y: layout !== 'stripes' ? -captionHeight * 0.625 - shaftRadius : 0
     })
 
     this.outline = function (shortCaptionLength, colorCount, layout) {

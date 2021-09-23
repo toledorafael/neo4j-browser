@@ -425,21 +425,20 @@ const relationshipType = new Renderer({
     const layout =
       selection.node() &&
       selection.node().closest('.neod3viz').__graphStyle.layout
-    const labelAbove = layout === 'segments'
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint(labelAbove).x)
+      .attr('x', rel => rel.arrow.midShaftPoint(layout).x)
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint(labelAbove).y +
+          rel.arrow.midShaftPoint(layout).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint(labelAbove).x} ${
-            rel.arrow.midShaftPoint(labelAbove).y
+          return `rotate(180 ${rel.arrow.midShaftPoint(layout).x} ${
+            rel.arrow.midShaftPoint(layout).y
           })`
         } else {
           return null

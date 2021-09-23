@@ -54,8 +54,16 @@ export default class LoopArrow {
         cy + (localLoopRadius + displacement) * Math.cos(sweep)
       )
     }
-    this.midShaftPoint = () =>
-      normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
+    this.midShaftPoint = layout => {
+      if (layout === 'separate') {
+        return normalPoint(
+          0,
+          r3,
+          (this.separateArrowWidth || r1) + captionHeight / 2 + 2
+        )
+      }
+      return normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
+    }
     const startPoint = (radius, displacement) =>
       normalPoint((Math.PI + spread) / 2, radius, displacement)
     const endPoint = (radius, displacement) =>
@@ -91,6 +99,7 @@ export default class LoopArrow {
     const separateOutline = (colorCount, index) => {
       const hLength = 6
       const distance = Math.min(6, r1 / colorCount)
+      this.separateArrowWidth = distance * colorCount
       const sRadius = distance * 0.25
       const hRadius = distance * 0.4
 
