@@ -292,19 +292,14 @@ function getColors (rel, viz) {
 }
 
 function updateArrow (pathGroups, viz) {
-  const toggleStripes =
+  const layout =
     pathGroups.node() &&
-    pathGroups.node().closest('.neod3viz').__graphStyle.layout === 'stripes'
+    pathGroups.node().closest('.neod3viz').__graphStyle.layout
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
       const colors = getColors(rel, viz)
       return rel.arrow
-        .outline(
-          rel.shortCaptionLength,
-          colors.length,
-          toggleStripes,
-          !toggleStripes
-        )
+        .outline(rel.shortCaptionLength, colors.length, layout)
         .map(a => ({ pathDef: a, colors }))
     } else {
       return []
@@ -409,38 +404,41 @@ const relationshipType = new Renderer({
       .attr({ 'text-anchor': 'middle' })
       .attr({ 'pointer-events': 'none' })
 
-    const toggleStripes =
-      texts.node() &&
-      texts.node().closest('.neod3viz').__graphStyle.layout === 'stripes'
+    const layout =
+      texts.node() && texts.node().closest('.neod3viz').__graphStyle.layout
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel => {
         return viz.style
           .forRelationship(rel)
-          .get(`text-color-${toggleStripes ? rel.captionLayout : 'external'}`)
+          .get(
+            `text-color-${
+              layout !== 'segments' ? rel.captionLayout : 'external'
+            }`
+          )
       })
 
     return texts.exit().remove()
   },
 
   onTick (selection, viz) {
-    const toggleStripes =
+    const layout =
       selection.node() &&
-      selection.node().closest('.neod3viz').__graphStyle.layout === 'stripes'
+      selection.node().closest('.neod3viz').__graphStyle.layout
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint(!toggleStripes).x)
+      .attr('x', rel => rel.arrow.midShaftPoint(layout).x)
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint(!toggleStripes).y +
+          rel.arrow.midShaftPoint(layout).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint(!toggleStripes).x} ${
-            rel.arrow.midShaftPoint(!toggleStripes).y
+          return `rotate(180 ${rel.arrow.midShaftPoint(layout).x} ${
+            rel.arrow.midShaftPoint(layout).y
           })`
         } else {
           return null
