@@ -97,8 +97,10 @@ export default class LoopArrow {
     }
 
     const separateOutline = (colorCount, index) => {
-      const hLength = 6
+      // const hLength = 6
+      const hLength = headLength
       const distance = Math.min(6, r1 / colorCount)
+      this.separateDistance = distance
       this.separateArrowWidth = distance * colorCount
       const sRadius = distance * 0.25
       const hRadius = distance * 0.4
@@ -164,6 +166,8 @@ export default class LoopArrow {
             path: separateOutline(colorCount, i)
           }))
       }
+
+      this.separateArrowWidth = 0
 
       if (layout === 'stripes') {
         // prettier-ignore
@@ -352,18 +356,22 @@ export default class LoopArrow {
 
     this.overlay = function (minWidth) {
       const displacement = Math.max(minWidth / 2, shaftRadius)
-      const inner = loopRadius - displacement
-      const outer = loopRadius + displacement
+      const inner = this.separateArrowWidth
+        ? loopRadius - this.separateDistance
+        : loopRadius - displacement
+      const outer = this.separateArrowWidth
+        ? loopRadius + this.separateArrowWidth
+        : loopRadius + displacement
       // prettier-ignore
       return [
-        'M', startPoint(r1, displacement),
-        'L', startPoint(r3, displacement),
-        'A', outer, outer, 0, 1, 1, endPoint(r3, displacement),
-        'L', endPoint(r2, displacement),
-        'L', endPoint(r2, -displacement),
-        'L', endPoint(r3, -displacement),
-        'A', inner, inner, 0, 1, 0, startPoint(r3, -displacement),
-        'L', startPoint(r1, -displacement),
+        'M', startPoint(r1, outer - loopRadius),
+        'L', startPoint(r3, outer - loopRadius),
+        'A', outer, outer, 0, 1, 1, endPoint(r3, outer - loopRadius),
+        'L', endPoint(r1, outer - loopRadius),
+        'L', endPoint(r1, inner - loopRadius),
+        'L', endPoint(r3, inner - loopRadius),
+        'A', inner, inner, 0, 1, 0, startPoint(r3, inner - loopRadius),
+        'L', startPoint(r1, inner - loopRadius),
         'Z'
       ].join(' ')
     }
