@@ -413,7 +413,10 @@ const relationshipType = new Renderer({
           .forRelationship(rel)
           .get(
             `text-color-${
-              layout !== 'segments' ? rel.captionLayout : 'external'
+              checkPropertyList(rel.propertyList, 'condition') &&
+              layout !== 'stripes'
+                ? 'external'
+                : rel.captionLayout
             }`
           )
       })

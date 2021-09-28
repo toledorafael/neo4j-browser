@@ -447,7 +447,11 @@ export default class ArcArrow {
     }
 
     this.overlay = function (minWidth) {
-      const radius = Math.max(minWidth / 2, shaftRadius)
+      const radius = Math.max(
+        minWidth / 2,
+        shaftRadius,
+        (this.separateArrowWidth || 0) / 2
+      )
 
       return [
         'M',

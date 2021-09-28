@@ -42,40 +42,49 @@ export default class StraightArrow {
     const headRadius = headWidth / 2
 
     const separateOutline = (colorCount, index) => {
-      const hLength = 6
+      // const hLength = 6
+      const hLength = headHeight
       const distance = Math.min(6, startRadius / colorCount)
       this.separateArrowWidth = distance * colorCount
       const sRadius = distance * 0.25
       const hRadius = distance * 0.4
-
-      const halfWidthOffset = Math.floor(colorCount / 2)
-      var offset
-      
-      if (index === 0 && colorCount > 1) {
-        offset = -halfWidthOffset * distance
-      } else if (index < halfWidthOffset) {
-        offset = -((halfWidthOffset - index) * distance)
-      } else if (index === halfWidthOffset || (index === 0 && colorCount <= 1)) {
-        offset = 0
-      } else if (index > halfWidthOffset) {
-        offset = (index - halfWidthOffset) * distance
-      }
+      const offset = distance * (index - (colorCount - 1) / 2)
+      const extraLength =
+        endRadius - Math.sqrt(endRadius * endRadius - offset * offset)
 
       return [
-        'M', startArrow, sRadius + offset,
-        'L', endShaft + hLength, sRadius + offset,
-        'L', endShaft + hLength, hRadius + offset,
-        'L', endArrow, offset,
-        'L', endShaft + hLength, -hRadius + offset,
-        'L', endShaft + hLength, -sRadius + offset,
-        'L', startArrow, -sRadius + offset,
+        'M',
+        0,
+        sRadius + offset,
+        'L',
+        endShaft,
+        sRadius + offset,
+        'L',
+        endShaft,
+        hRadius + offset,
+        'L',
+        endArrow + extraLength,
+        offset,
+        'L',
+        endShaft,
+        -hRadius + offset,
+        'L',
+        endShaft,
+        -sRadius + offset,
+        'L',
+        0,
+        -sRadius + offset,
         'Z'
       ].join(' ')
     }
 
     this.midShaftPoint = layout => ({
       x: startArrow + this.shaftLength / 2,
-      y: layout !== 'stripes' ? -captionHeight * 0.625 - Math.max(shaftRadius, this.separateArrowWidth / 2) : 0
+      y:
+        layout !== 'stripes'
+          ? -captionHeight * 0.625 -
+            Math.max(shaftRadius, this.separateArrowWidth / 2)
+          : 0
     })
 
     this.outline = function (shortCaptionLength, colorCount, layout) {
@@ -150,7 +159,11 @@ export default class StraightArrow {
     }
 
     this.overlay = function (minWidth) {
-      const radius = Math.max(minWidth / 2, shaftRadius)
+      const radius = Math.max(
+        minWidth / 2,
+        shaftRadius,
+        (this.separateArrowWidth || 0) / 2
+      )
       return [
         'M',
         startArrow,
