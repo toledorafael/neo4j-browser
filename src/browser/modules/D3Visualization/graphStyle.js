@@ -244,28 +244,46 @@ export default function neoGraphStyle () {
         for (let i = 0; i < rules.length; i++) {
           let rule = rules[i]
           // if rule concerns a condition
+          // and presence condition is not true or empty
           if (
             rule.selector.classes.includes('condRule') &&
             presenceCondition !== '' &&
             presenceCondition !== 'true'
           ) {
+            let featureExpression = rule.selector.classes[0]
             // If no solver was created for this presence condition then create one
             if (!this.selector.classes[0].solver) {
               this.selector.classes[0].solver = new SatSolver(presenceCondition)
+              this.selector.classes[0].cachedAssumptSolutions = {}
             }
 
+            // If the result for this feature expression is not cached yet
             // Check if presence condition is satisfiable assuming the feature expression of interest
+            // Save the result in cachedAssumptSolution
             if (
-              this.selector.classes[0].solver.solveAssuming(
-                rule.selector.classes[0]
+              !(
+                featureExpression in
+                this.selector.classes[0].cachedAssumptSolutions
               )
             ) {
+              this.selector.classes[0].cachedAssumptSolutions[
+                featureExpression
+              ] = this.selector.classes[0].solver.solveAssuming(
+                featureExpression
+              )
+            }
+
+            // Look up the satisfiability solution in the cached results
+            if (
+              this.selector.classes[0].cachedAssumptSolutions[featureExpression]
+            ) {
+              // If no property is set for this link, create one
               if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
               } else {
-                // Merge rules
+                // If properties were already set and there is an update on the color rules, merge the rules
                 if (this.props.color !== rule.props.color) {
                   for (const key in rule.props) {
                     if (key === 'color') {
@@ -288,7 +306,7 @@ export default function neoGraphStyle () {
               }
             }
           } else {
-            // if condition = true or empty
+            // TODO: if condition = true or empty
             // All rules regarding any condition should apply (?)
           }
         }
