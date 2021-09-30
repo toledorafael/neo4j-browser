@@ -240,6 +240,20 @@ export class GrassEditorComponent extends Component {
     )
   }
 
+  dashPicker (selector, styleForItem) {
+    return (
+      <span>
+        <input
+          type='text'
+          value={styleForItem.get('pattern') || ''}
+          onChange={e => {
+            this.updateStyle(selector, { pattern: e.target.value })
+          }}
+        />
+      </span>
+    )
+  }
+
   stylePicker () {
     // Based on what type of graph components is selected, we add applicable style pickers
     let pickers
@@ -329,7 +343,8 @@ export class GrassEditorComponent extends Component {
       }
       pickers = [
         this.colorPicker(styleForRelType.selector, styleForRelType),
-        this.widthPicker(styleForRelType.selector, styleForRelType)
+        this.widthPicker(styleForRelType.selector, styleForRelType),
+        this.dashPicker(styleForRelType.selector, styleForRelType)
         // this.captionPicker(
         //  styleForRelType.selector,
         //  styleForRelType,

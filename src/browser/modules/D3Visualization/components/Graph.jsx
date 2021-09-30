@@ -50,6 +50,10 @@ const relationshipLayouts = [
   {
     id: 'separate',
     display: 'Separate Links'
+  },
+  {
+    id: 'segments-pattern',
+    display: 'Patterns'
   }
 ]
 

@@ -103,12 +103,12 @@ export default class ArcArrow {
       y:
         cy -
         arcRadius * Math.cos(midShaftAngle) -
-        (layout === 'segments'
-          ? captionHeight * 0.625 + shaftRadius
-          : layout === 'separate'
-            ? captionHeight * 0.625 +
+        (layout === 'separate'
+          ? captionHeight * 0.625 +
             (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
-            : 0)
+          : layout === 'stripes'
+            ? 0
+            : captionHeight * 0.625 + shaftRadius)
     })
 
     const startTangent = function (dr) {
@@ -160,10 +160,10 @@ export default class ArcArrow {
     const positiveSweep = startAttach.y > 0 ? 0 : 1
     const negativeSweep = startAttach.y < 0 ? 0 : 1
 
-    const tipInstructions = function (segmentCount, index) {
+    const tipInstructions = function (colorCount, index) {
       const instructions = []
-      const inner = -shaftRadius + (index / segmentCount) * arrowWidth
-      const outer = -shaftRadius + ((index + 1) / segmentCount) * arrowWidth
+      const inner = -shaftRadius + (index / colorCount) * arrowWidth
+      const outer = -shaftRadius + ((index + 1) / colorCount) * arrowWidth
       if (index === 0) {
         instructions.push('L')
         instructions.push(coord(endTangent(-headRadius)))
@@ -181,7 +181,7 @@ export default class ArcArrow {
       )
 
       // tip point
-      if (segmentCount === 2 * index + 1) {
+      if (colorCount === 2 * index + 1) {
         instructions.push('L')
         instructions.push(coord(endNormal(headLength)))
       }
@@ -197,7 +197,7 @@ export default class ArcArrow {
         )
       )
 
-      if (index === segmentCount - 1) {
+      if (index === colorCount - 1) {
         instructions.push('L')
         instructions.push(coord(endTangent(headRadius)))
       }
@@ -252,28 +252,58 @@ export default class ArcArrow {
       ].join(' ')
     }
 
-    this.outline = function (shortCaptionLength, segmentCount, layout) {
+    this.outline = function (shortCaptionLength, colorCount, layout) {
       if (layout === 'separate') {
-        return Array(segmentCount)
+        return Array(colorCount)
           .fill()
           .map((_, i) => ({
-            path: separateOutline(segmentCount, i)
+            path: separateOutline(colorCount, i)
           }))
+      }
+
+      if (layout === 'segments-pattern') {
+        const segmentAngle = (endAngle - startAngle) / colorCount
+        return Array(colorCount + 1)
+          .fill()
+          .map((_, i) => {
+            if (i === colorCount) {
+              return {
+                path: [
+                  'M',
+                  coord(endTangent(-headRadius)),
+                  'L',
+                  coord(endNormal(headLength)),
+                  'L',
+                  coord(endTangent(headRadius)),
+                  'Z'
+                ].join(' ')
+              }
+            }
+            return {
+              path:
+                `M ${coord(angleTangent(startAngle + segmentAngle * i, 0))} ` +
+                `A ${arcRadius} ${arcRadius} 0 0 1 ${coord(
+                  angleTangent(startAngle + segmentAngle * (i + 1), 0)
+                )}`,
+              useStroke: true,
+              strokeWidth: arrowWidth
+            }
+          })
       }
 
       let paths = []
       if (startAngle > endAngle || shaftRadius >= arcRadius) {
         if (layout === 'stripes') {
-          paths = Array(segmentCount)
+          paths = Array(colorCount)
             .fill()
             .map((_, i) => {
-              const inner = -shaftRadius + (i / segmentCount) * arrowWidth
-              const outer = -shaftRadius + ((i + 1) / segmentCount) * arrowWidth
+              const inner = -shaftRadius + (i / colorCount) * arrowWidth
+              const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
 
               return [
                 'M',
                 coord(endTangent(inner)),
-                tipInstructions(segmentCount, i),
+                tipInstructions(colorCount, i),
                 'L',
                 coord(endTangent(outer)),
                 'Z'
@@ -292,7 +322,7 @@ export default class ArcArrow {
         }
       }
 
-      if (captionLayout === 'external' && layout !== 'segments') {
+      if (captionLayout === 'external' && layout === 'stripes') {
         let captionSweep = shortCaptionLength / arcRadius
         if (this.deflection > 0) {
           captionSweep *= -1
@@ -302,11 +332,11 @@ export default class ArcArrow {
         const endBreak = midShaftAngle + captionSweep / 2
 
         if (layout === 'stripes') {
-          paths = Array(segmentCount)
+          paths = Array(colorCount)
             .fill()
             .map((_, i) => {
-              const inner = -shaftRadius + (i / segmentCount) * arrowWidth
-              const outer = -shaftRadius + ((i + 1) / segmentCount) * arrowWidth
+              const inner = -shaftRadius + (i / colorCount) * arrowWidth
+              const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
 
               return [
                 'M',
@@ -341,7 +371,7 @@ export default class ArcArrow {
                 0,
                 positiveSweep,
                 coord(endTangent(inner)),
-                tipInstructions(segmentCount, i),
+                tipInstructions(colorCount, i),
                 'L',
                 coord(endTangent(outer)),
                 'A',
@@ -377,11 +407,11 @@ export default class ArcArrow {
         }
       } else {
         if (layout === 'stripes') {
-          paths = Array(segmentCount)
+          paths = Array(colorCount)
             .fill()
             .map((_, i) => {
-              const inner = -shaftRadius + (i / segmentCount) * arrowWidth
-              const outer = -shaftRadius + ((i + 1) / segmentCount) * arrowWidth
+              const inner = -shaftRadius + (i / colorCount) * arrowWidth
+              const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
 
               return [
                 'M',
@@ -393,7 +423,7 @@ export default class ArcArrow {
                 0,
                 positiveSweep,
                 coord(endTangent(inner)),
-                tipInstructions(segmentCount, i),
+                tipInstructions(colorCount, i),
                 'L',
                 coord(endTangent(outer)),
                 'A',

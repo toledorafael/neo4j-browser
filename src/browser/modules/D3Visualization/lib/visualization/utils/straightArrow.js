@@ -88,6 +88,36 @@ export default class StraightArrow {
     })
 
     this.outline = function (shortCaptionLength, colorCount, layout) {
+      if (layout === 'segments-pattern') {
+        const segmentLength = this.shaftLength / colorCount
+        return Array(colorCount + 1)
+          .fill()
+          .map((_, i) => {
+            if (i === colorCount) {
+              return {
+                path: [
+                  'M',
+                  endShaft,
+                  headRadius,
+                  'L',
+                  endArrow,
+                  0,
+                  'L',
+                  endShaft,
+                  -headRadius,
+                  'Z'
+                ].join(' ')
+              }
+            }
+            return {
+              path: `M ${startArrow + segmentLength * i},0 L ${startArrow +
+                segmentLength * (i + 1)},0`,
+              useStroke: true,
+              strokeWidth: shaftWidth
+            }
+          })
+      }
+
       let path
       if (captionLayout === 'external' && layout !== 'segments') {
         const startBreak =

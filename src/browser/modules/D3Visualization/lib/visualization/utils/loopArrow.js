@@ -244,6 +244,8 @@ export default class LoopArrow {
         ]
       }
 
+      // segments and patterns
+
       for (let i = 0; i < colorCount; ++i) {
         let start = (i * totalLength) / colorCount
         let end = ((i + 1) * totalLength) / colorCount
@@ -253,11 +255,8 @@ export default class LoopArrow {
         if (end < startLength) {
           // prettier-ignore
           section = [
-            'M', startPoint(r1 + start, shaftRadius),
-            'L', startPoint(r1 + end, shaftRadius),
-            'L', startPoint(r1 + end, -shaftRadius),
-            'L', startPoint(r1 + start, -shaftRadius),
-            'Z'
+            'M', startPoint(r1 + start, 0),
+            'L', startPoint(r1 + end, 0)
           ].join(' ')
         } else if (start < startLength && end < startLength + arcLength) {
           let endR = (end - startLength) / loopRadius - (Math.PI + spread) / 2
@@ -267,27 +266,18 @@ export default class LoopArrow {
           let isLargeArc = endR > (Math.PI - spread) / 2
           // prettier-ignore
           section = [
-            'M', startPoint(r1 + start, shaftRadius),
-            'L', startPoint(r3, shaftRadius),
-            'A', outer, outer, 0, isLargeArc ? 1 : 0, 1, arcPoint(outer, endR),
-            'L', arcPoint(inner, endR),
-            'A', inner, inner, 0, isLargeArc ? 1 : 0, 0, startPoint(r3, -shaftRadius),
-            'L', startPoint(r1 + start, -shaftRadius),
-            'Z'
+            'M', startPoint(r1 + start, 0),
+            'L', startPoint(r3, 0),
+            'A', loopRadius, loopRadius, 0, isLargeArc ? 1 : 0, 1, arcPoint(loopRadius, endR)
           ].join(' ')
         } else if (start < startLength) {
           end = end - startLength - arcLength
           // prettier-ignore
           section = [
-            'M', startPoint(r1 + start, shaftRadius),
-            'L', startPoint(r3, shaftRadius),
-            'A', outer, outer, 0, 1, 1, endPoint(r3, shaftRadius),
-            'L', endPoint(r3 - end, shaftRadius),
-            'L', endPoint(r3 - end, -shaftRadius),
-            'L', endPoint(r3, -shaftRadius),
-            'A', inner, inner, 0, 1, 0, startPoint(r3, -shaftRadius),
-            'L', startPoint(r1 + start, -shaftRadius),
-            'Z'
+            'M', startPoint(r1 + start, 0),
+            'L', startPoint(r3, 0),
+            'A', loopRadius, loopRadius, 0, 1, 1, endPoint(r3, 0),
+            'L', endPoint(r3 - end, 0)
           ].join(' ')
         } else if (end < startLength + arcLength) {
           let startR =
@@ -299,11 +289,8 @@ export default class LoopArrow {
           let isLargeArc = endR - startR > Math.PI
           // prettier-ignore
           section = [
-            'M', arcPoint(outer, startR),
-            'A', outer, outer, 0, isLargeArc ? 1 : 0, 1, arcPoint(outer, endR),
-            'L', arcPoint(inner, endR),
-            'A', inner, inner, 0, isLargeArc ? 1 : 0, 0, arcPoint(inner, startR),
-            'Z'
+            'M', arcPoint(loopRadius, startR),
+            'A', loopRadius, loopRadius, 0, isLargeArc ? 1 : 0, 1, arcPoint(loopRadius, endR)
           ].join(' ')
         } else if (start < startLength + arcLength) {
           let startR =
@@ -316,13 +303,9 @@ export default class LoopArrow {
 
           // prettier-ignore
           section = [
-            'M', arcPoint(outer, startR),
-            'A', outer, outer, 0, isLargeArc ? 1 : 0, 1, endPoint(r3, shaftRadius),
-            'L', endPoint(r3 - end, shaftRadius),
-            'L', endPoint(r3 - end, -shaftRadius),
-            'L', endPoint(r3, -shaftRadius),
-            'A', inner, inner, 0, isLargeArc ? 1 : 0, 0, arcPoint(inner, startR),
-            'Z'
+            'M', arcPoint(loopRadius, startR),
+            'A', loopRadius, loopRadius, 0, isLargeArc ? 1 : 0, 1, endPoint(r3, 0),
+            'L', endPoint(r3 - end, 0)
           ].join(' ')
         } else {
           start = start - startLength - arcLength
@@ -330,15 +313,16 @@ export default class LoopArrow {
 
           // prettier-ignore
           section = [
-            'M', endPoint(r3 - start, shaftRadius),
-            'L', endPoint(r3 - end, shaftRadius),
-            'L', endPoint(r3 - end, -shaftRadius),
-            'L', endPoint(r3 - start, -shaftRadius),
-            'Z'
+            'M', endPoint(r3 - start, 0),
+            'L', endPoint(r3 - end, 0)
           ].join(' ')
         }
 
-        sections.push({ path: section })
+        sections.push({
+          path: section,
+          useStroke: true,
+          strokeWidth: shaftWidth
+        })
       }
 
       // prettier-ignore

@@ -262,29 +262,60 @@ export default function neoGraphStyle () {
             ) {
               if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
+                this.props.pattern = this.props.color
+                  ? this.props.pattern || ''
+                  : ''
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
               } else {
                 // Merge rules
-                if (this.props.color !== rule.props.color) {
-                  for (const key in rule.props) {
-                    if (key === 'color') {
-                      if (Array.isArray(this.props.color)) {
-                        // If there are multiple colors add one more
-                        this.props.color.push(rule.props.color)
-                      } else {
-                        // Else create an array with the two colors
-                        this.props.color = [this.props.color, rule.props.color]
-                      }
+                // if (this.props.color === rule.props.color && this.props.pattern === rule.props.pattern) {
+                //   this.props = { ...this.props, ...rule.props }
+                //   this.props.caption =
+                //     this.props.caption || this.props.defaultCaption
+                // } else
+                // {
+                for (const key in rule.props) {
+                  if (key === 'color') {
+                    if (Array.isArray(this.props.color)) {
+                      // If there are multiple colors add one more
+                      this.props.color.push(rule.props.color)
+                    } else if (this.props.color !== undefined) {
+                      // Else create an array with the two colors
+                      this.props.color = [this.props.color, rule.props.color]
                     } else {
-                      this.props[key] = rule.props[key]
+                      this.props.color = [rule.props.color]
                     }
+
+                    if (Array.isArray(this.props.pattern)) {
+                      // If there are multiple patterns add one more
+                      this.props.pattern.push(rule.props.pattern || '')
+                    } else if (this.props.pattern !== undefined) {
+                      // Else create an array with the two patterns
+                      this.props.pattern = [
+                        this.props.pattern,
+                        rule.props.pattern || ''
+                      ]
+                    } else {
+                      this.props.pattern = [rule.props.pattern || '']
+                    }
+                  } else if (key === 'pattern') {
+                    // if (rule.props.color) {
+                    //   if (Array.isArray(this.props.pattern)) {
+                    //     // If there are multiple patterns add one more
+                    //     this.props.pattern.push(rule.props.pattern || '')
+                    //   } else if (this.props.pattern) {
+                    //     // Else create an array with the two patterns
+                    //     this.props.pattern = [this.props.pattern, rule.props.pattern || '']
+                    //   } else {
+                    //     this.props.pattern = [rule.props.pattern || '']
+                    //   }
+                    // }
+                  } else {
+                    this.props[key] = rule.props[key]
                   }
-                } else {
-                  this.props = { ...this.props, ...rule.props }
-                  this.props.caption =
-                    this.props.caption || this.props.defaultCaption
                 }
+                // }
               }
             }
           } else {

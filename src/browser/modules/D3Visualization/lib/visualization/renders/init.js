@@ -278,16 +278,19 @@ function setupGradient (svgEl, id, g, colors) {
   }
 }
 
-function getColors (rel, viz) {
-  let colors
+function getRelationshipStyle (rel, viz) {
   if (checkPropertyList(rel.propertyList, 'condition')) {
-    colors = viz.style.forCondRel(rel).get('color')
-    if (Array.isArray(colors)) {
-      return colors
+    const styles = viz.style.forCondRel(rel)
+    const colors = styles.get('color')
+    const patterns = styles.get('pattern')
+    console.log(colors)
+    console.log(patterns)
+    return {
+      colors: Array.isArray(colors) ? colors : [colors],
+      patterns: Array.isArray(patterns) ? patterns : [patterns]
     }
-    return [colors]
   } else {
-    return ['#A5ABB6']
+    return { colors: ['#A5ABB6'] }
   }
 }
 
@@ -297,10 +300,10 @@ function updateArrow (pathGroups, viz) {
     pathGroups.node().closest('.neod3viz').__graphStyle.layout
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
-      const colors = getColors(rel, viz)
+      const { colors, patterns } = getRelationshipStyle(rel, viz)
       return rel.arrow
         .outline(rel.shortCaptionLength, colors.length, layout)
-        .map(a => ({ pathDef: a, colors }))
+        .map(a => ({ pathDef: a, colors, patterns }))
     } else {
       return []
     }
@@ -313,19 +316,38 @@ function updateArrow (pathGroups, viz) {
   pathGroups
     .selectAll('path')
     .attr('d', d => d.pathDef.path)
-    .attr('fill', (d, i) => {
-      if (d.pathDef.gradient && d.colors.length > 1) {
+    .attr('fill', ({ pathDef, colors }, i) => {
+      if (pathDef.useStroke) return 'none'
+      if (pathDef.gradient && colors.length > 1) {
         const id =
           'gradient' +
           svgEl.__uid +
-          d.colors.map(x => x.slice(1)).join('') +
-          d.pathDef.gradient.id
-        setupGradient(svgEl, id, d.pathDef.gradient, d.colors)
+          colors.map(x => x.slice(1)).join('') +
+          pathDef.gradient.id
+        setupGradient(svgEl, id, pathDef.gradient, colors)
         return 'url(#' + id + ')'
       } else {
-        return d.colors[Math.min(i, d.colors.length - 1)]
+        return colors[Math.min(i, colors.length - 1)] || 'black'
       }
     })
+    .attr('stroke', ({ pathDef, colors }, i) => {
+      if (pathDef.useStroke) {
+        return colors[Math.min(i, colors.length - 1)] || 'black'
+      }
+      return 'none'
+    })
+    .attr('stroke-width', ({ pathDef }) => pathDef.strokeWidth)
+
+  if (layout === 'segments-pattern') {
+    pathGroups
+      .selectAll('path')
+      .filter(({ pathDef }) => pathDef.useStroke)
+      .attr('stroke-dasharray', ({ patterns }, i) => {
+        return patterns && patterns[Math.min(i, patterns.length - 1)]
+      })
+  } else {
+    pathGroups.selectAll('path').attr('stroke-dasharray', null)
+  }
 
   return pathGroups
 }
