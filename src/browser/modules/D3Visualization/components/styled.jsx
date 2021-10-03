@@ -570,3 +570,35 @@ export const StyledZoomButton = styled.button`
     }
   }
 `
+
+export const StyledPatternSelectorBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #00000077;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+`
+
+export const StyledPatternSelectorBody = styled.div`
+  background: black;
+`
+
+export const StyledPatternSelectorItem = styled.div`
+  svg {
+    display: block;
+  }
+  margin: 1px;
+  background: white;
+  padding: 10px 50px;
+
+  &:hover {
+    background: #eeeeee;
+  }
+`

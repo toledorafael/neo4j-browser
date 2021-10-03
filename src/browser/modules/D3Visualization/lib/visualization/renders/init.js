@@ -20,6 +20,7 @@
 import Renderer from '../components/renderer'
 import d3 from 'd3'
 import Logic from 'logic-solver'
+import { getPatternDashes } from '../utils/pattern'
 const noop = function () {}
 
 const nodeRingStrokeSize = 8
@@ -283,8 +284,6 @@ function getRelationshipStyle (rel, viz) {
     const styles = viz.style.forCondRel(rel)
     const colors = styles.get('color')
     const patterns = styles.get('pattern')
-    console.log(colors)
-    console.log(patterns)
     return {
       colors: Array.isArray(colors) ? colors : [colors],
       patterns: Array.isArray(patterns) ? patterns : [patterns]
@@ -342,8 +341,9 @@ function updateArrow (pathGroups, viz) {
     pathGroups
       .selectAll('path')
       .filter(({ pathDef }) => pathDef.useStroke)
-      .attr('stroke-dasharray', ({ patterns }, i) => {
-        return patterns && patterns[Math.min(i, patterns.length - 1)]
+      .attr('stroke-dasharray', ({ pathDef, patterns }, i) => {
+        const pattern = patterns && patterns[Math.min(i, patterns.length - 1)]
+        return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
       })
   } else {
     pathGroups.selectAll('path').attr('stroke-dasharray', null)
