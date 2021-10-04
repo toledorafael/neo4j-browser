@@ -253,7 +253,15 @@ export class GrassEditorComponent extends Component {
           }}
         /> */}
         <PatternSelector
-          patterns={['dashes 1', 'dashes 2', 'dashes 1 2 1 2']}
+          patterns={[
+            '',
+            'dashes 1',
+            'dashes 3',
+            'dashes 3 1',
+            'dashes 1 3',
+            'dashes 1 1 3 1',
+            'dashes 1 1 3 1 1 1'
+          ]}
           selectPattern={pattern => {
             console.log(pattern)
             this.updateStyle(selector, { pattern })

@@ -3,7 +3,8 @@ import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import {
   StyledPatternSelectorItem,
   StyledPatternSelectorBody,
-  StyledPatternSelectorBackdrop
+  StyledPatternSelectorBackdrop,
+  StyledPatternSelectorHeading
 } from './styled'
 
 export default function ({ patterns, selectPattern = console.log }) {
@@ -13,11 +14,14 @@ export default function ({ patterns, selectPattern = console.log }) {
       <button onClick={() => setShow(true)}>Select Dashes</button>
       {show && (
         <StyledPatternSelectorBackdrop
-          onclick={() => {
+          onClick={() => {
             setShow(false)
           }}
         >
           <StyledPatternSelectorBody>
+            <StyledPatternSelectorHeading>
+              Select a pattern
+            </StyledPatternSelectorHeading>
             {patterns.map((pattern, i) => (
               <StyledPatternSelectorItem
                 key={i}

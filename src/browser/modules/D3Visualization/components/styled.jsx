@@ -587,7 +587,17 @@ export const StyledPatternSelectorBackdrop = styled.div`
 `
 
 export const StyledPatternSelectorBody = styled.div`
-  background: black;
+  background: #e6e9ef;
+`
+
+export const StyledPatternSelectorHeading = styled.div`
+  background: white;
+  margin: 1px;
+  text-align: center;
+  color: black;
+  font-size: 19.5px;
+  padding: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
 `
 
 export const StyledPatternSelectorItem = styled.div`
