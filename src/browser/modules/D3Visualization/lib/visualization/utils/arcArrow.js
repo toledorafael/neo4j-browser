@@ -31,6 +31,7 @@ export default class ArcArrow {
     captionHeight
   ) {
     this.deflection = deflection
+    this.width = arrowWidth
     const square = l => l * l
 
     const deflectionRadians = (this.deflection * Math.PI) / 180
@@ -159,6 +160,9 @@ export default class ArcArrow {
     const headRadius = headWidth / 2
     const positiveSweep = startAttach.y > 0 ? 0 : 1
     const negativeSweep = startAttach.y < 0 ? 0 : 1
+
+    this.getEndCenter = () => startTangent(0)
+    this.getEndRotation = () => (startAngle * 180) / Math.PI
 
     const tipInstructions = function (colorCount, index) {
       const instructions = []

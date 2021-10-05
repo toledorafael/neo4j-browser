@@ -28,6 +28,7 @@ export default class LoopArrow {
     headLength,
     captionHeight
   ) {
+    this.width = shaftWidth
     const spread = (spreadDegrees * Math.PI) / 180
     const r1 = nodeRadius
     const r2 = nodeRadius + headLength
@@ -95,6 +96,9 @@ export default class LoopArrow {
       const cy = r3 / Math.cos(spread / 2)
       return new Point(-Math.sin(angle) * radius, Math.cos(angle) * radius + cy)
     }
+
+    this.getEndCenter = () => startPoint(r1, 0)
+    this.getEndRotation = () => 90 - (spread * 90) / Math.PI
 
     const separateOutline = (colorCount, index) => {
       // const hLength = 6

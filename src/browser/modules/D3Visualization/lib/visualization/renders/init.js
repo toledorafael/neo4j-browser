@@ -21,6 +21,7 @@ import Renderer from '../components/renderer'
 import d3 from 'd3'
 import Logic from 'logic-solver'
 import { getPatternDashes } from '../utils/pattern'
+import { getShapeDef } from '../utils/shapes'
 const noop = function () {}
 
 const nodeRingStrokeSize = 8
@@ -326,12 +327,12 @@ function updateArrow (pathGroups, viz) {
         setupGradient(svgEl, id, pathDef.gradient, colors)
         return 'url(#' + id + ')'
       } else {
-        return colors[Math.min(i, colors.length - 1)] || 'black'
+        return colors[Math.min(i, colors.length - 1)] || '#888888'
       }
     })
     .attr('stroke', ({ pathDef, colors }, i) => {
       if (pathDef.useStroke) {
-        return colors[Math.min(i, colors.length - 1)] || 'black'
+        return colors[Math.min(i, colors.length - 1)] || '#888888'
       }
       return 'none'
     })
@@ -412,6 +413,35 @@ const arrowPath = new Renderer({
   onTick (selection, viz, toggleStripes) {
     // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
     return updateArrow(selection.selectAll('g.outline'), viz)
+  }
+})
+
+const relationshipShape = new Renderer({
+  name: 'relationshipShape',
+  onGraphChange (selection, viz) {
+    const shapes = selection.selectAll('path.shape').data(rel => [rel])
+    shapes
+      .enter()
+      .append('path')
+      .classed('shape', true)
+      .attr('stroke', 'black')
+      .attr('strokeWidth', '1')
+      .attr('fill', '#ffffff77')
+
+    return shapes.exit().remove()
+  },
+  onTick (selection, viz) {
+    return selection.selectAll('path.shape').each(function (rel) {
+      const center = rel.arrow.getEndCenter()
+      const rotation = rel.arrow.getEndRotation()
+      const d = getShapeDef('circle', center, 2 + rel.arrow.width)
+
+      d3.select(this).attr('d', d)
+      d3.select(this).attr(
+        'transform',
+        `rotate(${rotation},${center.x},${center.y})`
+      )
+    })
   }
 })
 
@@ -553,6 +583,7 @@ node.push(nodeRing)
 
 const relationship = []
 relationship.push(arrowPath)
+relationship.push(relationshipShape)
 relationship.push(relationshipType)
 relationship.push(relationshipOverlay)
 

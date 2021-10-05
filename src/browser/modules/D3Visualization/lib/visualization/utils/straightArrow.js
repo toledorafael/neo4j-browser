@@ -32,6 +32,7 @@ export default class StraightArrow {
     captionHeight
   ) {
     this.length = centreDistance - (startRadius + endRadius)
+    this.width = shaftWidth
 
     this.shaftLength = this.length - headHeight
     this.separateArrowWidth = 0
@@ -86,6 +87,9 @@ export default class StraightArrow {
             Math.max(shaftRadius, this.separateArrowWidth / 2)
           : 0
     })
+
+    this.getEndCenter = () => ({ x: startArrow, y: 0 })
+    this.getEndRotation = () => 0
 
     this.outline = function (shortCaptionLength, colorCount, layout) {
       if (layout === 'segments-pattern') {
