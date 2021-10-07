@@ -172,6 +172,34 @@ export default function neoGraphStyle () {
       'text-color-internal': '#FFFFFF'
     }
   ]
+
+  const defaultShapes = [
+    {
+      shape: ''
+    },
+    {
+      shape: 'thinRectangle'
+    },
+    {
+      shape: 'ellipse'
+    },
+    {
+      shape: 'halfCircle'
+    },
+    {
+      shape: 'rectangle'
+    },
+    {
+      shape: 'circle'
+    },
+    {
+      shape: 'square'
+    },
+    {
+      shape: 'triangle'
+    }
+  ]
+
   const Selector = (function () {
     function Selector (tag1, classes1) {
       this.tag = tag1
@@ -413,6 +441,19 @@ export default function neoGraphStyle () {
       return defaultColors[index]
     }
 
+    const findAvailableDefaultShapes = function (rules) {
+      const usedShapes = rules
+        .filter(rule => {
+          return rule.props.shape != null
+        })
+        .map(rule => {
+          return rule.props.shape
+        })
+      let index =
+        usedShapes.length > defaultShapes.length - 1 ? 0 : usedShapes.length
+      return defaultShapes[index]
+    }
+
     const getDefaultNodeCaption = function (item) {
       if (
         !item ||
@@ -490,6 +531,31 @@ export default function neoGraphStyle () {
         return this.changeForSelector(
           minimalSelector,
           getDefaultNodeCaption(item)
+        )
+      }
+    }
+
+    GraphStyle.prototype.setDefaultRelationshipStyling = function (
+      selector,
+      item
+    ) {
+      let defaultShape = true
+      for (let i = 0; i < this.rules.length; i++) {
+        let rule = this.rules[i]
+        if (rule.selector.classes.length > 0 && rule.matches(selector)) {
+          if (rule.props.hasOwnProperty('shape')) {
+            defaultShape = false
+          }
+        }
+      }
+      const minimalSelector = new Selector(
+        selector.tag,
+        selector.classes.sort().slice(0, 1)
+      )
+      if (defaultShape) {
+        this.changeForSelector(
+          minimalSelector,
+          findAvailableDefaultShapes(this.rules)
         )
       }
     }
@@ -672,6 +738,7 @@ export default function neoGraphStyle () {
 
     GraphStyle.prototype.forRelationship = function (rel) {
       const selector = relationshipSelector(rel)
+      this.setDefaultRelationshipStyling(selector, rel)
       return this.calculateStyle(selector)
     }
 
