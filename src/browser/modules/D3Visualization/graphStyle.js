@@ -200,6 +200,24 @@ export default function neoGraphStyle () {
     }
   ]
 
+  const defaultPatterns = [
+    {
+      pattern: 'dashes 1'
+    },
+    {
+      pattern: 'dashes 3'
+    },
+    {
+      pattern: 'dashes 3 1'
+    },
+    {
+      pattern: 'dashes 1 1 3 1'
+    },
+    {
+      pattern: 'dashes 1 1 1 1 3 1'
+    }
+  ]
+
   const Selector = (function () {
     function Selector (tag1, classes1) {
       this.tag = tag1
@@ -454,6 +472,21 @@ export default function neoGraphStyle () {
       return defaultShapes[index]
     }
 
+    const findAvailableDefaultPatterns = function (rules) {
+      const usedPatterns = rules
+        .filter(rule => {
+          return rule.props.pattern != null
+        })
+        .map(rule => {
+          return rule.props.pattern
+        })
+      let index =
+        usedPatterns.length > defaultPatterns.length - 1
+          ? 0
+          : usedPatterns.length
+      return defaultPatterns[index]
+    }
+
     const getDefaultNodeCaption = function (item) {
       if (
         !item ||
@@ -540,11 +573,15 @@ export default function neoGraphStyle () {
       item
     ) {
       let defaultShape = true
+      let defaultPattern = true
       for (let i = 0; i < this.rules.length; i++) {
         let rule = this.rules[i]
         if (rule.selector.classes.length > 0 && rule.matches(selector)) {
           if (rule.props.hasOwnProperty('shape')) {
             defaultShape = false
+          }
+          if (rule.props.hasOwnProperty('pattern')) {
+            defaultPattern = false
           }
         }
       }
@@ -557,6 +594,13 @@ export default function neoGraphStyle () {
           minimalSelector,
           findAvailableDefaultShapes(this.rules)
         )
+      }
+      if (defaultPattern) {
+        this.changeForSelector(
+          minimalSelector,
+          findAvailableDefaultPatterns(this.rules)
+        )
+        console.log(this.rules)
       }
     }
 

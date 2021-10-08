@@ -55,8 +55,8 @@ export default class LoopArrow {
         cy + (localLoopRadius + displacement) * Math.cos(sweep)
       )
     }
-    this.midShaftPoint = layout => {
-      if (layout === 'separate') {
+    this.midShaftPoint = (textAbove, arrowLayout) => {
+      if (arrowLayout === 'separate') {
         return normalPoint(
           0,
           r3,

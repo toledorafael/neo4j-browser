@@ -79,20 +79,19 @@ export default class StraightArrow {
       ].join(' ')
     }
 
-    this.midShaftPoint = layout => ({
+    this.midShaftPoint = (textAbove, arrowLayout) => ({
       x: startArrow + this.shaftLength / 2,
-      y:
-        layout !== 'stripes'
-          ? -captionHeight * 0.625 -
-            Math.max(shaftRadius, this.separateArrowWidth / 2)
-          : 0
+      y: textAbove
+        ? -captionHeight * 0.625 -
+          Math.max(shaftRadius, this.separateArrowWidth / 2)
+        : 0
     })
 
     this.getEndCenter = () => ({ x: startArrow, y: 0 })
     this.getEndRotation = () => 0
 
     this.outline = function (shortCaptionLength, colorCount, layout) {
-      if (layout === 'segments-pattern') {
+      if (layout === 'segments') {
         const segmentLength = this.shaftLength / colorCount
         return Array(colorCount + 1)
           .fill()

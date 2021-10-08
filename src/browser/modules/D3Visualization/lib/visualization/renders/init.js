@@ -296,13 +296,12 @@ function getRelationshipStyle (rel, viz) {
 
 function updateArrow (pathGroups, viz) {
   const layout =
-    pathGroups.node() &&
-    pathGroups.node().closest('.neod3viz').__graphStyle.layout
+    pathGroups.node() && pathGroups.node().closest('.neod3viz').__graphStyle
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
       const { colors, patterns } = getRelationshipStyle(rel, viz)
       return rel.arrow
-        .outline(rel.shortCaptionLength, colors.length, layout)
+        .outline(rel.shortCaptionLength, colors.length, layout.arrowLayout)
         .map(a => ({ pathDef: a, colors, patterns }))
     } else {
       return []
@@ -338,7 +337,7 @@ function updateArrow (pathGroups, viz) {
     })
     .attr('stroke-width', ({ pathDef }) => pathDef.strokeWidth)
 
-  if (layout === 'segments-pattern') {
+  if (layout && layout.localPattern) {
     pathGroups
       .selectAll('path')
       .filter(({ pathDef }) => pathDef.useStroke)
@@ -458,7 +457,7 @@ const relationshipType = new Renderer({
       .attr({ 'pointer-events': 'none' })
 
     const layout =
-      texts.node() && texts.node().closest('.neod3viz').__graphStyle.layout
+      texts.node() && texts.node().closest('.neod3viz').__graphStyle
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel => {
@@ -467,7 +466,7 @@ const relationshipType = new Renderer({
           .get(
             `text-color-${
               checkPropertyList(rel.propertyList, 'condition') &&
-              layout !== 'stripes'
+              layout.textAbove
                 ? 'external'
                 : rel.captionLayout
             }`
@@ -479,23 +478,25 @@ const relationshipType = new Renderer({
 
   onTick (selection, viz) {
     const layout =
-      selection.node() &&
-      selection.node().closest('.neod3viz').__graphStyle.layout
+      selection.node() && selection.node().closest('.neod3viz').__graphStyle
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint(layout).x)
+      .attr(
+        'x',
+        rel => rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
+      )
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint(layout).y +
+          rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint(layout).x} ${
-            rel.arrow.midShaftPoint(layout).y
-          })`
+          return `rotate(180 ${
+            rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
+          } ${rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).y})`
         } else {
           return null
         }

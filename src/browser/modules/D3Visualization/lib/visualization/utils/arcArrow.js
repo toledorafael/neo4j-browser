@@ -99,16 +99,16 @@ export default class ArcArrow {
     if (this.deflection > 0) {
       midShaftAngle += Math.PI
     }
-    this.midShaftPoint = layout => ({
+    this.midShaftPoint = (textAbove, arrowLayout) => ({
       x: cx + arcRadius * Math.sin(midShaftAngle),
       y:
         cy -
         arcRadius * Math.cos(midShaftAngle) -
-        (layout === 'separate'
-          ? captionHeight * 0.625 +
+        (!textAbove
+          ? 0
+          : arrowLayout === 'separate'
+            ? captionHeight * 0.625 +
             (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
-          : layout === 'stripes'
-            ? 0
             : captionHeight * 0.625 + shaftRadius)
     })
 
@@ -224,7 +224,7 @@ export default class ArcArrow {
       const extraLength =
         endRadius - Math.sqrt(endRadius * endRadius - offset * offset)
 
-      const sAngle = -Math.atan(Math.abs(cx / cy))
+      const sAngle = -Math.atan2(cx, cy)
       // const r4 = Math.sqrt(r1 * r1 - offset * offset)
       return [
         'M',
@@ -265,8 +265,11 @@ export default class ArcArrow {
           }))
       }
 
-      if (layout === 'segments-pattern') {
-        const segmentAngle = (endAngle - startAngle) / colorCount
+      if (layout === 'segments') {
+        let sweepAngle = endAngle - startAngle
+        colorCount > 1 && console.log(sweepAngle)
+        if (sweepAngle > Math.PI) sweepAngle = sweepAngle - 2 * Math.PI
+        const segmentAngle = sweepAngle / colorCount
         return Array(colorCount + 1)
           .fill()
           .map((_, i) => {
@@ -286,7 +289,7 @@ export default class ArcArrow {
             return {
               path:
                 `M ${coord(angleTangent(startAngle + segmentAngle * i, 0))} ` +
-                `A ${arcRadius} ${arcRadius} 0 0 1 ${coord(
+                `A ${arcRadius} ${arcRadius} 0 0 ${positiveSweep} ${coord(
                   angleTangent(startAngle + segmentAngle * (i + 1), 0)
                 )}`,
               useStroke: true,
