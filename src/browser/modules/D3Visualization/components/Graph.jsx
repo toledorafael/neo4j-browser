@@ -34,9 +34,12 @@ import {
   StyleTextArea,
   StyleRelationshipLayoutButton,
   StyleRelationshipLayoutButtonGroup
-} from './styled'
+  , StyledGraphLegend } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
+
+import { getShapeDef } from '../lib/visualization/utils/shapes'
+import { getPatternDashes } from '../lib/visualization/utils/pattern'
 
 const relationshipLayouts = [
   {
@@ -405,6 +408,80 @@ export class GraphComponent extends Component {
     }
   }
 
+  legend () {
+    return (
+      <StyledGraphLegend>
+        <table>
+          <tr>
+            <th colspan='2'>Edge Types</th>
+          </tr>
+          {this.props.stats.relTypes &&
+            Object.keys(this.props.stats.relTypes).map(relType =>
+              relType === '*' ? null : (
+                <tr>
+                  <td>{relType}</td>
+                  <td>
+                    <svg width='180' height='15' viewBox='0 -6 144 12'>
+                      <line
+                        x1='0'
+                        x2='144'
+                        y1='0'
+                        y2='0'
+                        stroke='#888'
+                        strokeWidth='5'
+                      />
+                      <path
+                        d={getShapeDef(
+                          this.props.graphStyle
+                            .forRelationship({ type: relType })
+                            .get('shape'),
+                          { x: 0, y: 0 },
+                          6
+                        )}
+                        stroke='black'
+                        strokeWidth='1'
+                        fill='#ffffff77'
+                      />
+                    </svg>
+                  </td>
+                </tr>
+              )
+            )}
+          <tr>
+            <th colspan='2'>Feature Expressions</th>
+          </tr>
+          {this.props.stats.conditionTypes &&
+            this.props.stats.conditionTypes.map(condType => {
+              const style = this.props.graphStyle.forCondition(condType)
+              if (style.get('color') === '#A5ABB6') return null
+              return (
+                <tr>
+                  <td>{condType}</td>
+                  <td>
+                    <svg width='180' height='15' viewBox='0 -6 144 12'>
+                      <line
+                        x1='0'
+                        x2='144'
+                        y1='0'
+                        y2='0'
+                        stroke={style.get('color')}
+                        strokeWidth='5'
+                        strokeDasharray={
+                          this.state.currentLayout === 'segments-pattern'
+                            ? getPatternDashes(style.get('pattern'), 5)
+                            : ''
+                        }
+                      />
+                    </svg>
+                  </td>
+                </tr>
+              )
+            })}
+        </table>
+      </StyledGraphLegend>
+    )
+  }
+
   render () {
     return (
       // <div>
@@ -415,6 +492,7 @@ export class GraphComponent extends Component {
         {/* {this.inputToggle()} */}
         {this.inputFeatureExpression()}
         {this.inputToggleStripes()}
+        {this.legend()}
       </StyledSvgWrapper>
       // </div>
     )

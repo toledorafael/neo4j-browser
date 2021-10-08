@@ -612,3 +612,20 @@ export const StyledPatternSelectorItem = styled.div`
     background: #eeeeee;
   }
 `
+
+export const StyledGraphLegend = styled.div`
+  line-height: 16px;
+  font-size: 16px;
+  position: absolute;
+  left: 16px;
+  bottom: 64px;
+
+  td {
+    padding: 4px 8px;
+  }
+
+  th {
+    padding: 12px 8px 4px 8px;
+    text-align: left;
+  }
+`

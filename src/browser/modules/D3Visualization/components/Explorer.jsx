@@ -284,6 +284,7 @@ export class ExplorerComponent extends Component {
       >
         {legend}
         <GraphComponent
+          stats={this.state.stats}
           fullscreen={this.props.fullscreen}
           frameHeight={this.props.frameHeight}
           relationships={this.state.relationships}
