@@ -162,7 +162,10 @@ export default class ArcArrow {
     const negativeSweep = startAttach.y < 0 ? 0 : 1
 
     this.getEndCenter = () => startTangent(0)
-    this.getEndRotation = () => (startAngle * 180) / Math.PI
+    this.getEndRotation = () =>
+      deflection < 0
+        ? (startAngle * 180) / Math.PI
+        : 180 + (startAngle * 180) / Math.PI
 
     const tipInstructions = function (colorCount, index) {
       const instructions = []

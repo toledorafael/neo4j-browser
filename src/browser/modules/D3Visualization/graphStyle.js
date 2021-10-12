@@ -184,9 +184,6 @@ export default function neoGraphStyle () {
       shape: 'ellipse'
     },
     {
-      shape: 'halfCircle'
-    },
-    {
       shape: 'rectangle'
     },
     {
@@ -194,6 +191,9 @@ export default function neoGraphStyle () {
     },
     {
       shape: 'square'
+    },
+    {
+      shape: 'halfCircle'
     },
     {
       shape: 'triangle'
