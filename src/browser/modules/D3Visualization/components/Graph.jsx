@@ -455,7 +455,11 @@ export class GraphComponent extends Component {
                       />
                       {this.state.currentLayout.globalShape && (
                         <path
-                          d={getShapeDef(style.get('shape'), { x: 0, y: 0 }, 6)}
+                          d={getShapeDef(
+                            style.get('shape'),
+                            { x: 0, y: 0 },
+                            11
+                          )}
                           stroke='black'
                           strokeWidth='1'
                           fill='#ffffff77'

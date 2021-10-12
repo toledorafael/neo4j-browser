@@ -97,7 +97,7 @@ export default class LoopArrow {
       return new Point(-Math.sin(angle) * radius, Math.cos(angle) * radius + cy)
     }
 
-    this.getEndCenter = () => startPoint(r1, 0)
+    this.getEndCenter = () => startPoint(r1, (this.separateArrowWidth || 0) / 2)
     this.getEndRotation = () => 90 - (spread * 90) / Math.PI
 
     const separateOutline = (colorCount, index) => {
@@ -105,7 +105,7 @@ export default class LoopArrow {
       const hLength = headLength
       const distance = Math.min(6, r1 / colorCount)
       this.separateDistance = distance
-      this.separateArrowWidth = distance * colorCount
+      this.separateArrowWidth = distance * (colorCount - 1)
       const sRadius = distance * 0.25
       const hRadius = distance * 0.4
 

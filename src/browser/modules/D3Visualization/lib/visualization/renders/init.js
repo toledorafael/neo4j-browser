@@ -449,8 +449,8 @@ const relationshipShape = new Renderer({
     return selection.selectAll('path.shape').each(function (rel) {
       const center = rel.arrow.getEndCenter()
       const rotation = rel.arrow.getEndRotation()
-      const shape = viz.style.forRelationship(rel).props.shape
-      const d = getShapeDef(shape, center, 2 + rel.arrow.width)
+      const shape = viz.style.forRelationship(rel).get('shape')
+      const d = getShapeDef(shape, center, 6 + rel.arrow.width)
 
       d3.select(this).attr('d', d)
       d3.select(this).attr(
