@@ -116,6 +116,7 @@ export default class StraightArrow {
               path: `M ${startArrow + segmentLength * i},0 L ${startArrow +
                 segmentLength * (i + 1)},0`,
               useStroke: true,
+              pathOffset: segmentLength * i,
               strokeWidth: shaftWidth
             }
           })

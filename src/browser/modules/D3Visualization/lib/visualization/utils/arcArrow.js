@@ -296,6 +296,7 @@ export default class ArcArrow {
                   angleTangent(startAngle + segmentAngle * (i + 1), 0)
                 )}`,
               useStroke: true,
+              pathOffset: Math.abs(segmentAngle * i * arcRadius),
               strokeWidth: arrowWidth
             }
           })

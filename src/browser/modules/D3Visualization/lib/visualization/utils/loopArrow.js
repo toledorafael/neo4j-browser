@@ -325,6 +325,7 @@ export default class LoopArrow {
         sections.push({
           path: section,
           useStroke: true,
+          pathOffset: (totalLength * i) / colorCount,
           strokeWidth: shaftWidth
         })
       }

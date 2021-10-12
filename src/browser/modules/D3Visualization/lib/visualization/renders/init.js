@@ -299,10 +299,11 @@ function updateArrow (pathGroups, viz) {
     pathGroups.node() && pathGroups.node().closest('.neod3viz').__graphStyle
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
+      console.log(rel)
       const { colors, patterns } = getRelationshipStyle(rel, viz)
       return rel.arrow
         .outline(rel.shortCaptionLength, colors.length, layout.arrowLayout)
-        .map(a => ({ pathDef: a, colors, patterns }))
+        .map(a => ({ pathDef: a, colors, patterns, rel }))
     } else {
       return []
     }
@@ -345,8 +346,23 @@ function updateArrow (pathGroups, viz) {
         const pattern = patterns && patterns[Math.min(i, patterns.length - 1)]
         return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
       })
+      .attr('stroke-dashoffset', null)
+  } else if (layout && layout.globalPattern) {
+    pathGroups
+      .selectAll('path')
+      .filter(({ pathDef }) => pathDef.useStroke)
+      .attr('stroke-dasharray', ({ pathDef, rel }) => {
+        const pattern = viz.style.forRelationship(rel).get('pattern')
+        return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
+      })
+      .attr('stroke-dashoffset', ({ pathDef }) => {
+        return pathDef.pathOffset
+      })
   } else {
-    pathGroups.selectAll('path').attr('stroke-dasharray', null)
+    pathGroups
+      .selectAll('path')
+      .attr('stroke-dasharray', null)
+      .attr('stroke-dashoffset', null)
   }
 
   return pathGroups
