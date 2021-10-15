@@ -66,6 +66,7 @@ import appReducer, { NAME as app } from 'shared/modules/app/appDuck'
 import experimentalFeaturesReducer, {
   NAME as experimentalFeatures
 } from 'shared/modules/experimentalFeatures/experimentalFeaturesDuck'
+import { paletteReducer } from 'shared/modules/palette/palette'
 
 export default {
   [connections]: connectionsReducer,
@@ -88,5 +89,6 @@ export default {
   [commands]: commandsReducer,
   [udc]: udcReducer,
   [app]: appReducer,
-  [experimentalFeatures]: experimentalFeaturesReducer
+  [experimentalFeatures]: experimentalFeaturesReducer,
+  palette: paletteReducer
 }

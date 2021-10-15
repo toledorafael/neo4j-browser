@@ -28,19 +28,19 @@ export default function neoGraphStyle () {
   const defaultStyle = {
     node: {
       diameter: '50px',
-      color: '#A5ABB6',
-      'border-color': '#9AA1AC',
+      color: 'var(--graph-color0)',
+      'border-color': 'var(--border-color0)',
       'border-width': '2px',
-      'text-color-internal': '#FFFFFF',
+      'text-color-internal': 'var(--graph-internal-text-color)',
       'font-size': '14px'
     },
     relationship: {
-      color: '#A5ABB6',
+      color: 'var(--graph-color0)',
       'shaft-width': '5px', // Check if the link gets thicker
       'font-size': '14px',
       padding: '3px',
       'text-color-external': '#000000',
-      'text-color-internal': '#FFFFFF',
+      'text-color-internal': 'var(--graph-internal-text-color)',
       caption: '<type>'
     }
   }
@@ -110,68 +110,76 @@ export default function neoGraphStyle () {
       'shaft-width': '38px'
     }
   ]
-  const defaultColors = [
-    {
-      color: '#FFE081',
-      'border-color': '#9AA1AC',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#C990C0',
-      'border-color': '#b261a5',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#F79767',
-      'border-color': '#f36924',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#57C7E3',
-      'border-color': '#23b3d7',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#F16667',
-      'border-color': '#eb2728',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#D9C8AE',
-      'border-color': '#c0a378',
-      'text-color-internal': '#604A0E'
-    },
-    {
-      color: '#8DCC93',
-      'border-color': '#5db665',
-      'text-color-internal': '#604A0E'
-    },
-    {
-      color: '#ECB5C9',
-      'border-color': '#da7298',
-      'text-color-internal': '#604A0E'
-    },
-    {
-      color: '#4C8EDA',
-      'border-color': '#2870c2',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#FFC454',
-      'border-color': '#d7a013',
-      'text-color-internal': '#604A0E'
-    },
-    {
-      color: '#DA7194',
-      'border-color': '#cc3c6c',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#569480',
-      'border-color': '#447666',
-      'text-color-internal': '#FFFFFF'
+  // const defaultColors = [
+  //   {
+  //     color: '#FFE081',
+  //     'border-color': '#9AA1AC',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#C990C0',
+  //     'border-color': '#b261a5',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#F79767',
+  //     'border-color': '#f36924',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#57C7E3',
+  //     'border-color': '#23b3d7',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#F16667',
+  //     'border-color': '#eb2728',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#D9C8AE',
+  //     'border-color': '#c0a378',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#8DCC93',
+  //     'border-color': '#5db665',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#ECB5C9',
+  //     'border-color': '#da7298',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#4C8EDA',
+  //     'border-color': '#2870c2',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#FFC454',
+  //     'border-color': '#d7a013',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#DA7194',
+  //     'border-color': '#cc3c6c',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#569480',
+  //     'border-color': '#447666',
+  //     'text-color-internal': '#FFFFFF'
+  //   }
+  // ]
+
+  const defaultColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => {
+    return {
+      color: `var(--graph-color${i})`,
+      'border-color': `var(--border-color${i})`,
+      'text-color-internal': 'var(--graph-internal-text-color)'
     }
-  ]
+  })
 
   const defaultShapes = [
     {

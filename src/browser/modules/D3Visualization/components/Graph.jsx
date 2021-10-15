@@ -41,6 +41,8 @@ import graphView from '../lib/visualization/components/graphView'
 
 import { getShapeDef } from '../lib/visualization/utils/shapes'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
+import { connect } from 'react-redux'
+import { presetPaletteAction } from 'shared/modules/palette/palette'
 
 const relationshipLayouts = [
   {
@@ -80,7 +82,7 @@ const relationshipLayouts = [
   }
 ]
 
-export class GraphComponent extends Component {
+export class Graph extends Component {
   state = {
     zoomInLimitReached: true,
     zoomOutLimitReached: false,
@@ -427,6 +429,8 @@ export class GraphComponent extends Component {
   legend () {
     return (
       <StyledGraphLegend>
+        <button onClick={this.props.setLightTheme}>Light</button>
+        <button onClick={this.props.setDarkTheme}>Dark</button>
         <table>
           <tr>
             <th colspan='2'>Edge Types</th>
@@ -521,3 +525,8 @@ export class GraphComponent extends Component {
     )
   }
 }
+
+export const GraphComponent = connect(null, dispatch => ({
+  setLightTheme: () => dispatch(presetPaletteAction('light')),
+  setDarkTheme: () => dispatch(presetPaletteAction('dark'))
+}))(Graph)

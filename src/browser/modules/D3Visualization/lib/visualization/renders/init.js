@@ -322,7 +322,7 @@ function updateArrow (pathGroups, viz) {
         const id =
           'gradient' +
           svgEl.__uid +
-          colors.map(x => x.slice(1)).join('') +
+          colors.map(x => x.replace(/[^a-zA-Z0-9]/g, '')).join('') +
           pathDef.gradient.id
         setupGradient(svgEl, id, pathDef.gradient, colors)
         return 'url(#' + id + ')'
