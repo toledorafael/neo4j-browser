@@ -1,6 +1,6 @@
 # Neo4j Browser
 
-Neo4j Browser is the general purpose user interface for working with Neo4j. Query, visualize, administrate and monitor the database
+<!--Neo4j Browser is the general purpose user interface for working with Neo4j. Query, visualize, administrate and monitor the database
 with modern and easy-to-use tools.
 
 ![neo4j browser screenshot](./.github/neo4j-browser-screenshot.png)
@@ -40,7 +40,7 @@ The region marks represent the source files where the nodes are declared.
 
 `yarn test` to run a single test run. A linter will run first.
 
-`yarn dev` to have continuous testing on every file change.
+`yarn dev` to have continuous testing on every file change. -->
 
 <!-- #### E2E Suite
 
