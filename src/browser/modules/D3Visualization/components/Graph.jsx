@@ -33,33 +33,62 @@ import {
   StyleSubmitButton,
   StyleTextArea,
   StyleRelationshipLayoutButton,
-  StyleRelationshipLayoutButtonGroup
+  StyleRelationshipLayoutButtonGroup,
+  StyledGraphLegend
 } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
+import { getShapeDef } from '../lib/visualization/utils/shapes'
+import { getPatternDashes } from '../lib/visualization/utils/pattern'
+import { connect } from 'react-redux'
+import { presetPaletteAction } from 'shared/modules/palette/palette'
+
 const relationshipLayouts = [
   {
     id: 'stripes',
-    display: 'Stripes'
+    display: 'Stripes',
+    arrowLayout: 'stripes',
+    globalShape: true
   },
   {
-    id: 'segments',
-    display: 'Segments'
+    id: 'segments-shape',
+    display: 'Segments (shapes)',
+    arrowLayout: 'segments',
+    globalShape: true,
+    textAbove: true
+  },
+  {
+    id: 'segments-pattern',
+    display: 'Segments (patterns)',
+    arrowLayout: 'segments',
+    globalPattern: true,
+    textAbove: true
   },
   {
     id: 'separate',
-    display: 'Separate Links'
+    display: 'Separate Links',
+    arrowLayout: 'separate',
+    globalShape: true,
+    textAbove: true
+  },
+  {
+    id: 'segments-local-pattern',
+    display: 'Patterns',
+    arrowLayout: 'segments',
+    globalShape: true,
+    localPattern: true,
+    textAbove: true
   }
 ]
 
-export class GraphComponent extends Component {
+export class Graph extends Component {
   state = {
     zoomInLimitReached: true,
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
-    currentLayout: 'segments',
+    currentLayout: relationshipLayouts[0],
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...'
   }
@@ -67,9 +96,7 @@ export class GraphComponent extends Component {
   graphInit (el) {
     this.svgElement = el
     if (this.svgElement && !this.svgElement.__graphStyle) {
-      this.svgElement.__graphStyle = {
-        layout: this.state.currentLayout
-      }
+      this.svgElement.__graphStyle = this.state.currentLayout
     }
     if (this.svgElement && !this.svgElement.__uid) {
       this.svgElement.__uid = Math.floor(Math.random() * Math.pow(2, 52))
@@ -380,25 +407,106 @@ export class GraphComponent extends Component {
     if (this.props.fullscreen) {
       return (
         <StyleRelationshipLayoutButtonGroup>
-          {relationshipLayouts.map(({ id, display }) => (
+          {relationshipLayouts.map(layout => (
             <StyleRelationshipLayoutButton
-              className={id === this.state.currentLayout ? 'selected' : ''}
+              className={layout === this.state.currentLayout ? 'selected' : ''}
               onClick={() => {
                 this.setState({
-                  currentLayout: id
+                  currentLayout: layout
                 })
-                this.svgElement &&
-                  this.svgElement.__graphStyle &&
-                  (this.svgElement.__graphStyle.layout = id)
+                this.svgElement && (this.svgElement.__graphStyle = layout)
                 this.graphView.update()
               }}
             >
-              {display}
+              {layout.display}
             </StyleRelationshipLayoutButton>
           ))}
         </StyleRelationshipLayoutButtonGroup>
       )
     }
+  }
+
+  legend () {
+    return (
+      <StyledGraphLegend>
+        <button onClick={this.props.setLightTheme}>Light</button>
+        <button onClick={this.props.setDarkTheme}>Dark</button>
+        <table>
+          <tr>
+            <th colspan='2'>Edge Types</th>
+          </tr>
+          {this.props.stats.relTypes &&
+            Object.keys(this.props.stats.relTypes).map(relType => {
+              const style = this.props.graphStyle.forRelationship({
+                type: relType
+              })
+              return relType === '*' ? null : (
+                <tr>
+                  <td>{relType}</td>
+                  <td>
+                    <svg width='180' height='15' viewBox='0 -6 144 12'>
+                      <line
+                        x1='0'
+                        x2='144'
+                        y1='0'
+                        y2='0'
+                        stroke='#888'
+                        strokeWidth='5'
+                        strokeDasharray={
+                          this.state.currentLayout.globalPattern &&
+                          getPatternDashes(style.get('pattern'), 5)
+                        }
+                      />
+                      {this.state.currentLayout.globalShape && (
+                        <path
+                          d={getShapeDef(
+                            style.get('shape'),
+                            { x: 0, y: 0 },
+                            11
+                          )}
+                          stroke='black'
+                          strokeWidth='1'
+                          fill='#ffffff77'
+                        />
+                      )}
+                    </svg>
+                  </td>
+                </tr>
+              )
+            })}
+          <tr>
+            <th colspan='2'>Feature Expressions</th>
+          </tr>
+          {this.props.stats.conditionTypes &&
+            this.props.stats.conditionTypes.map(condType => {
+              const style = this.props.graphStyle.forCondition(condType)
+              if (style.get('color') === '#A5ABB6') return null
+              return (
+                <tr>
+                  <td>{condType}</td>
+                  <td>
+                    <svg width='180' height='15' viewBox='0 -6 144 12'>
+                      <line
+                        x1='0'
+                        x2='144'
+                        y1='0'
+                        y2='0'
+                        stroke={style.get('color')}
+                        strokeWidth='5'
+                        strokeDasharray={
+                          this.state.currentLayout.localPattern
+                            ? getPatternDashes(style.get('pattern'), 5)
+                            : ''
+                        }
+                      />
+                    </svg>
+                  </td>
+                </tr>
+              )
+            })}
+        </table>
+      </StyledGraphLegend>
+    )
   }
 
   render () {
@@ -411,8 +519,14 @@ export class GraphComponent extends Component {
         {/* {this.inputToggle()} */}
         {this.inputFeatureExpression()}
         {this.inputToggleStripes()}
+        {this.legend()}
       </StyledSvgWrapper>
       // </div>
     )
   }
 }
+
+export const GraphComponent = connect(null, dispatch => ({
+  setLightTheme: () => dispatch(presetPaletteAction('light')),
+  setDarkTheme: () => dispatch(presetPaletteAction('dark'))
+}))(Graph)

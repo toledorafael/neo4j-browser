@@ -28,19 +28,19 @@ export default function neoGraphStyle () {
   const defaultStyle = {
     node: {
       diameter: '50px',
-      color: '#A5ABB6',
-      'border-color': '#9AA1AC',
+      color: 'var(--graph-color0)',
+      'border-color': 'var(--border-color0)',
       'border-width': '2px',
-      'text-color-internal': '#FFFFFF',
+      'text-color-internal': 'var(--graph-internal-text-color)',
       'font-size': '14px'
     },
     relationship: {
-      color: '#A5ABB6',
+      color: 'var(--graph-color0)',
       'shaft-width': '5px', // Check if the link gets thicker
       'font-size': '14px',
       padding: '3px',
       'text-color-external': '#000000',
-      'text-color-internal': '#FFFFFF',
+      'text-color-internal': 'var(--graph-internal-text-color)',
       caption: '<type>'
     }
   }
@@ -110,68 +110,122 @@ export default function neoGraphStyle () {
       'shaft-width': '38px'
     }
   ]
-  const defaultColors = [
+  // const defaultColors = [
+  //   {
+  //     color: '#FFE081',
+  //     'border-color': '#9AA1AC',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#C990C0',
+  //     'border-color': '#b261a5',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#F79767',
+  //     'border-color': '#f36924',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#57C7E3',
+  //     'border-color': '#23b3d7',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#F16667',
+  //     'border-color': '#eb2728',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#D9C8AE',
+  //     'border-color': '#c0a378',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#8DCC93',
+  //     'border-color': '#5db665',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#ECB5C9',
+  //     'border-color': '#da7298',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#4C8EDA',
+  //     'border-color': '#2870c2',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#FFC454',
+  //     'border-color': '#d7a013',
+  //     'text-color-internal': '#604A0E'
+  //   },
+  //   {
+  //     color: '#DA7194',
+  //     'border-color': '#cc3c6c',
+  //     'text-color-internal': '#FFFFFF'
+  //   },
+  //   {
+  //     color: '#569480',
+  //     'border-color': '#447666',
+  //     'text-color-internal': '#FFFFFF'
+  //   }
+  // ]
+
+  const defaultColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => {
+    return {
+      color: `var(--graph-color${i})`,
+      'border-color': `var(--border-color${i})`,
+      'text-color-internal': 'var(--graph-internal-text-color)'
+    }
+  })
+
+  const defaultShapes = [
     {
-      color: '#FFE081',
-      'border-color': '#9AA1AC',
-      'text-color-internal': '#FFFFFF'
+      shape: ''
     },
     {
-      color: '#C990C0',
-      'border-color': '#b261a5',
-      'text-color-internal': '#FFFFFF'
+      shape: 'thinRectangle'
     },
     {
-      color: '#F79767',
-      'border-color': '#f36924',
-      'text-color-internal': '#FFFFFF'
+      shape: 'ellipse'
     },
     {
-      color: '#57C7E3',
-      'border-color': '#23b3d7',
-      'text-color-internal': '#FFFFFF'
+      shape: 'rectangle'
     },
     {
-      color: '#F16667',
-      'border-color': '#eb2728',
-      'text-color-internal': '#FFFFFF'
+      shape: 'circle'
     },
     {
-      color: '#D9C8AE',
-      'border-color': '#c0a378',
-      'text-color-internal': '#604A0E'
+      shape: 'square'
     },
     {
-      color: '#8DCC93',
-      'border-color': '#5db665',
-      'text-color-internal': '#604A0E'
+      shape: 'halfCircle'
     },
     {
-      color: '#ECB5C9',
-      'border-color': '#da7298',
-      'text-color-internal': '#604A0E'
-    },
-    {
-      color: '#4C8EDA',
-      'border-color': '#2870c2',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#FFC454',
-      'border-color': '#d7a013',
-      'text-color-internal': '#604A0E'
-    },
-    {
-      color: '#DA7194',
-      'border-color': '#cc3c6c',
-      'text-color-internal': '#FFFFFF'
-    },
-    {
-      color: '#569480',
-      'border-color': '#447666',
-      'text-color-internal': '#FFFFFF'
+      shape: 'triangle'
     }
   ]
+
+  const defaultPatterns = [
+    {
+      pattern: 'dashes 1'
+    },
+    {
+      pattern: 'dashes 3'
+    },
+    {
+      pattern: 'dashes 3 1'
+    },
+    {
+      pattern: 'dashes 1 1 3 1'
+    },
+    {
+      pattern: 'dashes 1 1 1 1 3 1'
+    }
+  ]
+
   const Selector = (function () {
     function Selector (tag1, classes1) {
       this.tag = tag1
@@ -278,35 +332,67 @@ export default function neoGraphStyle () {
               // If no property is set for this link, create one
               if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
+                this.props.pattern = this.props.color
+                  ? this.props.pattern || ''
+                  : ''
                 this.selector.classes[0].color = rule.props.color
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
               } else {
-                // If properties were already set and there is an update on the color rules, merge the rules
-                if (this.props.color !== rule.props.color) {
-                  for (const key in rule.props) {
-                    if (key === 'color') {
-                      if (Array.isArray(this.props.color)) {
-                        // If there are multiple colors add one more
-                        this.props.color.push(rule.props.color)
-                        this.selector.classes[0].color.push(rule.props.color)
-                      } else {
-                        // Else create an array with the two colors
-                        this.props.color = [this.props.color, rule.props.color]
-                        this.selector.classes[0].color = [
-                          this.selector.classes[0].color,
-                          rule.props.color
-                        ]
-                      }
+                // Merge rules
+                // if (this.props.color === rule.props.color && this.props.pattern === rule.props.pattern) {
+                //   this.props = { ...this.props, ...rule.props }
+                //   this.props.caption =
+                //     this.props.caption || this.props.defaultCaption
+                // } else
+                // {
+                for (const key in rule.props) {
+                  if (key === 'color') {
+                    if (Array.isArray(this.props.color)) {
+                      // If there are multiple colors add one more
+                      this.props.color.push(rule.props.color)
+                      this.selector.classes[0].color.push(rule.props.color)
+                    } else if (this.props.color !== undefined) {
+                      // Else create an array with the two colors
+                      this.props.color = [this.props.color, rule.props.color]
+
+                      this.selector.classes[0].color = [
+                        this.selector.classes[0].color,
+                        rule.props.color
+                      ]
                     } else {
-                      this.props[key] = rule.props[key]
+                      this.props.color = [rule.props.color]
                     }
+
+                    if (Array.isArray(this.props.pattern)) {
+                      // If there are multiple patterns add one more
+                      this.props.pattern.push(rule.props.pattern || '')
+                    } else if (this.props.pattern !== undefined) {
+                      // Else create an array with the two patterns
+                      this.props.pattern = [
+                        this.props.pattern,
+                        rule.props.pattern || ''
+                      ]
+                    } else {
+                      this.props.pattern = [rule.props.pattern || '']
+                    }
+                  } else if (key === 'pattern') {
+                    // if (rule.props.color) {
+                    //   if (Array.isArray(this.props.pattern)) {
+                    //     // If there are multiple patterns add one more
+                    //     this.props.pattern.push(rule.props.pattern || '')
+                    //   } else if (this.props.pattern) {
+                    //     // Else create an array with the two patterns
+                    //     this.props.pattern = [this.props.pattern, rule.props.pattern || '']
+                    //   } else {
+                    //     this.props.pattern = [rule.props.pattern || '']
+                    //   }
+                    // }
+                  } else {
+                    this.props[key] = rule.props[key]
                   }
-                } else {
-                  this.props = { ...this.props, ...rule.props }
-                  this.props.caption =
-                    this.props.caption || this.props.defaultCaption
                 }
+                // }
               }
             }
           } else {
@@ -405,6 +491,34 @@ export default function neoGraphStyle () {
       let index =
         usedColors.length - 1 > defaultColors ? 0 : usedColors.length - 1
       return defaultColors[index]
+    }
+
+    const findAvailableDefaultShapes = function (rules) {
+      const usedShapes = rules
+        .filter(rule => {
+          return rule.props.shape != null
+        })
+        .map(rule => {
+          return rule.props.shape
+        })
+      let index =
+        usedShapes.length > defaultShapes.length - 1 ? 0 : usedShapes.length
+      return defaultShapes[index]
+    }
+
+    const findAvailableDefaultPatterns = function (rules) {
+      const usedPatterns = rules
+        .filter(rule => {
+          return rule.props.pattern != null
+        })
+        .map(rule => {
+          return rule.props.pattern
+        })
+      let index =
+        usedPatterns.length > defaultPatterns.length - 1
+          ? 0
+          : usedPatterns.length
+      return defaultPatterns[index]
     }
 
     const getDefaultNodeCaption = function (item) {
@@ -512,6 +626,42 @@ export default function neoGraphStyle () {
           minimalSelector,
           getDefaultNodeCaption(item)
         )
+      }
+    }
+
+    GraphStyle.prototype.setDefaultRelationshipStyling = function (
+      selector,
+      item
+    ) {
+      let defaultShape = true
+      let defaultPattern = true
+      for (let i = 0; i < this.rules.length; i++) {
+        let rule = this.rules[i]
+        if (rule.selector.classes.length > 0 && rule.matches(selector)) {
+          if (rule.props.hasOwnProperty('shape')) {
+            defaultShape = false
+          }
+          if (rule.props.hasOwnProperty('pattern')) {
+            defaultPattern = false
+          }
+        }
+      }
+      const minimalSelector = new Selector(
+        selector.tag,
+        selector.classes.sort().slice(0, 1)
+      )
+      if (defaultShape) {
+        this.changeForSelector(
+          minimalSelector,
+          findAvailableDefaultShapes(this.rules)
+        )
+      }
+      if (defaultPattern) {
+        this.changeForSelector(
+          minimalSelector,
+          findAvailableDefaultPatterns(this.rules)
+        )
+        console.log(this.rules)
       }
     }
 
@@ -693,6 +843,7 @@ export default function neoGraphStyle () {
 
     GraphStyle.prototype.forRelationship = function (rel) {
       const selector = relationshipSelector(rel)
+      this.setDefaultRelationshipStyling(selector, rel)
       return this.calculateStyle(selector)
     }
 

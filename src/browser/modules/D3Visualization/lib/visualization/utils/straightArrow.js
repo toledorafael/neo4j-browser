@@ -32,6 +32,7 @@ export default class StraightArrow {
     captionHeight
   ) {
     this.length = centreDistance - (startRadius + endRadius)
+    this.width = shaftWidth
 
     this.shaftLength = this.length - headHeight
     this.separateArrowWidth = 0
@@ -78,16 +79,49 @@ export default class StraightArrow {
       ].join(' ')
     }
 
-    this.midShaftPoint = layout => ({
+    this.midShaftPoint = (textAbove, arrowLayout) => ({
       x: startArrow + this.shaftLength / 2,
-      y:
-        layout !== 'stripes'
-          ? -captionHeight * 0.625 -
-            Math.max(shaftRadius, this.separateArrowWidth / 2)
-          : 0
+      y: textAbove
+        ? -captionHeight * 0.625 -
+          Math.max(shaftRadius, this.separateArrowWidth / 2)
+        : 0
     })
 
+    this.getEndCenter = () => ({ x: startArrow, y: 0 })
+    this.getEndRotation = () => 0
+
     this.outline = function (shortCaptionLength, colorCount, layout) {
+      if (layout === 'segments') {
+        const segmentLength = this.shaftLength / colorCount
+        return Array(colorCount + 1)
+          .fill()
+          .map((_, i) => {
+            if (i === colorCount) {
+              return {
+                path: [
+                  'M',
+                  endShaft,
+                  headRadius,
+                  'L',
+                  endArrow,
+                  0,
+                  'L',
+                  endShaft,
+                  -headRadius,
+                  'Z'
+                ].join(' ')
+              }
+            }
+            return {
+              path: `M ${startArrow + segmentLength * i},0 L ${startArrow +
+                segmentLength * (i + 1)},0`,
+              useStroke: true,
+              pathOffset: segmentLength * i,
+              strokeWidth: shaftWidth
+            }
+          })
+      }
+
       let path
       if (captionLayout === 'external' && layout !== 'segments') {
         const startBreak =
