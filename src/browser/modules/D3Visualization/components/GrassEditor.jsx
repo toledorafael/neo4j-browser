@@ -33,6 +33,8 @@ import {
 } from './styled'
 import * as actions from 'shared/modules/grass/grassDuck'
 import { toKeyString } from 'shared/services/utils'
+import PatternSelector from './PatternSelector'
+import { DashPattern } from '../lib/visualization/utils/pattern'
 
 export class GrassEditorComponent extends Component {
   constructor (props) {
@@ -240,6 +242,35 @@ export class GrassEditorComponent extends Component {
     )
   }
 
+  dashPicker (selector, styleForItem) {
+    return (
+      <span>
+        {/* <input
+          type='text'
+          value={styleForItem.get('pattern') || ''}
+          onChange={e => {
+            this.updateStyle(selector, { pattern: e.target.value })
+          }}
+        /> */}
+        <PatternSelector
+          patterns={[
+            '',
+            'dashes 1',
+            'dashes 3',
+            'dashes 3 1',
+            'dashes 1 3',
+            'dashes 1 1 3 1',
+            'dashes 1 1 3 1 1 1'
+          ]}
+          selectPattern={pattern => {
+            console.log(pattern)
+            this.updateStyle(selector, { pattern })
+          }}
+        />
+      </span>
+    )
+  }
+
   stylePicker () {
     // Based on what type of graph components is selected, we add applicable style pickers
     let pickers
@@ -329,7 +360,8 @@ export class GrassEditorComponent extends Component {
       }
       pickers = [
         this.colorPicker(styleForRelType.selector, styleForRelType),
-        this.widthPicker(styleForRelType.selector, styleForRelType)
+        this.widthPicker(styleForRelType.selector, styleForRelType),
+        this.dashPicker(styleForRelType.selector, styleForRelType)
         // this.captionPicker(
         //  styleForRelType.selector,
         //  styleForRelType,

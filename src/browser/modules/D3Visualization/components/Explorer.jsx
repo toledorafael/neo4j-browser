@@ -26,6 +26,7 @@ import neoGraphStyle from '../graphStyle'
 import { InspectorComponent } from './Inspector'
 import { LegendComponent } from './Legend'
 import { StyledFullSizeContainer } from './styled'
+import { connect } from 'react-redux'
 
 const deduplicateNodes = nodes => {
   return nodes.reduce(
@@ -42,7 +43,7 @@ const deduplicateNodes = nodes => {
   ).nodes
 }
 
-export class ExplorerComponent extends Component {
+export class Explorer extends Component {
   constructor (props) {
     super(props)
     const graphStyle = neoGraphStyle()
@@ -272,6 +273,15 @@ export class ExplorerComponent extends Component {
       ((this.state.hoveredItem && this.state.hoveredItem.type !== 'canvas') ||
         (this.state.selectedItem && this.state.selectedItem.type !== 'canvas'))
 
+    const style = {}
+    this.props.palette.colors.forEach((color, i) => {
+      style[`--graph-color${i}`] = color
+    })
+    this.props.palette.borderColors.forEach((color, i) => {
+      style[`--border-color${i}`] = color
+    })
+    style['--graph-internal-text-color'] = this.props.palette.textColor
+
     return (
       <StyledFullSizeContainer
         id='svg-vis'
@@ -281,9 +291,11 @@ export class ExplorerComponent extends Component {
         forcePaddingBottom={
           inspectingItemType ? this.state.forcePaddingBottom : null
         }
+        style={style}
       >
         {legend}
         <GraphComponent
+          stats={this.state.stats}
           fullscreen={this.props.fullscreen}
           frameHeight={this.props.frameHeight}
           relationships={this.state.relationships}
@@ -315,4 +327,7 @@ export class ExplorerComponent extends Component {
     )
   }
 }
-export const Explorer = ExplorerComponent
+
+export const ExplorerComponent = connect(state => ({
+  palette: state.palette
+}))(Explorer)

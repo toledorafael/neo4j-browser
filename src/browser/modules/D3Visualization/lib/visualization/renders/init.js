@@ -20,6 +20,8 @@
 import Renderer from '../components/renderer'
 import d3 from 'd3'
 import Logic from 'logic-solver'
+import { getPatternDashes } from '../utils/pattern'
+import { getShapeDef } from '../utils/shapes'
 const noop = function () {}
 
 const nodeRingStrokeSize = 8
@@ -278,29 +280,30 @@ function setupGradient (svgEl, id, g, colors) {
   }
 }
 
-function getColors (rel, viz) {
-  let colors
+function getRelationshipStyle (rel, viz) {
   if (checkPropertyList(rel.propertyList, 'condition')) {
-    colors = viz.style.forCondRel(rel).get('color')
-    if (Array.isArray(colors)) {
-      return colors
+    const styles = viz.style.forCondRel(rel)
+    const colors = styles.get('color')
+    const patterns = styles.get('pattern')
+    return {
+      colors: Array.isArray(colors) ? colors : [colors],
+      patterns: Array.isArray(patterns) ? patterns : [patterns]
     }
-    return [colors]
   } else {
-    return ['#A5ABB6']
+    return { colors: ['#A5ABB6'] }
   }
 }
 
 function updateArrow (pathGroups, viz) {
   const layout =
-    pathGroups.node() &&
-    pathGroups.node().closest('.neod3viz').__graphStyle.layout
+    pathGroups.node() && pathGroups.node().closest('.neod3viz').__graphStyle
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
-      const colors = getColors(rel, viz)
+      console.log(rel)
+      const { colors, patterns } = getRelationshipStyle(rel, viz)
       return rel.arrow
-        .outline(rel.shortCaptionLength, colors.length, layout)
-        .map(a => ({ pathDef: a, colors }))
+        .outline(rel.shortCaptionLength, colors.length, layout.arrowLayout)
+        .map(a => ({ pathDef: a, colors, patterns, rel }))
     } else {
       return []
     }
@@ -313,19 +316,54 @@ function updateArrow (pathGroups, viz) {
   pathGroups
     .selectAll('path')
     .attr('d', d => d.pathDef.path)
-    .attr('fill', (d, i) => {
-      if (d.pathDef.gradient && d.colors.length > 1) {
+    .attr('fill', ({ pathDef, colors }, i) => {
+      if (pathDef.useStroke) return 'none'
+      if (pathDef.gradient && colors.length > 1) {
         const id =
           'gradient' +
           svgEl.__uid +
-          d.colors.map(x => x.slice(1)).join('') +
-          d.pathDef.gradient.id
-        setupGradient(svgEl, id, d.pathDef.gradient, d.colors)
+          colors.map(x => x.replace(/[^a-zA-Z0-9]/g, '')).join('') +
+          pathDef.gradient.id
+        setupGradient(svgEl, id, pathDef.gradient, colors)
         return 'url(#' + id + ')'
       } else {
-        return d.colors[Math.min(i, d.colors.length - 1)]
+        return colors[Math.min(i, colors.length - 1)] || '#888888'
       }
     })
+    .attr('stroke', ({ pathDef, colors }, i) => {
+      if (pathDef.useStroke) {
+        return colors[Math.min(i, colors.length - 1)] || '#888888'
+      }
+      return 'none'
+    })
+    .attr('stroke-width', ({ pathDef }) => pathDef.strokeWidth)
+
+  if (layout && layout.localPattern) {
+    pathGroups
+      .selectAll('path')
+      .filter(({ pathDef }) => pathDef.useStroke)
+      .attr('stroke-dasharray', ({ pathDef, patterns }, i) => {
+        const pattern = patterns && patterns[Math.min(i, patterns.length - 1)]
+        return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
+      })
+      .attr('stroke-dashoffset', null)
+  } else if (layout && layout.globalPattern) {
+    pathGroups
+      .selectAll('path')
+      .filter(({ pathDef }) => pathDef.useStroke)
+      .attr('stroke-dasharray', ({ pathDef, rel }) => {
+        const pattern = viz.style.forRelationship(rel).get('pattern')
+        return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
+      })
+      .attr('stroke-dashoffset', ({ pathDef }) => {
+        return pathDef.pathOffset
+      })
+  } else {
+    pathGroups
+      .selectAll('path')
+      .attr('stroke-dasharray', null)
+      .attr('stroke-dashoffset', null)
+  }
 
   return pathGroups
 }
@@ -393,6 +431,41 @@ const arrowPath = new Renderer({
   }
 })
 
+const relationshipShape = new Renderer({
+  name: 'relationshipShape',
+  onGraphChange (selection, viz) {
+    const shapes = selection.selectAll('path.shape').data(rel => [rel])
+    shapes
+      .enter()
+      .append('path')
+      .classed('shape', true)
+      .attr('stroke', 'black')
+      .attr('strokeWidth', '1')
+      .attr('fill', '#ffffff77')
+
+    return shapes.exit().remove()
+  },
+  onTick (selection, viz) {
+    const svgEl = selection.node() && selection.node().closest('.neod3viz')
+    return selection.selectAll('path.shape').each(function (rel) {
+      const center = rel.arrow.getEndCenter()
+      const rotation = rel.arrow.getEndRotation()
+      const shape = viz.style.forRelationship(rel).get('shape')
+      const d = getShapeDef(shape, center, 6 + rel.arrow.width)
+
+      d3.select(this).attr('d', d)
+      d3.select(this).attr(
+        'transform',
+        `rotate(${rotation},${center.x},${center.y})`
+      )
+      d3.select(this).style(
+        'opacity',
+        svgEl.__graphStyle && svgEl.__graphStyle.globalShape ? 1 : 0
+      )
+    })
+  }
+})
+
 const relationshipType = new Renderer({
   name: 'relationshipType',
   onGraphChange (selection, viz) {
@@ -405,7 +478,7 @@ const relationshipType = new Renderer({
       .attr({ 'pointer-events': 'none' })
 
     const layout =
-      texts.node() && texts.node().closest('.neod3viz').__graphStyle.layout
+      texts.node() && texts.node().closest('.neod3viz').__graphStyle
     texts
       .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', rel => {
@@ -414,7 +487,7 @@ const relationshipType = new Renderer({
           .get(
             `text-color-${
               checkPropertyList(rel.propertyList, 'condition') &&
-              layout !== 'stripes'
+              layout.textAbove
                 ? 'external'
                 : rel.captionLayout
             }`
@@ -426,23 +499,25 @@ const relationshipType = new Renderer({
 
   onTick (selection, viz) {
     const layout =
-      selection.node() &&
-      selection.node().closest('.neod3viz').__graphStyle.layout
+      selection.node() && selection.node().closest('.neod3viz').__graphStyle
     return selection
       .selectAll('text')
-      .attr('x', rel => rel.arrow.midShaftPoint(layout).x)
+      .attr(
+        'x',
+        rel => rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
+      )
       .attr(
         'y',
         rel =>
-          rel.arrow.midShaftPoint(layout).y +
+          rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', function (rel) {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint(layout).x} ${
-            rel.arrow.midShaftPoint(layout).y
-          })`
+          return `rotate(180 ${
+            rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
+          } ${rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).y})`
         } else {
           return null
         }
@@ -531,6 +606,7 @@ node.push(nodeRing)
 
 const relationship = []
 relationship.push(arrowPath)
+relationship.push(relationshipShape)
 relationship.push(relationshipType)
 relationship.push(relationshipOverlay)
 
