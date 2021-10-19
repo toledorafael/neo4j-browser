@@ -446,6 +446,7 @@ const relationshipShape = new Renderer({
     return shapes.exit().remove()
   },
   onTick (selection, viz) {
+    const svgEl = selection.node() && selection.node().closest('.neod3viz')
     return selection.selectAll('path.shape').each(function (rel) {
       const center = rel.arrow.getEndCenter()
       const rotation = rel.arrow.getEndRotation()
@@ -456,6 +457,10 @@ const relationshipShape = new Renderer({
       d3.select(this).attr(
         'transform',
         `rotate(${rotation},${center.x},${center.y})`
+      )
+      d3.select(this).style(
+        'opacity',
+        svgEl.__graphStyle && svgEl.__graphStyle.globalShape ? 1 : 0
       )
     })
   }
