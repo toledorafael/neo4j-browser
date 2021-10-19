@@ -66,6 +66,82 @@ const darkPalette = {
   textColor: '#ffffff'
 }
 
+const lightCustomPalette = {
+  colors: [
+    '#a9a9a9',
+    '#e6194b',
+    '#f58231',
+    '#3cb44b',
+    '#42d4f4',
+    '#f032e6',
+
+    '#fabed4',
+    '#ffd8b1',
+    '#fffac8',
+    '#aaffc3',
+    '#dcbeff',
+
+    '#ffe119',
+    '#bfef45'
+  ],
+  borderColors: [
+    '#a9a9a9',
+    '#e6194b',
+    '#f58231',
+    '#3cb44b',
+    '#42d4f4',
+    '#f032e6',
+
+    '#fabed4',
+    '#ffd8b1',
+    '#fffac8',
+    '#aaffc3',
+    '#dcbeff',
+
+    '#ffe119',
+    '#bfef45'
+  ],
+  textColor: '#000000'
+}
+
+const darkCustomPalette = {
+  colors: [
+    '#a9a9a9',
+    '#e6194b',
+    '#f58231',
+    '#3cb44b',
+    '#42d4f4',
+    '#f032e6',
+
+    '#800000',
+    '#9a6324',
+    '#808000',
+    '#469990',
+    '#000075',
+
+    '#4363d8',
+    '#911eb4'
+  ],
+  borderColors: [
+    '#a9a9a9',
+    '#e6194b',
+    '#f58231',
+    '#3cb44b',
+    '#42d4f4',
+    '#f032e6',
+
+    '#800000',
+    '#9a6324',
+    '#808000',
+    '#469990',
+    '#000075',
+
+    '#4363d8',
+    '#911eb4'
+  ],
+  textColor: '#ffffff'
+}
+
 const initialState = darkPalette
 
 export function resetPaletteAction () {
@@ -88,6 +164,8 @@ export function paletteReducer (state = initialState, action) {
   if (action.type === 'palette/PRESET') {
     if (action.name === 'dark') return darkPalette
     if (action.name === 'light') return lightPalette
+    if (action.name === 'lightCustom') return lightCustomPalette
+    if (action.name === 'darkCustom') return darkCustomPalette
     return initialState
   }
   return state

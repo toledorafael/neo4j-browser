@@ -431,6 +431,8 @@ export class Graph extends Component {
       <StyledGraphLegend>
         <button onClick={this.props.setLightTheme}>Light</button>
         <button onClick={this.props.setDarkTheme}>Dark</button>
+        <button onClick={this.props.setLightCustomTheme}>Light 2</button>
+        <button onClick={this.props.setDarkCustomTheme}>Dark 2</button>
         <table>
           <tr>
             <th colspan='2'>Edge Types</th>
@@ -528,5 +530,7 @@ export class Graph extends Component {
 
 export const GraphComponent = connect(null, dispatch => ({
   setLightTheme: () => dispatch(presetPaletteAction('light')),
-  setDarkTheme: () => dispatch(presetPaletteAction('dark'))
+  setDarkTheme: () => dispatch(presetPaletteAction('dark')),
+  setLightCustomTheme: () => dispatch(presetPaletteAction('lightCustom')),
+  setDarkCustomTheme: () => dispatch(presetPaletteAction('darkCustom'))
 }))(Graph)
