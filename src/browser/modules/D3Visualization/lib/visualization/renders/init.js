@@ -19,7 +19,6 @@
  */
 import Renderer from '../components/renderer'
 import d3 from 'd3'
-import Logic from 'logic-solver'
 import { getPatternDashes } from '../utils/pattern'
 import { getShapeDef } from '../utils/shapes'
 const noop = function () {}
@@ -138,98 +137,6 @@ const nodeRing = new Renderer({
   onTick: noop
 })
 
-// split expression by operator considering parentheses
-const split = (expression, operator) => {
-  const result = []
-  let braces = 0
-  let currentChunk = ''
-  for (let i = 0; i < expression.length; ++i) {
-    const curCh = expression[i]
-    if (curCh === '(') {
-      braces++
-    } else if (curCh === ')') {
-      braces--
-    }
-    if (braces === 0 && operator === curCh) {
-      result.push(currentChunk)
-      currentChunk = ''
-    } else currentChunk += curCh
-  }
-  if (currentChunk !== '') {
-    result.push(currentChunk)
-  }
-  return result
-}
-// this will only take strings containing * operator [ no + ]
-const parseDisjunctionSeparatedExpression = expression => {
-  const operandsString = split(expression, '+')
-  const operands = operandsString.map(noStr => {
-    if (noStr[0] === '(') {
-      const expr = noStr.substr(1, noStr.length - 2)
-      // recursive call to the main function
-      // return parseConjunctionSeparatedExpression(expr)
-      return parseNegation(expr)
-    } else if (noStr[0] === '-') {
-      return parseNegation(noStr)
-    }
-    return noStr
-  })
-  // const initialValue = 1.0
-  // const result = operands.reduce((acc, no) => acc * no, initialValue)
-  if (operands.length > 1) {
-    return Logic.or(operands)
-  } else {
-    return operands[0]
-  }
-}
-// both * -
-const parseConjunctionSeparatedExpression = expression => {
-  const operandsString = split(expression, '*')
-  const operands = operandsString.map(operandStr => {
-    if (operandStr[0] === '-') {
-      return parseNegation(operandStr)
-    }
-    return parseDisjunctionSeparatedExpression(operandStr)
-  })
-  // const initialValue = numbers[0]
-  // const result = numbers.slice(1).reduce((acc, no) => acc - no, initialValue)
-  if (operands.length > 1) {
-    return Logic.and(operands)
-  } else {
-    return operands[0]
-  }
-}
-
-const parseNegation = expression => {
-  if (expression[0] === '-') {
-    return Logic.not(
-      parseConjunctionSeparatedExpression(
-        expression.substr(1, expression.length - 1)
-      )
-    )
-  } else {
-    return parseConjunctionSeparatedExpression(expression)
-  }
-}
-
-const parse = featureExpression => {
-  var newFeatureExpression = featureExpression
-    .replaceAll(/\s/g, '')
-    .replaceAll('!', '-')
-  if (
-    newFeatureExpression.includes('/\\') ||
-    newFeatureExpression.includes('\\/')
-  ) {
-    newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
-    newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
-    // return parseConjunctionSeparatedExpression(newFeatureExpression)
-    const parsedExpression = parseNegation(newFeatureExpression)
-    return parsedExpression
-  } else {
-    return newFeatureExpression
-  }
-}
-
 const checkPropertyList = (propertyList, propertyName) => {
   if (propertyList.length > 0) {
     for (let index = 0; index < propertyList.length; index++) {
@@ -238,17 +145,6 @@ const checkPropertyList = (propertyList, propertyName) => {
     }
     return false
   }
-}
-
-const evaluateUnderAllSolutions = (solutions, presenceCondition) => {
-  var newPresenceCondition = parse(presenceCondition)
-  for (let solutionId = 0; solutionId < solutions.length; solutionId++) {
-    const solution = solutions[solutionId]
-    if (solution.evaluate(newPresenceCondition)) {
-      return true
-    }
-  }
-  return false
 }
 
 function setupGradient (svgEl, id, g, colors) {
@@ -379,19 +275,6 @@ const arrowPath = new Renderer({
       .enter()
       .append('g')
       .classed('outline', true)
-
-    if (featureExpression !== '') {
-      var formula = parse(featureExpression)
-      var solver = new Logic.Solver()
-      solver.require(formula)
-      var solutions = []
-      var curSol
-      while ((curSol = solver.solve())) {
-        curSol.ignoreUnknownVariables()
-        solutions.push(curSol)
-        solver.forbid(curSol.getFormula())
-      }
-    }
 
     updateArrow(paths, viz)
     // updateGradient(paths, viz)
