@@ -31,8 +31,9 @@ import {
   StyledLegendInlineList
 } from './styled'
 import { RowExpandToggleComponent } from './RowExpandToggle'
+import { connect } from 'react-redux'
 
-export class LegendComponent extends Component {
+export class Legend extends Component {
   constructor (props) {
     super(props)
     this.state = {}
@@ -222,7 +223,7 @@ export class LegendComponent extends Component {
       )
     }
     let relTypes = mapRelTypes(this.props.stats.relTypes)
-    let conditionTypes = mapConditionTypes(this.props.stats.conditionTypes)
+    let conditionTypes = mapConditionTypes(this.props.conditionTypes)
     return (
       <StyledLegend className={relTypes ? '' : 'one-row'}>
         {mapLabels(this.props.stats.labels)}
@@ -232,3 +233,7 @@ export class LegendComponent extends Component {
     )
   }
 }
+
+export const LegendComponent = connect(state => ({
+  conditionTypes: state.filters
+}))(Legend)

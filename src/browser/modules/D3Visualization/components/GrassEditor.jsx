@@ -34,7 +34,7 @@ import {
 import * as actions from 'shared/modules/grass/grassDuck'
 import { toKeyString } from 'shared/services/utils'
 import PatternSelector from './PatternSelector'
-import { DashPattern } from '../lib/visualization/utils/pattern'
+import { removeFilterAction } from 'shared/modules/filters/filters'
 
 export class GrassEditorComponent extends Component {
   constructor (props) {
@@ -263,7 +263,6 @@ export class GrassEditorComponent extends Component {
             'dashes 1 1 3 1 1 1'
           ]}
           selectPattern={pattern => {
-            console.log(pattern)
             this.updateStyle(selector, { pattern })
           }}
         />
@@ -278,6 +277,8 @@ export class GrassEditorComponent extends Component {
     let visible
     let changeHandler
     let showVisibleToggle
+    let deleteFilterButton = null
+
     if (this.props.selectedLabel) {
       // If selected components are nodes
       const labelList =
@@ -377,6 +378,17 @@ export class GrassEditorComponent extends Component {
           {this.props.selectedCondition.condition || '*'}
         </StyledTokenRelationshipType>
       )
+      deleteFilterButton = (
+        <button
+          onClick={() => {
+            this.props.removeFilter(this.props.selectedCondition.condition)
+            this.graphStyle.destroySelector(styleForRelType.selector)
+            this.props.update(this.graphStyle.toSheet())
+          }}
+        >
+          Remove filter
+        </button>
+      )
     } else {
       return null
     }
@@ -395,6 +407,7 @@ export class GrassEditorComponent extends Component {
       <StyledInlineList className='style-picker'>
         {title}
         {showVisibleToggle && visibleToggle}
+        {deleteFilterButton}
         {pickers}
       </StyledInlineList>
     )
@@ -424,6 +437,9 @@ const mapDispatchToProps = dispatch => {
   return {
     update: data => {
       dispatch(actions.updateGraphStyleData(data))
+    },
+    removeFilter: filter => {
+      dispatch(removeFilterAction(filter))
     }
   }
 }

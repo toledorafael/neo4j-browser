@@ -299,7 +299,6 @@ function updateArrow (pathGroups, viz) {
     pathGroups.node() && pathGroups.node().closest('.neod3viz').__graphStyle
   const paths = pathGroups.selectAll('path').data(rel => {
     if (rel.arrow) {
-      console.log(rel)
       const { colors, patterns } = getRelationshipStyle(rel, viz)
       return rel.arrow
         .outline(rel.shortCaptionLength, colors.length, layout.arrowLayout)

@@ -629,6 +629,11 @@ export default function neoGraphStyle () {
       }
     }
 
+    GraphStyle.prototype.destroySelector = function (selector) {
+      const rule = findRule(selector, this.rules)
+      this.destroyRule(rule)
+    }
+
     GraphStyle.prototype.importGrass = function (string) {
       try {
         const rules = this.parse(string)
@@ -706,6 +711,8 @@ export default function neoGraphStyle () {
       this.rules.forEach(rule => {
         sheet[rule.selector.toString()] = rule.props
       })
+      console.log(this.rules)
+      console.log(sheet)
       return sheet
     }
 

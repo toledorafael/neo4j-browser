@@ -43,6 +43,7 @@ import { getShapeDef } from '../lib/visualization/utils/shapes'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { connect } from 'react-redux'
 import { presetPaletteAction } from 'shared/modules/palette/palette'
+import { addFilterAction } from 'shared/modules/filters/filters'
 
 const relationshipLayouts = [
   {
@@ -308,6 +309,7 @@ export class Graph extends Component {
 
   handleSubmit (event) {
     if (this.state.newConditionType) {
+      this.props.addFilterAction(this.state.newConditionType)
       let conditionTypes
       if (this.state.conditionTypes) {
         if (
@@ -479,8 +481,8 @@ export class Graph extends Component {
           <tr>
             <th colspan='2'>Feature Expressions</th>
           </tr>
-          {this.props.stats.conditionTypes &&
-            this.props.stats.conditionTypes.map(condType => {
+          {this.props.conditionTypes &&
+            this.props.conditionTypes.map(condType => {
               const style = this.props.graphStyle.forCondition(condType)
               if (style.get('color') === '#A5ABB6') return null
               return (
@@ -528,9 +530,15 @@ export class Graph extends Component {
   }
 }
 
-export const GraphComponent = connect(null, dispatch => ({
-  setLightTheme: () => dispatch(presetPaletteAction('light')),
-  setDarkTheme: () => dispatch(presetPaletteAction('dark')),
-  setLightCustomTheme: () => dispatch(presetPaletteAction('lightCustom')),
-  setDarkCustomTheme: () => dispatch(presetPaletteAction('darkCustom'))
-}))(Graph)
+export const GraphComponent = connect(
+  state => ({
+    conditionTypes: state.filters
+  }),
+  dispatch => ({
+    setLightTheme: () => dispatch(presetPaletteAction('light')),
+    setDarkTheme: () => dispatch(presetPaletteAction('dark')),
+    setLightCustomTheme: () => dispatch(presetPaletteAction('lightCustom')),
+    setDarkCustomTheme: () => dispatch(presetPaletteAction('darkCustom')),
+    addFilterAction: filter => dispatch(addFilterAction(filter))
+  })
+)(Graph)

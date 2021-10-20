@@ -270,7 +270,6 @@ export default class ArcArrow {
 
       if (layout === 'segments') {
         let sweepAngle = endAngle - startAngle
-        colorCount > 1 && console.log(sweepAngle)
         if (sweepAngle > Math.PI) sweepAngle = sweepAngle - 2 * Math.PI
         const segmentAngle = sweepAngle / colorCount
         return Array(colorCount + 1)
