@@ -287,7 +287,7 @@ export default function neoGraphStyle () {
       return this
     }
 
-    StyleElement.prototype.applyCondRules = function (rules) {
+    StyleElement.prototype.applyCondRules = function (rules, solvers) {
       if (this.selector.tag === 'relationship') {
         var presenceCondition = ''
 
@@ -298,27 +298,44 @@ export default function neoGraphStyle () {
         for (let i = 0; i < rules.length; i++) {
           let rule = rules[i]
           // if rule concerns a condition
+          // and presence condition is not true or empty
           if (
             rule.selector.classes.includes('condRule') &&
             presenceCondition !== '' &&
             presenceCondition !== 'true'
           ) {
+            let featureExpression = rule.selector.classes[0]
+
             // If no solver was created for this presence condition then create one
-            if (!this.selector.classes[0].solver) {
-              this.selector.classes[0].solver = new SatSolver(presenceCondition)
+            if (!solvers[presenceCondition]) {
+              solvers[presenceCondition] = {
+                solver: new SatSolver(presenceCondition),
+                assumptions: {}
+              }
             }
 
+            // If the result for this feature expression is not cached yet
             // Check if presence condition is satisfiable assuming the feature expression of interest
+            // Save the result in cachedAssumptSolution
             if (
-              this.selector.classes[0].solver.solveAssuming(
-                rule.selector.classes[0]
-              )
+              !(featureExpression in solvers[presenceCondition]['assumptions'])
             ) {
+              solvers[presenceCondition]['assumptions'][
+                featureExpression
+              ] = solvers[presenceCondition]['solver'].solveAssuming(
+                featureExpression
+              )
+            }
+
+            // Look up the satisfiability solution in the cached results
+            if (solvers[presenceCondition]['assumptions'][featureExpression]) {
+              // If no property is set for this link, create one
               if (Object.keys(this.props).length === 0) {
                 this.props = { ...this.props, ...rule.props }
                 this.props.pattern = this.props.color
                   ? this.props.pattern || ''
                   : ''
+                this.selector.classes[0].color = rule.props.color
                 this.props.caption =
                   this.props.caption || this.props.defaultCaption
               } else {
@@ -334,9 +351,15 @@ export default function neoGraphStyle () {
                     if (Array.isArray(this.props.color)) {
                       // If there are multiple colors add one more
                       this.props.color.push(rule.props.color)
+                      this.selector.classes[0].color.push(rule.props.color)
                     } else if (this.props.color !== undefined) {
                       // Else create an array with the two colors
                       this.props.color = [this.props.color, rule.props.color]
+
+                      this.selector.classes[0].color = [
+                        this.selector.classes[0].color,
+                        rule.props.color
+                      ]
                     } else {
                       this.props.color = [rule.props.color]
                     }
@@ -373,8 +396,8 @@ export default function neoGraphStyle () {
               }
             }
           } else {
-            // if condition = true or empty
-            // All rules regarding any condition should apply (?)
+            // TODO: if condition = true or empty
+            // All rules regarding any condition should apply
           }
         }
       }
@@ -392,6 +415,9 @@ export default function neoGraphStyle () {
   const GraphStyle = (function () {
     function GraphStyle () {
       this.rules = []
+      // this.lastNumberOfRulesApplied = {}
+      // this.ruleColor = {}
+      this.solvers = {}
       try {
         this.loadRules()
       } catch (_error) {
@@ -536,8 +562,35 @@ export default function neoGraphStyle () {
       return new StyleElement(selector).applyRules(this.rules)
     }
 
+    GraphStyle.prototype.checkColorChange = function () {
+      for (let i = 0; i < this.rules.length; i++) {
+        let rule = this.rules[i]
+        if (this.ruleColor[i] !== rule.props.color) return true
+      }
+      return false
+    }
+
     GraphStyle.prototype.calculateCondStyle = function (selector) {
-      return new StyleElement(selector).applyCondRules(this.rules)
+      // if (selector.classes[0].id in this.lastNumberOfRulesApplied) {
+      //   if (this.rules.length !== this.lastNumberOfRulesApplied[selector.classes[0].id] || this.checkColorChange()) {
+      //     this.lastNumberOfRulesApplied[selector.classes[0].id] = this.rules.length
+      //     for (let i = 0; i < this.rules.length; i++) {
+      //       let rule = this.rules[i]
+      //       this.ruleColor[i] = rule.props.color
+      //     }
+      //     return new StyleElement(selector).applyCondRules(this.rules)
+      //   } else {
+      //     return new StyleElement(selector)
+      //   }
+      // } else {
+      //   this.lastNumberOfRulesApplied[selector.classes[0].id] = this.rules.length
+      //   for (let i = 0; i < this.rules.length; i++) {
+      //     let rule = this.rules[i]
+      //     this.ruleColor[i] = rule.props.color
+      //   }
+      //   return new StyleElement(selector).applyCondRules(this.rules)
+      // }
+      return new StyleElement(selector).applyCondRules(this.rules, this.solvers)
     }
 
     GraphStyle.prototype.forEntity = function (item) {
@@ -801,7 +854,11 @@ export default function neoGraphStyle () {
 
     GraphStyle.prototype.forCondRel = function (rel) {
       const selector = conditionSelector(rel)
-      return this.calculateCondStyle(selector)
+      // TODO: if it is called from ongraphchange then calculatecondstyle
+      // if called from ontick just return the selector for the relationship with the appropriate styling rules
+      let resultCond = this.calculateCondStyle(selector)
+      let result = this.calculateStyle(selector)
+      return resultCond
     }
     return GraphStyle
   })()
