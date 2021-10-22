@@ -60,7 +60,7 @@ export default class LoopArrow {
         return normalPoint(
           0,
           r3,
-          (this.separateArrowWidth || r1) + captionHeight / 2 + 2
+          (this.separateArrowWidth || 0) + captionHeight / 2 + 2
         )
       }
       return normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
