@@ -661,7 +661,6 @@ export default function neoGraphStyle () {
           minimalSelector,
           findAvailableDefaultPatterns(this.rules)
         )
-        console.log(this.rules)
       }
     }
 
@@ -764,8 +763,6 @@ export default function neoGraphStyle () {
       this.rules.forEach(rule => {
         sheet[rule.selector.toString()] = rule.props
       })
-      console.log(this.rules)
-      console.log(sheet)
       return sheet
     }
 

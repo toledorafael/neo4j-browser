@@ -34,7 +34,9 @@ import {
   StyleTextArea,
   StyleRelationshipLayoutButton,
   StyleRelationshipLayoutButtonGroup,
-  StyledGraphLegend
+  StyledGraphLegend,
+  StyledLayoutPicker,
+  StyledRelationshipLayoutHeader
 } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
@@ -45,41 +47,84 @@ import { connect } from 'react-redux'
 import { presetPaletteAction } from 'shared/modules/palette/palette'
 import { addFilterAction } from 'shared/modules/filters/filters'
 
-const relationshipLayouts = [
-  {
+const relationshipLayouts = {
+  stripes: {
     id: 'stripes',
     display: 'Stripes',
     arrowLayout: 'stripes',
     globalShape: true
   },
-  {
+  'segments-shape': {
     id: 'segments-shape',
-    display: 'Segments (shapes)',
+    display: 'Segments (symbols)',
     arrowLayout: 'segments',
     globalShape: true,
     textAbove: true
   },
-  {
+  'segments-pattern': {
     id: 'segments-pattern',
     display: 'Segments (patterns)',
     arrowLayout: 'segments',
     globalPattern: true,
     textAbove: true
   },
-  {
+  separate: {
     id: 'separate',
     display: 'Separate Links',
     arrowLayout: 'separate',
     globalShape: true,
     textAbove: true
   },
-  {
+  'segments-local-pattern': {
     id: 'segments-local-pattern',
     display: 'Patterns',
     arrowLayout: 'segments',
     globalShape: true,
     localPattern: true,
     textAbove: true
+  }
+}
+
+const featureItems = [
+  {
+    display: 'Segments',
+    items: [
+      {
+        id: 'segments-shape',
+        display: 'Symbols'
+      },
+      {
+        id: 'segments-pattern',
+        display: 'Pattern'
+      }
+    ]
+  },
+  {
+    display: 'Stripes',
+    items: [
+      {
+        id: 'stripes',
+        display: 'Symbols'
+      }
+    ]
+  },
+  {
+    display: 'Separate Links',
+    items: [
+      {
+        id: 'separate',
+        display: 'Symbols'
+      }
+    ]
+  },
+  {
+    display: 'Patterns',
+    items: [
+      {
+        id: 'segments-local-pattern',
+        display: 'Symbols'
+      }
+    ]
   }
 ]
 
@@ -89,7 +134,8 @@ export class Graph extends Component {
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
-    currentLayout: relationshipLayouts[0],
+    featureExpressionLayout: featureItems[0],
+    currentLayout: relationshipLayouts[featureItems[0].items[0].id],
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...'
   }
@@ -98,6 +144,7 @@ export class Graph extends Component {
     this.svgElement = el
     if (this.svgElement && !this.svgElement.__graphStyle) {
       this.svgElement.__graphStyle = this.state.currentLayout
+      console.log(this.svgElement.__graphStyle)
     }
     if (this.svgElement && !this.svgElement.__uid) {
       this.svgElement.__uid = Math.floor(Math.random() * Math.pow(2, 52))
@@ -408,22 +455,63 @@ export class Graph extends Component {
   inputToggleStripes () {
     if (this.props.fullscreen) {
       return (
-        <StyleRelationshipLayoutButtonGroup>
-          {relationshipLayouts.map(layout => (
-            <StyleRelationshipLayoutButton
-              className={layout === this.state.currentLayout ? 'selected' : ''}
-              onClick={() => {
-                this.setState({
-                  currentLayout: layout
-                })
-                this.svgElement && (this.svgElement.__graphStyle = layout)
-                this.graphView.update()
-              }}
-            >
-              {layout.display}
-            </StyleRelationshipLayoutButton>
-          ))}
-        </StyleRelationshipLayoutButtonGroup>
+        <StyledLayoutPicker>
+          <StyleRelationshipLayoutButtonGroup>
+            <StyledRelationshipLayoutHeader>
+              Rel Type
+            </StyledRelationshipLayoutHeader>
+            {this.state.featureExpressionLayout.items.map(layout => (
+              <StyleRelationshipLayoutButton
+                className={
+                  relationshipLayouts[layout.id] === this.state.currentLayout
+                    ? 'selected'
+                    : ''
+                }
+                key={layout.id}
+                onClick={() => {
+                  this.setState({
+                    currentLayout: relationshipLayouts[layout.id]
+                  })
+                  this.svgElement &&
+                    (this.svgElement.__graphStyle =
+                      relationshipLayouts[layout.id])
+                  this.graphView.update()
+                }}
+              >
+                {layout.display}
+              </StyleRelationshipLayoutButton>
+            ))}
+          </StyleRelationshipLayoutButtonGroup>
+          <StyleRelationshipLayoutButtonGroup>
+            <StyledRelationshipLayoutHeader>
+              Feature Exp
+            </StyledRelationshipLayoutHeader>
+            {featureItems.map(layout => (
+              <StyleRelationshipLayoutButton
+                className={
+                  layout === this.state.featureExpressionLayout
+                    ? 'selected'
+                    : ''
+                }
+                key={layout.id}
+                onClick={() => {
+                  if (this.state.featureExpressionLayout !== layout) {
+                    this.setState({
+                      featureExpressionLayout: layout,
+                      currentLayout: relationshipLayouts[layout.items[0].id]
+                    })
+                    this.svgElement &&
+                      (this.svgElement.__graphStyle =
+                        relationshipLayouts[layout.items[0].id])
+                    this.graphView.update()
+                  }
+                }}
+              >
+                {layout.display}
+              </StyleRelationshipLayoutButton>
+            ))}
+          </StyleRelationshipLayoutButtonGroup>
+        </StyledLayoutPicker>
       )
     }
   }

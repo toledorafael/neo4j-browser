@@ -459,15 +459,33 @@ export const StyleSubmitButton = styled.button`
   }
 `
 
-export const StyleRelationshipLayoutButtonGroup = styled.div`
+export const StyledLayoutPicker = styled.div`
   position: absolute;
   top: 100px;
-  right: 120px;
+  right: 12px;
+  border: none;
+`
+
+export const StyleRelationshipLayoutButtonGroup = styled.div`
+  display: inline-block;
+  vertical-align: top;
   width: 200px;
+  margin-left: 8px;
   border: none;
   border-radius: 8px;
   background: grey;
   padding: 0 4px;
+`
+
+export const StyledRelationshipLayoutHeader = styled.div`
+  line-height: 32px;
+  height: 32px;
+  font-size: 1.5em;
+  user-select: none;
+  color: white;
+  text-align: center;
+  border-bottom: white 2px solid;
+  margin: 4px 0;
 `
 
 export const StyleRelationshipLayoutButton = styled.button`
