@@ -32,7 +32,8 @@ export default function neoGraphStyle () {
       'border-color': 'var(--border-color0)',
       'border-width': '2px',
       'text-color-internal': 'var(--graph-internal-text-color)',
-      'font-size': '14px'
+      'font-size': '14px',
+      caption: 'label'
     },
     relationship: {
       color: 'var(--graph-color0)',
@@ -41,7 +42,8 @@ export default function neoGraphStyle () {
       padding: '3px',
       'text-color-external': '#000000',
       'text-color-internal': 'var(--graph-internal-text-color)',
-      caption: '<type>'
+      // caption: '<type>'
+      caption: '{condition}'
     }
   }
   const defaultSizes = [
@@ -210,6 +212,9 @@ export default function neoGraphStyle () {
 
   const defaultPatterns = [
     {
+      pattern: ''
+    },
+    {
       pattern: 'dashes 1'
     },
     {
@@ -219,10 +224,13 @@ export default function neoGraphStyle () {
       pattern: 'dashes 3 1'
     },
     {
+      pattern: 'dashes 1 3'
+    },
+    {
       pattern: 'dashes 1 1 3 1'
     },
     {
-      pattern: 'dashes 1 1 1 1 3 1'
+      pattern: 'dashes 1 1 3 1 1 1'
     }
   ]
 
@@ -293,6 +301,9 @@ export default function neoGraphStyle () {
 
         if ('condition' in this.selector.classes[0].propertyMap) {
           presenceCondition = this.selector.classes[0].propertyMap['condition']
+          if (presenceCondition === '' || presenceCondition === 'true') {
+            presenceCondition = 'a \\/ !a'
+          }
         }
 
         for (let i = 0; i < rules.length; i++) {
@@ -683,7 +694,7 @@ export default function neoGraphStyle () {
 
     GraphStyle.prototype.destroySelector = function (selector) {
       const rule = findRule(selector, this.rules)
-      this.destroyRule(rule)
+      if (rule) this.destroyRule(rule)
     }
 
     GraphStyle.prototype.importGrass = function (string) {

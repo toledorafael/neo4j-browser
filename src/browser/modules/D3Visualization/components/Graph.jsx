@@ -429,10 +429,11 @@ export class Graph extends Component {
     if (this.props.fullscreen) {
       // TODO: Add condition to only show PC form if the user is interested in learn about that
       if (
-        this.checkPropertyList(
-          this.graph._relationships[0].propertyList,
-          'condition'
-        )
+        // this.checkPropertyList(
+        //   this.graph._relationships[0].propertyList,
+        //   'condition'
+        // )
+        true
       ) {
         // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
         return (
@@ -545,8 +546,9 @@ export class Graph extends Component {
                         stroke='#888'
                         strokeWidth='5'
                         strokeDasharray={
-                          this.state.currentLayout.globalPattern &&
-                          getPatternDashes(style.get('pattern'), 5)
+                          (this.state.currentLayout.globalPattern &&
+                            getPatternDashes(style.get('pattern'), 5)) ||
+                          ''
                         }
                       />
                       {this.state.currentLayout.globalShape && (

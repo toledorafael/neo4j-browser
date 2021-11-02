@@ -436,6 +436,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     update: data => {
+      console.log(data)
       dispatch(actions.updateGraphStyleData(data))
     },
     removeFilter: filter => {
