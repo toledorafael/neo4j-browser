@@ -330,65 +330,78 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
 
         if (tip) tip.remove()
 
+        const midPoint = d.arrow.midShaftPoint(false, 'segments')
+        const rotation = ((d.naturalAngle + 180) / 180) * Math.PI
+
         tip = container
           .append('g')
           .attr('class', 'tip')
           .attr(
             'transform',
-            'translate(' + (d.source.x + 20) + ',' + (d.source.y + 20) + ')'
+            'translate(' +
+              (d.source.x +
+                midPoint.x * Math.cos(rotation) -
+                midPoint.y * Math.sin(rotation) -
+                250) +
+              ',' +
+              (d.source.y +
+                midPoint.y * Math.cos(rotation) +
+                midPoint.x * Math.sin(rotation)) +
+              ')'
           )
 
-        var textBox = tip
-          .append('rect')
-          .style('fill', 'white')
-          .style('stroke', 'steelblue')
+        const foreignObject = tip
+          .append('foreignObject')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', 500)
+          .attr('height', 300)
+        const textArea = foreignObject
+          .append('xhtml:div')
+          .style('background', 'white')
+          .style('border', 'steelblue 1px solid')
+          .style('line-height', '1em')
+          .style('overflow-y', 'auto')
+          .style('max-height', '100%')
+          .style('padding', '4px')
+          .style('overflow-wrap', 'break-word')
 
-        var yPos = 1
+        // var textBox = tip
+        //   .append('rect')
+        //   .style('fill', 'white')
+        //   .style('stroke', 'steelblue')
+
         for (var property in d.propertyList) {
           if (d.propertyList[property].key !== 'samplecode') {
-            tip
-              .append('text')
+            textArea
+              .append('div')
               .text(
                 d.propertyList[property].key +
                   ': ' +
                   d.propertyList[property].value
               )
-              .attr('dy', yPos + 'em')
-              .attr('x', 5)
-            yPos++
           } else {
             var sampleCodeArr = d.propertyList[property].value.split(/\r?\n/)
-            tip
-              .append('text')
-              .text('samplecode: ')
-              .attr('dy', yPos + 'em')
-              .attr('x', 5)
-            yPos++
+            textArea.append('div').text('samplecode: ')
             var firstLine = d.propertyMap['linenumber'] - 2
             for (var line in sampleCodeArr) {
               var currLine = +firstLine + +line
               if (currLine === +d.propertyMap['linenumber']) {
-                tip
-                  .append('text')
+                textArea
+                  .append('div')
                   .text(currLine + ':' + sampleCodeArr[line])
-                  .attr('dy', yPos + 'em')
-                  .attr('x', 5)
                   .style('font-weight', 'bold')
-                yPos++
               } else {
-                tip
-                  .append('text')
+                textArea
+                  .append('div')
                   .text(currLine + ':' + sampleCodeArr[line])
-                  .attr('dy', yPos + 'em')
-                  .attr('x', 5)
-                yPos++
               }
             }
           }
         }
 
-        var bbox = tip.node().getBBox()
-        textBox.attr('width', bbox.width + 5).attr('height', bbox.height + 5)
+        // var bbox = tip.node().getBBox()
+        // textBox.attr('width', bbox.width + 5).attr('height', bbox.height + 5)
       })
 
     relationshipGroups.classed(
