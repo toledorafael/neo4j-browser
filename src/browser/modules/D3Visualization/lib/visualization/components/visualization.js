@@ -32,7 +32,7 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
   const rect = baseGroup
     .append('rect')
     .style('fill', 'none')
-    // .style('pointer-events', 'all')
+    .style('pointer-events', 'all')
     // Make the rect cover the whole surface
     .attr('x', '-2500')
     .attr('y', '-2500')
@@ -150,14 +150,14 @@ const vizFn = function (el, measureSize, graph, layout, style, localStyle) {
     }
     return limitsReached
   }
+
   // Background click event
   // Check if panning is ongoing
-  // rect.on('click', function () {
-  //   if (!draw) {
-  //     return viz.trigger('canvasClicked', el)
-  //   }
-  // })
-  // TODO: fix the bug on clickling the canvas
+  rect.on('click', function () {
+    if (!draw) {
+      return viz.trigger('canvasClicked', el)
+    }
+  })
 
   baseGroup
     .call(zoomBehavior)

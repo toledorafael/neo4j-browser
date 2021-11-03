@@ -130,7 +130,7 @@ const featureItems = [
 
 export class Graph extends Component {
   state = {
-    zoomInLimitReached: true,
+    zoomInLimitReached: false,
     zoomOutLimitReached: false,
     shouldResize: false,
     showGroupMarks: false,
