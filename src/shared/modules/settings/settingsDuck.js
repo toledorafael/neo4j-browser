@@ -82,7 +82,7 @@ const initialState = {
   browserSyncDebugServer: null,
   maxRows: 1000,
   shouldReportUdc: true,
-  autoComplete: true,
+  autoComplete: false,
   scrollToTop: true,
   maxFrames: 30,
   editorAutocomplete: true,

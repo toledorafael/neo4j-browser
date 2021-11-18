@@ -54,12 +54,21 @@ const relationshipLayouts = {
     arrowLayout: 'stripes',
     globalShape: true
   },
+  'stripes-text': {
+    arrowLayout: 'stripes',
+    globalText: true
+  },
   'segments-shape': {
     id: 'segments-shape',
     display: 'Segments (symbols)',
     arrowLayout: 'segments',
     globalShape: true,
     textAbove: true
+  },
+  'segments-text': {
+    arrowLayout: 'segments',
+    textAbove: true,
+    globalText: true
   },
   'segments-pattern': {
     id: 'segments-pattern',
@@ -75,6 +84,11 @@ const relationshipLayouts = {
     globalShape: true,
     textAbove: true
   },
+  'separate-text': {
+    arrowLayout: 'separate',
+    textAbove: true,
+    globalText: true
+  },
   'segments-local-pattern': {
     id: 'segments-local-pattern',
     display: 'Patterns',
@@ -82,6 +96,12 @@ const relationshipLayouts = {
     globalShape: true,
     localPattern: true,
     textAbove: true
+  },
+  'segments-local-pattern-text': {
+    arrowLayout: 'segments',
+    localPattern: true,
+    textAbove: true,
+    globalText: true
   }
 }
 
@@ -89,6 +109,10 @@ const featureItems = [
   {
     display: 'Segments',
     items: [
+      {
+        id: 'segments-text',
+        display: 'Text'
+      },
       {
         id: 'segments-shape',
         display: 'Symbols'
@@ -103,6 +127,10 @@ const featureItems = [
     display: 'Stripes',
     items: [
       {
+        id: 'stripes-text',
+        display: 'Text'
+      },
+      {
         id: 'stripes',
         display: 'Symbols'
       }
@@ -112,6 +140,10 @@ const featureItems = [
     display: 'Separate Links',
     items: [
       {
+        id: 'separate-text',
+        display: 'Text'
+      },
+      {
         id: 'separate',
         display: 'Symbols'
       }
@@ -120,6 +152,10 @@ const featureItems = [
   {
     display: 'Patterns',
     items: [
+      {
+        id: 'segments-local-pattern-text',
+        display: 'Text'
+      },
       {
         id: 'segments-local-pattern',
         display: 'Symbols'

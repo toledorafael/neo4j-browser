@@ -87,6 +87,13 @@ export default class StraightArrow {
         : 0
     })
 
+    this.secondaryMidShaftPoint = arrowLayout => ({
+      x: startArrow + this.shaftLength / 2,
+      y:
+        +captionHeight * 0.625 +
+        Math.max(shaftRadius, this.separateArrowWidth / 2)
+    })
+
     this.getEndCenter = () => ({ x: startArrow, y: 0 })
     this.getEndRotation = () => 0
 

@@ -198,7 +198,8 @@ const initialState = {
   },
   settings: {
     'browser.allow_outgoing_connections': false,
-    'browser.remote_content_hostname_whitelist': 'guides.neo4j.com, localhost'
+    'browser.remote_content_hostname_whitelist':
+      'guides.neo4j.com, localhost, student.cs.uwaterloo.ca'
   }
 }
 

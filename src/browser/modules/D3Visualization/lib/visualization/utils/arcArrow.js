@@ -112,6 +112,17 @@ export default class ArcArrow {
             : captionHeight * 0.625 + shaftRadius)
     })
 
+    this.secondaryMidShaftPoint = arrowLayout => ({
+      x: cx + arcRadius * Math.sin(midShaftAngle),
+      y:
+        cy -
+        arcRadius * Math.cos(midShaftAngle) +
+        captionHeight * 0.625 +
+        (arrowLayout === 'separate'
+          ? (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
+          : shaftRadius)
+    })
+
     const startTangent = function (dr) {
       const dx = (dr < 0 ? 1 : -1) * Math.sqrt(square(dr) / (1 + square(g1)))
       const dy = g1 * dx

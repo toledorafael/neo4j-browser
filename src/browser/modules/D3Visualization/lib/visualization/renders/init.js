@@ -348,14 +348,16 @@ const relationshipShape = new Renderer({
   }
 })
 
+// This is the primary caption which actually defaults to condition
 const relationshipType = new Renderer({
   name: 'relationshipType',
   onGraphChange (selection, viz) {
-    const texts = selection.selectAll('text').data(rel => [rel])
+    const texts = selection.selectAll('text.primary-caption').data(rel => [rel])
 
     texts
       .enter()
       .append('text')
+      .classed('primary-caption', true)
       .attr({ 'text-anchor': 'middle' })
       .attr({ 'pointer-events': 'none' })
 
@@ -383,7 +385,7 @@ const relationshipType = new Renderer({
     const layout =
       selection.node() && selection.node().closest('.neod3viz').__graphStyle
     return selection
-      .selectAll('text')
+      .selectAll('text.primary-caption')
       .attr(
         'x',
         rel => rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
@@ -405,6 +407,62 @@ const relationshipType = new Renderer({
         }
       })
       .text(rel => rel.shortCaption)
+  }
+})
+
+// This is the secondary caption which defaults to rel type
+const relationshipSecondaryCaption = new Renderer({
+  name: 'relationshipSecondaryCaption',
+  onGraphChange (selection, viz) {
+    const texts = selection
+      .selectAll('text.secondary-caption')
+      .data(rel => [rel])
+
+    texts
+      .enter()
+      .append('text')
+      .classed('secondary-caption', true)
+      .attr('text-anchor', 'middle')
+      .attr('pointer-events', 'none')
+
+    texts
+      .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
+      .attr('fill', rel =>
+        viz.style.forRelationship(rel).get('text-color-external')
+      )
+
+    return texts.exit().remove()
+  },
+
+  onTick (selection, viz) {
+    const layout =
+      selection.node() && selection.node().closest('.neod3viz').__graphStyle
+    return selection
+      .selectAll('text.secondary-caption')
+      .attr(
+        'x',
+        rel =>
+          rel.arrow.secondaryMidShaftPoint(layout.textAbove, layout.arrowLayout)
+            .x
+      )
+      .attr(
+        'y',
+        rel =>
+          rel.arrow.secondaryMidShaftPoint(layout.arrowLayout).y +
+          parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
+          1
+      )
+      .attr('transform', function (rel) {
+        if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
+          return `rotate(180 ${
+            rel.arrow.secondaryMidShaftPoint(layout.arrowLayout).x
+          } ${rel.arrow.secondaryMidShaftPoint(layout.arrowLayout).y})`
+        } else {
+          return null
+        }
+      })
+      .style('font-weight', 'bold')
+      .text(rel => (layout.globalText ? rel.type : ''))
   }
 })
 
@@ -490,6 +548,7 @@ const relationship = []
 relationship.push(arrowPath)
 relationship.push(relationshipShape)
 relationship.push(relationshipType)
+relationship.push(relationshipSecondaryCaption)
 relationship.push(relationshipOverlay)
 
 const fileGroup = []

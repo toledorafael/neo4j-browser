@@ -65,6 +65,18 @@ export default class LoopArrow {
       }
       return normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
     }
+
+    this.secondaryMidShaftPoint = arrowLayout => {
+      if (arrowLayout === 'separate') {
+        return normalPoint(
+          0,
+          r3,
+          (this.separateArrowWidth || 0) + captionHeight * 2 + 2
+        )
+      }
+      return normalPoint(0, r3, shaftRadius + captionHeight * 2 + 2)
+    }
+
     const startPoint = (radius, displacement) =>
       normalPoint((Math.PI + spread) / 2, radius, displacement)
     const endPoint = (radius, displacement) =>
