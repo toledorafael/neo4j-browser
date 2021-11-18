@@ -1,8 +1,0 @@
-node_modules
-build
-dist
-src/browser/external
-mvn
-cypress
-yarn-cache
-coverage/
