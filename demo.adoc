@@ -4,7 +4,7 @@
 * Username: `neo4j`
 * Password: `rhjFjXmAp1mAVNtiYkhqMf1hHGUdf9mRuRy9LyaGtFI`
 
-== Commands
+== Query 1
 
 [source]
 ----
@@ -19,24 +19,25 @@ CALL{
 return x,r,y
 ----
 
-Task:
+== Query 2
 [source]
 ----
 MATCH p=(n)<-[r:read]-(m) RETURN p
 ----
 
-How many edges may execute in FC1 but not FC2?
+Identify some edges that are in FC1 but not FC2
 
 * FC1: `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ kPrim /\ !kDirected /\ !kConnectedComps /\ !kBFS`
 * FC2: `kUndirected /\ kDFS /\ kCycle /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS`
 
-How many edges may execute in FC3 but not FC4?
-
-Task:
+== Query 3
 [source]
 ----
-MATCH p=(n)<-[r:write]-(m) RETURN p
+MATCH p=(q)-[:call]->(n:cFunction)-[r]-(m) WHERE EXISTS(r.condition) AND n.label CONTAINS "updateEdgeWeight" AND type(r) <> "call" AND type(r) <> "contain" AND type(r) <> "obj" AND type(r) <> "varInfFunc" RETURN p
 ----
 
-* FC3: `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ !kDirected /\ !kPrim /\ !kConnectedComps /\ !kBFS`
-* FC4: `kUndirected /\ kWeighted /\ kBFS /\ kConnectedComps /\ kPrim /\ !kDirected /\ !kDFS /\ !kCycle`
+In which of the following feature configurations can the function given be called, and all its data flow operations may be executed?
+
+* `kUndirected /\ kDFS /\ kCycle /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kAlgorithm /\ !kConnectedComps /\ !kBFS`
+* `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ !kPrim /\ !kConnectedComps /\ !kBFS /\ !kDirected`
+* `kUndirected /\ kDFS /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS /\ !kCycle`
