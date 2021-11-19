@@ -1,0 +1,42 @@
+== Login
+
+* URL: `bolt://fe0f3c2f.databases.neo4j.io`
+* Username: `neo4j`
+* Password: `rhjFjXmAp1mAVNtiYkhqMf1hHGUdf9mRuRy9LyaGtFI`
+
+== Commands
+
+[source]
+----
+Match (r) where r:cFunction or r:cClass with collect(r)[0..10] as a, collect(ID(r))[0..10] as t
+CALL{
+  with a,t
+  unwind a as x
+  match(x)-[r]-(y)
+  where ID(y) in t
+  return x,r,y
+  }
+return x,r,y
+----
+
+Task:
+[source]
+----
+MATCH p=(n)<-[r:read]-(m) RETURN p
+----
+
+How many edges may execute in FC1 but not FC2?
+
+FC1: `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ kPrim /\ !kDirected /\ !kConnectedComps /\ !kBFS`
+FC2: `kUndirected /\ kDFS /\ kCycle /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS`
+
+How many edges may execute in FC3 but not FC4?
+
+Task:
+[source]
+----
+MATCH p=(n)<-[r:write]-(m) RETURN p
+----
+
+FC3: `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ !kDirected /\ !kPrim /\ !kConnectedComps /\ !kBFS`
+FC4: `kUndirected /\ kWeighted /\ kBFS /\ kConnectedComps /\ kPrim /\ !kDirected /\ !kDFS /\ !kCycle`
