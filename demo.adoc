@@ -1,3 +1,7 @@
+== Link to browser
+
+https://toledorafael.github.io/neo4j-browser/
+
 == Login
 
 * URL: `bolt://fe0f3c2f.databases.neo4j.io`
