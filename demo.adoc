@@ -25,7 +25,7 @@ return x,r,y
 MATCH p=(n)<-[r:read]-(m) RETURN p
 ----
 
-Identify some edges that are in FC1 but not FC2
+How many edges are in FC1 but not FC2?
 
 * FC1: `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ kPrim /\ !kDirected /\ !kConnectedComps /\ !kBFS`
 * FC2: `kUndirected /\ kDFS /\ kCycle /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS`
@@ -36,8 +36,10 @@ Identify some edges that are in FC1 but not FC2
 MATCH p=(q)-[:call]->(n:cFunction)-[r]-(m) WHERE EXISTS(r.condition) AND n.label CONTAINS "updateEdgeWeight" AND type(r) <> "call" AND type(r) <> "contain" AND type(r) <> "obj" AND type(r) <> "varInfFunc" RETURN p
 ----
 
-In which of the following feature configurations can the function given be called, and all its data flow operations may be executed?
+In which of the following configurations can the function be called?
 
-* `kUndirected /\ kDFS /\ kCycle /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kAlgorithm /\ !kConnectedComps /\ !kBFS`
+In which of the following configurations can all "read" operations be executed?
+
+* `!kUndirected /\ kDFS /\ kCycle /\ kDirected /\ !kWeighted /\ !kPrim /\ !kAlgorithm /\ !kConnectedComps /\ !kBFS`
 * `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ !kPrim /\ !kConnectedComps /\ !kBFS /\ !kDirected`
 * `kUndirected /\ kDFS /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS /\ !kCycle`
