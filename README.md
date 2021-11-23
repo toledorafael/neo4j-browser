@@ -1,5 +1,7 @@
 # Neo4j Browser
 
+Building: Run `yarn build`. Wait for your build to finish. Press `Ctrl-C`. The output is in the `dist` folder.
+
 <!--Neo4j Browser is the general purpose user interface for working with Neo4j. Query, visualize, administrate and monitor the database
 with modern and easy-to-use tools.
 

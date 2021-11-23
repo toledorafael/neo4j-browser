@@ -26,7 +26,7 @@ return x,r,y
 == Query 2
 [source]
 ----
-MATCH p=(n)<-[r:read]-(m) RETURN p
+MATCH p=(n)<-[r:read]-(m) RETURN p LIMIT 11
 ----
 
 How many edges are in FC1 but not FC2?
