@@ -610,7 +610,7 @@ export class Graph extends Component {
           {this.props.conditionTypes &&
             this.props.conditionTypes.map(condType => {
               const style = this.props.graphStyle.forCondition(condType)
-              if (style.get('color') === '#A5ABB6') return null
+              if (style.get('color') === 'var(--graph-color0)') return null
               return (
                 <tr>
                   <td>{condType}</td>

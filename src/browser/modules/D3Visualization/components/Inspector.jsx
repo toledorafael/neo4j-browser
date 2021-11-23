@@ -116,6 +116,7 @@ export class InspectorComponent extends Component {
             hiddenRelationshipTypes={this.props.hiddenRelationshipTypes}
             setNodeLabelVisibility={this.props.setNodeLabelVisibility}
             setRelTypeVisibility={this.props.setRelTypeVisibility}
+            deselect={this.props.deselect}
           />
         )
       }

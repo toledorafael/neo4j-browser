@@ -208,6 +208,12 @@ export class Explorer extends Component {
     })
   }
 
+  deselect () {
+    this.setState({
+      selectedItem: ''
+    })
+  }
+
   componentWillReceiveProps (props) {
     if (!deepEquals(props.graphStyleData, this.props.graphStyleData)) {
       if (props.graphStyleData) {
@@ -322,6 +328,7 @@ export class Explorer extends Component {
           setNodeLabelVisibility={this.setNodeLabelVisibility.bind(this)}
           setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
           onExpandToggled={this.onInspectorExpandToggled.bind(this)}
+          deselect={this.deselect.bind(this)}
         />
       </StyledFullSizeContainer>
     )

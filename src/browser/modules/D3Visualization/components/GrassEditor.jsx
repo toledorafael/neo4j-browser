@@ -384,6 +384,7 @@ export class GrassEditorComponent extends Component {
             this.props.removeFilter(this.props.selectedCondition.condition)
             this.graphStyle.destroySelector(styleForRelType.selector)
             this.props.update(this.graphStyle.toSheet())
+            this.props.deselect()
           }}
         >
           Remove filter
