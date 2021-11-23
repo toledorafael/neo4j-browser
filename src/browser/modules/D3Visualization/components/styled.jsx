@@ -635,11 +635,21 @@ export const StyledGraphLegend = styled.div`
   line-height: 16px;
   font-size: 16px;
   position: absolute;
-  left: 16px;
-  bottom: 64px;
+  left: -1px;
+  bottom: 32px;
+  padding: 16px;
+  background: white;
+  border-top-right-radius: 2px;
+  border: grey solid 1px;
 
   td {
     padding: 4px 8px;
+    .legend-label {
+      width: 150px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
   }
 
   th {

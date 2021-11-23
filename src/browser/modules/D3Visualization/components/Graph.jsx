@@ -571,7 +571,6 @@ export class Graph extends Component {
               })
               return relType === '*' ? null : (
                 <tr>
-                  <td>{relType}</td>
                   <td>
                     <svg width='180' height='15' viewBox='0 -6 144 12'>
                       <line
@@ -601,6 +600,11 @@ export class Graph extends Component {
                       )}
                     </svg>
                   </td>
+                  <td>
+                    <div className='legend-label' title={relType}>
+                      {relType}
+                    </div>
+                  </td>
                 </tr>
               )
             })}
@@ -613,7 +617,6 @@ export class Graph extends Component {
               if (style.get('color') === 'var(--graph-color0)') return null
               return (
                 <tr>
-                  <td>{condType}</td>
                   <td>
                     <svg width='180' height='15' viewBox='0 -6 144 12'>
                       <line
@@ -630,6 +633,11 @@ export class Graph extends Component {
                         }
                       />
                     </svg>
+                  </td>
+                  <td>
+                    <div className='legend-label' title={condType}>
+                      {condType}
+                    </div>
                   </td>
                 </tr>
               )
