@@ -661,13 +661,13 @@ export default function neoGraphStyle () {
         selector.tag,
         selector.classes.sort().slice(0, 1)
       )
-      if (defaultShape) {
+      if (defaultShape && selector.classes.length) {
         this.changeForSelector(
           minimalSelector,
           findAvailableDefaultShapes(this.rules)
         )
       }
-      if (defaultPattern) {
+      if (defaultPattern && selector.classes.length) {
         this.changeForSelector(
           minimalSelector,
           findAvailableDefaultPatterns(this.rules)
