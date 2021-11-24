@@ -8,13 +8,13 @@ https://toledorafael.github.io/neo4j-browser/
 * Username: `neo4j`
 * Password: `rhjFjXmAp1mAVNtiYkhqMf1hHGUdf9mRuRy9LyaGtFI`
 
-== Query 1 - Short alterBehavior path
+== Query 1
 [source]
 ----
 MATCH p=({id:'f1'})-->({id:'f2'}) RETURN p
 ----
 
-== Query 2 - Long alterBehavior path
+== Query 2
 [source]
 ----
 MATCH p=({id:'f3'})-[*2..]->({id:'f4'}) RETURN p
@@ -40,7 +40,7 @@ In which of the following configurations can function f5 have its behavior alter
 
 In which of the following configuration can both of those facts occur?
 
-* !k8 /\ k9 /\ k10 /\ k11 /\ !k13
+* `!k8 /\ k9 /\ k10 /\ k11 /\ !k13`
 * `!k9 /\ k10 /\ !k11 /\ k12 /\ k13`
 * `k8 /\ k9 /\ !k10 /\ k11 /\ !k12`
 * `k8 /\ !k9 /\ k10 /\ k11 /\ k12 /\ k13`
