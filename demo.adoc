@@ -36,7 +36,7 @@ RETURN p,q
 
 In which of the following configurations can function f9 alters the behavior of another function?
 
-In which of the following configurations can function f5 have its behavior altered?
+In which of the following configurations can function f10 alters the behavior of another function?
 
 In which of the following configuration can both of those facts occur?
 
