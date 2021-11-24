@@ -8,42 +8,39 @@ https://toledorafael.github.io/neo4j-browser/
 * Username: `neo4j`
 * Password: `rhjFjXmAp1mAVNtiYkhqMf1hHGUdf9mRuRy9LyaGtFI`
 
-== Query 1
-
+== Query 1 - Short alterBehavior path
 [source]
 ----
-Match (r) where r:cFunction or r:cClass with collect(r)[0..10] as a, collect(ID(r))[0..10] as t
-CALL{
-  with a,t
-  unwind a as x
-  match(x)-[r]-(y)
-  where ID(y) in t
-  return x,r,y
-  }
-return x,r,y
+MATCH p=({id:'f1'})-->({id:'f2'}) RETURN p
 ----
 
-== Query 2
+== Query 2 - Long alterBehavior path
 [source]
 ----
-MATCH p=(n)<-[r:read]-(m) RETURN p LIMIT 11
+MATCH p=({id:'f3'})-[*2..]->({id:'f4'}) RETURN p
 ----
 
-How many edges are in FC1 but not FC2?
+In which of the following configuration can the alterBehavior path occur?
 
-* FC1: `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ kPrim /\ !kDirected /\ !kConnectedComps /\ !kBFS`
-* FC2: `kUndirected /\ kDFS /\ kCycle /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS`
+* FC1: `!k4 /\ !k5 /\ k6 /\ k7`
+* FC2: `k4 /\ k5 /\ !k6 /\ !k7`
+* FC3: `!k4 /\ k5 /\ k6 /\ k7`
 
 == Query 3
 [source]
 ----
-MATCH p=(q)-[:call]->(n:cFunction)-[r]-(m) WHERE EXISTS(r.condition) AND n.label CONTAINS "updateEdgeWeight" AND type(r) <> "call" AND type(r) <> "contain" AND type(r) <> "obj" AND type(r) <> "varInfFunc" RETURN p
+MATCH p=()-->({id:"f7"}) 
+MATCH q=()-->({id:"f5"})
+RETURN p,q
 ----
 
-In which of the following configurations can the function be called?
+In which of the following configurations can function f9 alters the behavior of another function?
 
-In which of the following configurations can all "read" operations be executed?
+In which of the following configurations can function f5 have its behavior altered?
 
-* `!kUndirected /\ kDFS /\ kCycle /\ kDirected /\ !kWeighted /\ !kPrim /\ !kAlgorithm /\ !kConnectedComps /\ !kBFS`
-* `kUndirected /\ kWeighted /\ kDFS /\ kCycle /\ !kPrim /\ !kConnectedComps /\ !kBFS /\ !kDirected`
-* `kUndirected /\ kDFS /\ kConnectedComps /\ !kDirected /\ !kWeighted /\ !kPrim /\ !kBFS /\ !kCycle`
+In which of the following configuration can both of those facts occur?
+
+* !k8 /\ k9 /\ k10 /\ k11 /\ !k13
+* `!k9 /\ k10 /\ !k11 /\ k12 /\ k13`
+* `k8 /\ k9 /\ !k10 /\ k11 /\ !k12`
+* `k8 /\ !k9 /\ k10 /\ k11 /\ k12 /\ k13`
