@@ -1,10 +1,34 @@
 # Neo4j Browser
 
-Neo4j Browser is the general purpose graphical user interface for Neo4j. Query, visualize, administrate and monitor the database with modern and easy-to-use tools. 
+Building: Run `yarn build`. Wait for your build to finish. Press `Ctrl-C`. The output is in the `dist` folder.
+
+<!--Neo4j Browser is the general purpose user interface for working with Neo4j. Query, visualize, administrate and monitor the database
+with modern and easy-to-use tools.
 
 ![neo4j browser screenshot](./.github/neo4j-browser-screenshot.png)
 
-## Demo
+
+## New features
+
+We introduce a couple of new features to enhance the user experience during their exploration of a graph representing a code factbase extracted with [Rex](https://github.com/bmuscede/Rex)
+
+### Properties popup
+
+This feature enables the user to open popups showing the nodes and links properties in the graph visualization.
+
+![neo4j browser screenshot](linkAttribute.png)
+
+### File region marks
+
+The region marks represent the source files where the nodes are declared.
+
+![neo4j browser screenshot](nodeAttribute.png)
+
+### Demo
+
+![](demoFileRegions3.gif)
+
+## Development setup
 
 You can try out the latest (unreleased) version of Neo4j Browser at [http://browser-canary.graphapp.io/](http://browser-canary.graphapp.io/).
 
@@ -16,11 +40,9 @@ Found a bug or some other problem with Neo4j Browser? Please [**open an issue**]
 
 Have an idea for a new feature? You're welcome to leave suggestions and ideas [here](https://neo4j-browser.canny.io/feature-requests).
 
-Contributions welcome! More information in our [CONTRIBUTING.md](CONTRIBUTING.md).
+`yarn dev` to have continuous testing on every file change. -->
 
-## Development 
-Running Neo4j Browser locally requires Node.js (^12.4.0) and for dependencies we use yarn (`npm install -g yarn`). 
-To install dependencies and then start the development server at `http://localhost:8080`:
+<!-- #### E2E Suite
 
 ```shell
 yarn install
@@ -68,4 +90,12 @@ CYPRESS_E2E_TEST_ENV=local|null (if the initial set of pw should run or not) (de
 CYPRESS_BASE_URL=<url to reach the browser to test> (default http://localhost:8080)
 ```
 
-Example: `CYPRESS_E2E_TEST_ENV="local" CYPRESS_BASE_URL=http://localhost:30000 cypress open --env server=4.2`
+Example: `CYPRESS_E2E_TEST_ENV="local" CYPRESS_BASE_URL=http://localhost:8081 cypress open --env server=3.5`
+
+## Devtools
+
+Redux and React have useful devtools, the chrome versions are linked bellow: 
+
+- [Redux devtools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en)
+- [React devtools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) -->
+

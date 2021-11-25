@@ -32,10 +32,19 @@ export function createGraph(nodes: any, relationships: any) {
   graph.addNodes(mapNodes(nodes))
   graph.addRelationships(mapRelationships(relationships, graph))
   ;(graph as any).display = { initialNodeDisplay: 300, nodeCount: 1 }
+  ;(graph as any).uid = Math.floor(Math.random() * Math.pow(2, 52))
   return graph
 }
 
-export function mapNodes(nodes: any) {
+export function createInteractionsBundling () {
+  // let hierachy = new hierarchy()
+  // hierarchy.addNodes()
+  // hierarchy.addLinks()
+  // hierarchy.display = {}
+  // return hierarchy
+}
+
+export function mapNodes (nodes: any) {
   return nodes.map(
     (node: any) =>
       new Node(

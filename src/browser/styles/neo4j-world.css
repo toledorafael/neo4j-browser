@@ -189,3 +189,33 @@
 .nw-neo4j-outline-64px:before {
   content: '\e922';
 }
+
+/* :root {
+    --graph-color0: #a5abb6;
+    --border-color0: #9aa1ac;
+    --graph-color1: #ffe081;
+    --border-color1: #9aa1ac;
+    --graph-color2: #c990c0;
+    --border-color2: #b261a5;
+    --graph-color3: #f79767;
+    --border-color3: #f36924;
+    --graph-color4: #57c7e3;
+    --border-color4: #23b3d7;
+    --graph-color5: #f16667;
+    --border-color5: #eb2728;
+    --graph-color6: #d9c8ae;
+    --border-color6: #c0a378;
+    --graph-color7: #8dcc93;
+    --border-color7: #5db665;
+    --graph-color8: #ecb5c9;
+    --border-color8: #da7298;
+    --graph-color9: #4c8eda;
+    --border-color9: #2870c2;
+    --graph-color10: #ffc454;
+    --border-color10: #d7a013;
+    --graph-color11: #da7194;
+    --border-color11: #cc3c6c;
+    --graph-color12: #569480;
+    --border-color12: #447666;
+    --graph-internal-text-color: #000000;
+} */

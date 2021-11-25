@@ -19,9 +19,11 @@
  */
 
 import { connect } from 'react-redux'
-import React, { memo, useRef, useEffect } from 'react'
+import React, { memo, useRef, useEffect, PureComponent } from 'react'
 import { StyledStream, Padding, AnimationContainer } from './styled'
 import CypherFrame from './CypherFrame/CypherFrame'
+
+import AnalysisFrame from './CypherFrame/AnalysisFrame'
 import HistoryFrame from './HistoryFrame'
 import PlayFrame from './PlayFrame'
 import DefaultFrame from '../Frame/DefaultFrame'

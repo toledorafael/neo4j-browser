@@ -39,6 +39,8 @@ import {
   setNodePropertiesExpandedByDefault
 } from 'shared/modules/frames/framesDuck'
 import { Action, Dispatch } from 'redux'
+import { InspectorComponent } from './Inspector'
+import { LegendComponent } from './Legend'
 
 const deduplicateNodes = (nodes: any) => {
   return nodes.reduce(
@@ -89,7 +91,7 @@ type ExplorerComponentState = {
 }
 type FullExplorerProps = ExplorerComponentProps & ExporerReduxProps
 
-export class ExplorerComponent extends Component<
+export class ExplorerLocal extends Component<
   FullExplorerProps,
   ExplorerComponentState
 > {
@@ -123,6 +125,7 @@ export class ExplorerComponent extends Component<
         this.defaultStyle,
         this.props.graphStyleData
       )
+      // const rebasedStyle = this.defaultStyle
       graphStyle.loadRules(rebasedStyle)
     }
     this.state = {
@@ -138,7 +141,52 @@ export class ExplorerComponent extends Component<
       hoveredItem: selectedItem,
       freezeLegend: false,
       width: defaultPanelWidth(),
-      nodePropertiesExpanded: this.props.nodePropertiesExpandedByDefault
+      nodePropertiesExpanded: this.props.nodePropertiesExpandedByDefault,
+      hiddenNodeLabels: [],
+      hiddenRelationshipTypes: []
+    }
+  }
+
+  setNodeLabelVisibility (label, value) {
+    if (!value) {
+      if (!this.state.hiddenNodeLabels.includes(label)) {
+        this.setState({
+          hiddenNodeLabels: [...this.state.hiddenNodeLabels, label]
+        })
+      }
+    } else {
+      const index = this.state.hiddenNodeLabels.indexOf(label)
+      if (index >= 0) {
+        this.setState({
+          hiddenNodeLabels: [
+            ...this.state.hiddenNodeLabels.slice(0, index),
+            ...this.state.hiddenNodeLabels.slice(index + 1)
+          ]
+        })
+      }
+    }
+  }
+
+  setRelTypeVisibility (relType, value) {
+    if (!value) {
+      if (!this.state.hiddenRelationshipTypes.includes(relType)) {
+        this.setState({
+          hiddenRelationshipTypes: [
+            ...this.state.hiddenRelationshipTypes,
+            relType
+          ]
+        })
+      }
+    } else {
+      const index = this.state.hiddenRelationshipTypes.indexOf(relType)
+      if (index >= 0) {
+        this.setState({
+          hiddenRelationshipTypes: [
+            ...this.state.hiddenRelationshipTypes.slice(0, index),
+            ...this.state.hiddenRelationshipTypes.slice(index + 1)
+          ]
+        })
+      }
     }
   }
 
@@ -182,6 +230,53 @@ export class ExplorerComponent extends Component<
     }
   }, 200)
 
+  onSelectedLabel(label, propertyKeys) {
+    this.setState({
+      selectedItem: {
+        type: 'legend-item',
+        item: {
+          selectedLabel: { label: label, propertyKeys: propertyKeys },
+          selectedRelType: null,
+          selectedCondition: null
+        }
+      }
+    })
+  }
+
+  onSelectedRelType(relType, propertyKeys) {
+    this.setState({
+      selectedItem: {
+        type: 'legend-item',
+        item: {
+          selectedLabel: null,
+          selectedRelType: { relType: relType, propertyKeys: propertyKeys },
+          selectedCondition: null
+        }
+      }
+    })
+  }
+
+  onSelectedCondition (condition, propertyKeys) {
+    this.setState({
+      selectedItem: {
+        type: 'legend-item',
+        item: {
+          selectedLabel: null,
+          selectedRelType: null,
+          selectedCondition: {
+            condition: condition,
+            propertyKeys: propertyKeys
+          }
+        }
+      }
+    })
+  }
+
+  deselect () {
+    this.setState({
+      selectedItem: ''
+    })
+  }
   onItemSelect(selectedItem: VizItem): void {
     this.setState({ selectedItem })
   }
@@ -223,10 +318,50 @@ export class ExplorerComponent extends Component<
     const graphStyle = this.state.freezeLegend
       ? neoGraphStyle()
       : this.state.graphStyle
+    let legend
+    if (this.state.freezeLegend) {
+      legend = (
+        <LegendComponent
+          stats={this.state.stats}
+          graphStyle={neoGraphStyle()}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
+          onSelectedLabel={this.onSelectedLabel.bind(this)}
+          onSelectedRelType={this.onSelectedRelType.bind(this)}
+          onSelectedCondition={this.onSelectedCondition.bind(this)}
+        />
+      )
+    } else {
+      legend = (
+        <LegendComponent
+          stats={this.state.stats}
+          graphStyle={this.state.graphStyle}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
+          onSelectedLabel={this.onSelectedLabel.bind(this)}
+          onSelectedRelType={this.onSelectedRelType.bind(this)}
+          onSelectedCondition={this.onSelectedCondition.bind(this)}
+        />
+      )
+    }
+    const inspectingItemType =
+      !this.state.inspectorContracted &&
+      ((this.state.hoveredItem && this.state.hoveredItem.type !== 'canvas') ||
+        (this.state.selectedItem && this.state.selectedItem.type !== 'canvas'))
+
+    const style = {}
+    this.props.palette.colors.forEach((color, i) => {
+      style[`--graph-color${i}`] = color
+    })
+    this.props.palette.borderColors.forEach((color, i) => {
+      style[`--border-color${i}`] = color
+    })
+    style['--graph-internal-text-color'] = this.props.palette.textColor
 
     return (
-      <StyledFullSizeContainer id="svg-vis">
+      <StyledFullSizeContainer id="svg-vis" style={style}>
         <GraphComponent
+          stats={this.state.stats}
           fullscreen={this.props.fullscreen}
           frameHeight={this.props.frameHeight}
           relationships={this.state.relationships}
@@ -243,6 +378,8 @@ export class ExplorerComponent extends Component<
           offset={
             (this.state.nodePropertiesExpanded ? this.state.width : 0) + 4
           }
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelTypes={this.state.hiddenRelationshipTypes}
         />
         <NodeInspectorPanel
           frameHeight={this.props.frameHeight}
@@ -263,6 +400,12 @@ export class ExplorerComponent extends Component<
             )
             this.setState({ nodePropertiesExpanded: !nodePropertiesExpanded })
           }}
+          hiddenNodeLabels={this.state.hiddenNodeLabels}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
+          setNodeLabelVisibility={this.setNodeLabelVisibility.bind(this)}
+          setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
+          // onExpandToggled={this.onInspectorExpandToggled.bind(this)}
+          deselect={this.deselect.bind(this)}
         />
       </StyledFullSizeContainer>
     )
@@ -272,6 +415,10 @@ export class ExplorerComponent extends Component<
     this.mounted = false
   }
 }
+
+export const ExplorerComponent: ConnectedComponent<any, any> = connect((state: any) => ({
+  palette: state.palette
+}))(ExplorerLocal)
 
 export const Explorer: ConnectedComponent<
   typeof ExplorerComponent,

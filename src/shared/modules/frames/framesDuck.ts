@@ -71,7 +71,7 @@ export function getNodePropertiesExpandedByDefault(
 /**
  * Reducer helpers
  */
-function addFrame(state: FramesState, newState: Frame) {
+function addFrame(state: FramesState, newState: Frame) { // Should handle my frames
   if (newState.parentId && state.allIds.indexOf(newState.parentId) < 0) {
     // Can't find parent
     return state

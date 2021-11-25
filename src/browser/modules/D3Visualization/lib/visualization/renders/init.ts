@@ -18,7 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Renderer from '../components/renderer'
-const noop = function() {}
+import d3 from 'd3'
+import { getPatternDashes } from '../utils/pattern'
+import { getShapeDef } from '../utils/shapes'
+const noop = function () {}
 
 const nodeRingStrokeSize = 8
 
@@ -143,71 +146,332 @@ const nodeRing = new Renderer({
   onTick: noop
 })
 
+const checkPropertyList = (propertyList, propertyName) => {
+  if (propertyList.length > 0) {
+    for (let index = 0; index < propertyList.length; index++) {
+      const element = propertyList[index]
+      if (element.key === propertyName) return true
+    }
+    return false
+  }
+}
+
+function setupGradient (svgEl, id, g, colors) {
+  const svg = d3.select(svgEl)
+  let el = svg.select(`#${id.replace(/\./g, '\\.')}`)
+  if (el.empty()) {
+    el = svg.append('defs').append(g.type)
+    el.attr('id', id)
+    el.attr('gradientUnits', 'userSpaceOnUse')
+
+    for (let attr in g.attrs) {
+      el.attr(attr, g.attrs[attr])
+    }
+
+    // extract into function
+    const offsetPercent = Math.trunc(100 / colors.length)
+    for (let colorId = 0; colorId < colors.length; colorId++) {
+      if (colorId > 0) {
+        el.append('stop')
+          .attr('stop-color', colors[colorId - 1])
+          .attr('offset', (offsetPercent * colorId).toString() + '% ')
+          .attr('stop-opacity', 1)
+        el.append('stop')
+          .attr('stop-color', colors[colorId])
+          .attr('offset', (offsetPercent * colorId).toString() + '%')
+          .attr('stop-opacity', 1)
+      }
+    }
+  }
+}
+
+function getRelationshipStyle (rel, viz) {
+  if (checkPropertyList(rel.propertyList, 'condition')) {
+    const styles = viz.style.forCondRel(rel)
+    const colors = styles.get('color')
+    const patterns = styles.get('pattern')
+    return {
+      colors: Array.isArray(colors) ? colors : [colors],
+      patterns: Array.isArray(patterns) ? patterns : [patterns]
+    }
+  } else {
+    return { colors: ['#A5ABB6'] }
+  }
+}
+
+function updateArrow (pathGroups, viz) {
+  const layout =
+    pathGroups.node() && pathGroups.node().closest('.neod3viz').__graphStyle
+  const paths = pathGroups.selectAll('path').data(rel => {
+    if (rel.arrow) {
+      const { colors, patterns } = getRelationshipStyle(rel, viz)
+      return rel.arrow
+        .outline(rel.shortCaptionLength, colors.length, layout.arrowLayout)
+        .map(a => ({ pathDef: a, colors, patterns, rel }))
+    } else {
+      return []
+    }
+  })
+  paths.enter().append('path')
+  paths.exit().remove()
+
+  const svgEl = pathGroups.node() && pathGroups.node().closest('.neod3viz')
+
+  pathGroups
+    .selectAll('path')
+    .attr('d', d => d.pathDef.path)
+    .attr('fill', ({ pathDef, colors }, i) => {
+      if (pathDef.useStroke) return 'none'
+      if (pathDef.gradient && colors.length > 1) {
+        const id =
+          'gradient' +
+          svgEl.__uid +
+          colors.map(x => x.replace(/[^a-zA-Z0-9]/g, '')).join('') +
+          pathDef.gradient.id
+        setupGradient(svgEl, id, pathDef.gradient, colors)
+        return 'url(#' + id + ')'
+      } else {
+        return colors[Math.min(i, colors.length - 1)] || '#888888'
+      }
+    })
+    .attr('stroke', ({ pathDef, colors }, i) => {
+      if (pathDef.useStroke) {
+        return colors[Math.min(i, colors.length - 1)] || '#888888'
+      }
+      return 'none'
+    })
+    .attr('stroke-width', ({ pathDef }) => pathDef.strokeWidth)
+
+  if (layout && layout.localPattern) {
+    pathGroups
+      .selectAll('path')
+      .filter(({ pathDef }) => pathDef.useStroke)
+      .attr('stroke-dasharray', ({ pathDef, patterns }, i) => {
+        const pattern = patterns && patterns[Math.min(i, patterns.length - 1)]
+        return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
+      })
+      .attr('stroke-dashoffset', null)
+  } else if (layout && layout.globalPattern) {
+    pathGroups
+      .selectAll('path')
+      .filter(({ pathDef }) => pathDef.useStroke)
+      .attr('stroke-dasharray', ({ pathDef, rel }) => {
+        const pattern = viz.style.forRelationship(rel).get('pattern')
+        return pattern && getPatternDashes(pattern, pathDef.strokeWidth)
+      })
+      .attr('stroke-dashoffset', ({ pathDef }) => {
+        return pathDef.pathOffset
+      })
+  } else {
+    pathGroups
+      .selectAll('path')
+      .attr('stroke-dasharray', null)
+      .attr('stroke-dashoffset', null)
+  }
+
+  return pathGroups
+}
+
 const arrowPath = new Renderer({
   name: 'arrowPath',
-  onGraphChange(selection: any, viz: any) {
-    const paths = selection.selectAll('path.outline').data((rel: any) => [rel])
-
+  onGraphChange (selection: any, viz: any, featureExpression, toggleStripes) {
+    const paths = selection.selectAll('g.outline').data((rel: any) => [rel])
+    // paths
+    //   .enter()
+    //   .append('path')
+    //   .classed('outline', true)
     paths
       .enter()
-      .append('path')
+      .append('g')
       .classed('outline', true)
 
-    paths
-      .attr('fill', (rel: any) => viz.style.forRelationship(rel).get('color'))
-      .attr('stroke', 'none')
+    updateArrow(paths, viz)
+    // updateGradient(paths, viz)
+    // this feature needs to be redone
+    // .attr('stroke-width', '3px')
+    // .attr('stroke', function (rel) {
+    //   if (featureExpression !== '') {
+    //     var presenceCondition = ''
+    //     if (checkPropertyList(rel.propertyList, 'condition')) {
+    //       for (let index = 0; index < rel.propertyList.length; index++) {
+    //         const element = rel.propertyList[index]
+    //         if (element.key === 'condition') {
+    //           presenceCondition = rel.propertyList[index].value
+    //         }
+    //       }
+    //       if (presenceCondition !== 'true') {
+    //         if (evaluateUnderAllSolutions(solutions, presenceCondition)) {
+    //           return 'red'
+    //         }
+    //       } else {
+    //         return 'red'
+    //       }
+    //       return 'none'
+    //     }
+    //     // return 'red'
+    //   }
+    //   return 'none'
+    // })
 
     return paths.exit().remove()
   },
 
-  onTick(selection: any) {
-    return selection
-      .selectAll('path')
-      .attr('d', (d: any) => d.arrow.outline(d.shortCaptionLength))
+  onTick (selection: any, viz, toggleStripes) {
+    // selection.selectAll('path').filter(d => (d.arrow instanceof LoopArrow)).style('opacity', 0.5)
+    return updateArrow(selection.selectAll('g.outline'), viz)
   }
 })
 
+const relationshipShape = new Renderer({
+  name: 'relationshipShape',
+  onGraphChange (selection, viz) {
+    const shapes = selection.selectAll('path.shape').data(rel => [rel])
+    shapes
+      .enter()
+      .append('path')
+      .classed('shape', true)
+      .attr('stroke', 'black')
+      .attr('strokeWidth', '1')
+      .attr('fill', '#ffffff77')
+
+    return shapes.exit().remove()
+  },
+  onTick (selection, viz) {
+    const svgEl = selection.node() && selection.node().closest('.neod3viz')
+    return selection.selectAll('path.shape').each(function (rel) {
+      const center = rel.arrow.getEndCenter()
+      const rotation = rel.arrow.getEndRotation()
+      const shape = viz.style.forRelationship(rel).get('shape')
+      const d = getShapeDef(shape, center, 6 + rel.arrow.width)
+
+      d3.select(this).attr('d', d)
+      d3.select(this).attr(
+        'transform',
+        `rotate(${rotation},${center.x},${center.y})`
+      )
+      d3.select(this).style(
+        'opacity',
+        svgEl.__graphStyle && svgEl.__graphStyle.globalShape ? 1 : 0
+      )
+    })
+  }
+})
+
+// This is the primary caption which actually defaults to condition
 const relationshipType = new Renderer({
   name: 'relationshipType',
-  onGraphChange(selection: any, viz: any) {
-    const texts = selection.selectAll('text').data((rel: any) => [rel])
+  onGraphChange (selection: any, viz: any) {
+    const texts = selection.selectAll('text.primary-caption').data((rel: any) => [rel])
 
     texts
       .enter()
       .append('text')
+      .classed('primary-caption', true)
       .attr({ 'text-anchor': 'middle' })
       .attr({ 'pointer-events': 'none' })
 
+    const layout =
+      texts.node() && texts.node().closest('.neod3viz').__graphStyle
     texts
-      .attr('font-size', (rel: any) =>
-        viz.style.forRelationship(rel).get('font-size')
+      .attr('font-size', rel => viz.style.forRelationship(rel).get('font-size'))
+      .attr('fill', rel => {
+        return viz.style
+          .forRelationship(rel)
+          .get(
+            `text-color-${
+              checkPropertyList(rel.propertyList, 'condition') &&
+              layout.textAbove
+                ? 'external'
+                : rel.captionLayout
+            }`
+          )
+      })
+
+    return texts.exit().remove()
+  },
+
+  onTick (selection, viz) {
+    const layout =
+      selection.node() && selection.node().closest('.neod3viz').__graphStyle
+    return selection
+      .selectAll('text.primary-caption')
+      .attr(
+        'x',
+        rel => rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
       )
+      .attr(
+        'y',
+        rel =>
+          rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).y +
+          parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
+          1
+      )
+      .attr('transform', function (rel) {
+        if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
+          return `rotate(180 ${
+            rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).x
+          } ${rel.arrow.midShaftPoint(layout.textAbove, layout.arrowLayout).y})`
+        } else {
+          return null
+        }
+      })
+      .text(rel => rel.shortCaption)
+  }
+})
+
+// This is the secondary caption which defaults to rel type
+const relationshipSecondaryCaption = new Renderer({
+  name: 'relationshipSecondaryCaption',
+  onGraphChange (selection, viz) {
+    const texts = selection
+      .selectAll('text.secondary-caption')
+      .data(rel => [rel])
+
+    texts
+      .enter()
+      .append('text')
+      .classed('secondary-caption', true)
+      .attr('text-anchor', 'middle')
+      .attr('pointer-events', 'none')
+
+    texts
+      .attr('font-size', (rel: any) => viz.style.forRelationship(rel).get('font-size'))
       .attr('fill', (rel: any) =>
-        viz.style.forRelationship(rel).get(`text-color-${rel.captionLayout}`)
+        viz.style.forRelationship(rel).get('text-color-external')
       )
 
     return texts.exit().remove()
   },
 
-  onTick(selection: any, viz: any) {
+  onTick (selection: any, viz: any) {
+    const layout =
+      selection.node() && selection.node().closest('.neod3viz').__graphStyle
     return selection
-      .selectAll('text')
-      .attr('x', (rel: any) => rel.arrow.midShaftPoint.x)
+      .selectAll('text.secondary-caption')
+      .attr(
+        'x',
+        rel =>
+          rel.arrow.secondaryMidShaftPoint(layout.textAbove, layout.arrowLayout)
+            .x
+      )
       .attr(
         'y',
-        (rel: any) =>
-          rel.arrow.midShaftPoint.y +
+        rel =>
+          rel.arrow.secondaryMidShaftPoint(layout.arrowLayout).y +
           parseFloat(viz.style.forRelationship(rel).get('font-size')) / 2 -
           1
       )
       .attr('transform', (rel: any) => {
         if (rel.naturalAngle < 90 || rel.naturalAngle > 270) {
-          return `rotate(180 ${rel.arrow.midShaftPoint.x} ${rel.arrow.midShaftPoint.y})`
+          return `rotate(180 ${
+            rel.arrow.secondaryMidShaftPoint(layout.arrowLayout).x
+          } ${rel.arrow.secondaryMidShaftPoint(layout.arrowLayout).y})`
         } else {
           return null
         }
       })
-      .text((rel: any) => rel.shortCaption)
+      .style('font-weight', 'bold')
+      .text(rel => (layout.globalText ? rel.type : ''))
   }
 })
 
@@ -233,6 +497,56 @@ const relationshipOverlay = new Renderer({
   }
 })
 
+const groupCountour = new Renderer({
+  name: 'groupCountor',
+  onGraphChange (selection) {
+    // var polygon, centroid
+    // // select nodes of the group, retrieve its positions
+    // // and return the convex hull of the specified points
+    // // (3 points as minimum, otherwise returns null)
+    // var polygonGenerator = function (groupId, selection) {
+    //   var nodeCoords = selection
+    //     .filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+    //     .data()
+    //     .map(function (d) { return [d.x, d.y] })
+
+    //   return d3.geom.polygon(d3.geom.hull(nodeCoords))
+    //   // return d3.geom.polygon(nodeCoords)
+    //   // return d3.polygonHull(nodeCoords)
+    // }
+
+    // var scaleFactor = 1.2
+
+    // var valueline = d3.svg.line()
+    //   .x(function (d) { return d[0] })
+    //   .y(function (d) { return d[1] })
+    //   .interpolate('basis')
+    //   // .curve(d3.curveCatmullRomClosed)
+
+    // groupIds.forEach(function (groupId) {
+    //   var path = fileGroups.filter(function (d) { if (d.propertyMap.hasOwnProperty('filename')) { return groupId.localeCompare(d.propertyMap.filename) } })
+    //     .attr('transform', 'scale(1) translate(0,0)')
+    //     .attr('d', function (d) {
+    //       polygon = polygonGenerator(d)
+    //       centroid = polygon.centroid()
+    //       // to scale the shape properly around its points:
+    //       // move the 'g' element to the centroid point, translate
+    //       // all the path around the center of the 'g' and then
+    //       // we can scale the 'g' element properly
+    //       return valueline(
+    //         polygon.map(function (point) {
+    //           return [ point[0] - centroid[0], point[1] - centroid[1] ]
+    //         })
+    //       )
+    //     })
+    //   d3.select(path.node().parentNode).attr('transform', 'translate(' + centroid[0] + ',' + (centroid[1]) + ') scale(' + scaleFactor + ')')
+    // })
+    return selection
+  },
+
+  onTick: noop
+})
+
 const node = []
 node.push(nodeOutline)
 node.push(nodeIcon)
@@ -241,7 +555,13 @@ node.push(nodeRing)
 
 const relationship = []
 relationship.push(arrowPath)
+relationship.push(relationshipShape)
 relationship.push(relationshipType)
+relationship.push(relationshipSecondaryCaption)
 relationship.push(relationshipOverlay)
 
-export { node, relationship }
+const fileGroup = []
+fileGroup.push(groupCountour)
+// fileGroup.push(fileLabel)
+
+export { node, relationship, fileGroup } // Add countour

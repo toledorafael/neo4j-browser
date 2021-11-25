@@ -25,17 +25,19 @@ export default class ArcArrow {
   overlay: any
   shaftLength: any
   constructor(
-    startRadius: any,
-    endRadius: any,
-    endCentre: any,
-    deflection: any,
-    arrowWidth: any,
-    headWidth: any,
-    headLength: any,
-    captionLayout: any
+    startRadius,
+    endRadius,
+    endCentre,
+    deflection,
+    arrowWidth,
+    headWidth,
+    headLength,
+    captionLayout,
+    captionHeight
   ) {
     this.deflection = deflection
-    const square = (l: any) => l * l
+    this.width = arrowWidth
+    const square = l => l * l
 
     const deflectionRadians = (this.deflection * Math.PI) / 180
     const startAttach = {
@@ -102,10 +104,29 @@ export default class ArcArrow {
     if (this.deflection > 0) {
       midShaftAngle += Math.PI
     }
-    this.midShaftPoint = {
+    this.midShaftPoint = (textAbove, arrowLayout) => ({
       x: cx + arcRadius * Math.sin(midShaftAngle),
-      y: cy - arcRadius * Math.cos(midShaftAngle)
-    }
+      y:
+        cy -
+        arcRadius * Math.cos(midShaftAngle) -
+        (!textAbove
+          ? 0
+          : arrowLayout === 'separate'
+            ? captionHeight * 0.625 +
+            (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
+            : captionHeight * 0.625 + shaftRadius)
+    })
+
+    this.secondaryMidShaftPoint = arrowLayout => ({
+      x: cx + arcRadius * Math.sin(midShaftAngle),
+      y:
+        cy -
+        arcRadius * Math.cos(midShaftAngle) +
+        captionHeight * 0.625 +
+        (arrowLayout === 'separate'
+          ? (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
+          : shaftRadius)
+    })
 
     const startTangent = function(dr: any) {
       const dx = (dr < 0 ? 1 : -1) * Math.sqrt(square(dr) / (1 + square(g1)))
@@ -156,20 +177,178 @@ export default class ArcArrow {
     const positiveSweep = startAttach.y > 0 ? 0 : 1
     const negativeSweep = startAttach.y < 0 ? 0 : 1
 
-    this.outline = function(shortCaptionLength: any) {
-      if (startAngle > endAngle) {
-        return [
-          'M',
-          coord(endTangent(-headRadius)),
-          'L',
-          coord(endNormal(headLength)),
-          'L',
-          coord(endTangent(headRadius)),
-          'Z'
-        ].join(' ')
+    this.getEndCenter = () => startTangent(0)
+    this.getEndRotation = () =>
+      deflection < 0
+        ? (startAngle * 180) / Math.PI
+        : 180 + (startAngle * 180) / Math.PI
+
+    const tipInstructions = function (colorCount, index) {
+      const instructions = []
+      const inner = -shaftRadius + (index / colorCount) * arrowWidth
+      const outer = -shaftRadius + ((index + 1) / colorCount) * arrowWidth
+      if (index === 0) {
+        instructions.push('L')
+        instructions.push(coord(endTangent(-headRadius)))
       }
 
-      if (captionLayout === 'external') {
+      // inner instruction
+      instructions.push('L')
+      instructions.push(
+        coord(
+          endOverlayCorner(
+            inner,
+            headLength * (1 - Math.abs(inner) / headRadius)
+          )
+        )
+      )
+
+      // tip point
+      if (colorCount === 2 * index + 1) {
+        instructions.push('L')
+        instructions.push(coord(endNormal(headLength)))
+      }
+
+      // outer instruction
+      instructions.push('L')
+      instructions.push(
+        coord(
+          endOverlayCorner(
+            outer,
+            headLength * (1 - Math.abs(outer) / headRadius)
+          )
+        )
+      )
+
+      if (index === colorCount - 1) {
+        instructions.push('L')
+        instructions.push(coord(endTangent(headRadius)))
+      }
+      return instructions.join(' ')
+    }
+
+    const separateOutline = (colorCount, index) => {
+      const distance = Math.min(
+        6,
+        Math.min(startRadius, endRadius) / colorCount
+      )
+      this.separateArrowWidth = distance * colorCount
+      const sRadius = distance * 0.25
+      const hRadius = distance * 0.4
+
+      const offset = (index - (colorCount - 1) / 2) * distance
+
+      const inner = -sRadius + offset
+      const outer = sRadius + offset
+      const extraLength =
+        endRadius - Math.sqrt(endRadius * endRadius - offset * offset)
+
+      const sAngle = -Math.atan2(cx, cy)
+      // const r4 = Math.sqrt(r1 * r1 - offset * offset)
+      return [
+        'M',
+        coord(angleTangent(sAngle, outer)),
+        'L',
+        coord(angleTangent(sAngle, inner)),
+        'A',
+        arcRadius + inner,
+        arcRadius + inner,
+        0,
+        0,
+        positiveSweep,
+        coord(endTangent(inner)),
+        'L',
+        coord(endTangent(offset - hRadius)),
+        'L',
+        coord(endOverlayCorner(offset, headLength + extraLength)),
+        'L',
+        coord(endTangent(offset + hRadius)),
+        'L',
+        coord(endTangent(outer)),
+        'A',
+        arcRadius + outer,
+        arcRadius + outer,
+        0,
+        0,
+        negativeSweep,
+        coord(angleTangent(sAngle, outer))
+      ].join(' ')
+    }
+
+    this.outline = function (shortCaptionLength, colorCount, layout) {
+      if (layout === 'separate') {
+        return Array(colorCount)
+          .fill()
+          .map((_, i) => ({
+            path: separateOutline(colorCount, i)
+          }))
+      }
+
+      if (layout === 'segments') {
+        let sweepAngle = endAngle - startAngle
+        if (sweepAngle > Math.PI) sweepAngle = sweepAngle - 2 * Math.PI
+        const segmentAngle = sweepAngle / colorCount
+        return Array(colorCount + 1)
+          .fill()
+          .map((_, i) => {
+            if (i === colorCount) {
+              return {
+                path: [
+                  'M',
+                  coord(endTangent(-headRadius)),
+                  'L',
+                  coord(endNormal(headLength)),
+                  'L',
+                  coord(endTangent(headRadius)),
+                  'Z'
+                ].join(' ')
+              }
+            }
+            return {
+              path:
+                `M ${coord(angleTangent(startAngle + segmentAngle * i, 0))} ` +
+                `A ${arcRadius} ${arcRadius} 0 0 ${positiveSweep} ${coord(
+                  angleTangent(startAngle + segmentAngle * (i + 1), 0)
+                )}`,
+              useStroke: true,
+              pathOffset: Math.abs(segmentAngle * i * arcRadius),
+              strokeWidth: arrowWidth
+            }
+          })
+      }
+
+      let paths = []
+      if (startAngle > endAngle || shaftRadius >= arcRadius) {
+        if (layout === 'stripes') {
+          paths = Array(colorCount)
+            .fill()
+            .map((_, i) => {
+              const inner = -shaftRadius + (i / colorCount) * arrowWidth
+              const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
+
+              return [
+                'M',
+                coord(endTangent(inner)),
+                tipInstructions(colorCount, i),
+                'L',
+                coord(endTangent(outer)),
+                'Z'
+              ].join(' ')
+            })
+        } else {
+          // prettier-ignore
+          paths = [
+            [
+              'M', coord(endTangent(-headRadius)),
+              'L', coord(endNormal(headLength)),
+              'L', coord(endTangent(headRadius)),
+              'Z'
+            ].join(' ')
+          ]
+        }
+      }
+
+      if (captionLayout === 'external' && layout === 'stripes') {
         let captionSweep = shortCaptionLength / arcRadius
         if (this.deflection > 0) {
           captionSweep *= -1
@@ -178,89 +357,157 @@ export default class ArcArrow {
         const startBreak = midShaftAngle - captionSweep / 2
         const endBreak = midShaftAngle + captionSweep / 2
 
-        return [
-          'M',
-          coord(startTangent(shaftRadius)),
-          'L',
-          coord(startTangent(-shaftRadius)),
-          'A',
-          arcRadius - shaftRadius,
-          arcRadius - shaftRadius,
-          0,
-          0,
-          positiveSweep,
-          coord(angleTangent(startBreak, -shaftRadius)),
-          'L',
-          coord(angleTangent(startBreak, shaftRadius)),
-          'A',
-          arcRadius + shaftRadius,
-          arcRadius + shaftRadius,
-          0,
-          0,
-          negativeSweep,
-          coord(startTangent(shaftRadius)),
-          'Z',
-          'M',
-          coord(angleTangent(endBreak, shaftRadius)),
-          'L',
-          coord(angleTangent(endBreak, -shaftRadius)),
-          'A',
-          arcRadius - shaftRadius,
-          arcRadius - shaftRadius,
-          0,
-          0,
-          positiveSweep,
-          coord(endTangent(-shaftRadius)),
-          'L',
-          coord(endTangent(-headRadius)),
-          'L',
-          coord(endNormal(headLength)),
-          'L',
-          coord(endTangent(headRadius)),
-          'L',
-          coord(endTangent(shaftRadius)),
-          'A',
-          arcRadius + shaftRadius,
-          arcRadius + shaftRadius,
-          0,
-          0,
-          negativeSweep,
-          coord(angleTangent(endBreak, shaftRadius))
-        ].join(' ')
+        if (layout === 'stripes') {
+          paths = Array(colorCount)
+            .fill()
+            .map((_, i) => {
+              const inner = -shaftRadius + (i / colorCount) * arrowWidth
+              const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
+
+              return [
+                'M',
+                coord(startTangent(outer)),
+                'L',
+                coord(startTangent(inner)),
+                'A',
+                arcRadius + inner,
+                arcRadius + inner,
+                0,
+                0,
+                positiveSweep,
+                coord(angleTangent(startBreak, inner)),
+                'L',
+                coord(angleTangent(startBreak, shaftRadius)),
+                'A',
+                arcRadius + outer,
+                arcRadius + outer,
+                0,
+                0,
+                negativeSweep,
+                coord(startTangent(outer)),
+                'Z',
+                'M',
+                coord(angleTangent(endBreak, outer)),
+                'L',
+                coord(angleTangent(endBreak, inner)),
+                'A',
+                arcRadius + inner,
+                arcRadius + inner,
+                0,
+                0,
+                positiveSweep,
+                coord(endTangent(inner)),
+                tipInstructions(colorCount, i),
+                'L',
+                coord(endTangent(outer)),
+                'A',
+                arcRadius + outer,
+                arcRadius + outer,
+                0,
+                0,
+                negativeSweep,
+                coord(angleTangent(endBreak, outer)),
+                'Z'
+              ].join(' ')
+            })
+        } else {
+          // prettier-ignore
+          paths = [
+            [
+              'M', coord(startTangent(shaftRadius)),
+              'L', coord(startTangent(-shaftRadius)),
+              'A', arcRadius - shaftRadius, arcRadius - shaftRadius, 0, 0, positiveSweep, coord(angleTangent(startBreak, -shaftRadius)),
+              'L', coord(angleTangent(startBreak, shaftRadius)),
+              'A', arcRadius + shaftRadius, arcRadius + shaftRadius, 0, 0, negativeSweep, coord(startTangent(shaftRadius)),
+              'Z',
+              'M', coord(angleTangent(endBreak, shaftRadius)),
+              'L', coord(angleTangent(endBreak, -shaftRadius)),
+              'A', arcRadius - shaftRadius, arcRadius - shaftRadius, 0, 0, positiveSweep, coord(endTangent(-shaftRadius)),
+              'L', coord(endTangent(-headRadius)),
+              'L', coord(endNormal(headLength)),
+              'L', coord(endTangent(headRadius)),
+              'L', coord(endTangent(shaftRadius)),
+              'A', arcRadius + shaftRadius, arcRadius + shaftRadius, 0, 0, negativeSweep, coord(angleTangent(endBreak, shaftRadius))
+            ].join(' ')
+          ]
+        }
       } else {
+        if (layout === 'stripes') {
+          paths = Array(colorCount)
+            .fill()
+            .map((_, i) => {
+              const inner = -shaftRadius + (i / colorCount) * arrowWidth
+              const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
+
+              return [
+                'M',
+                coord(startTangent(inner)),
+                'A',
+                arcRadius + inner,
+                arcRadius + inner,
+                0,
+                0,
+                positiveSweep,
+                coord(endTangent(inner)),
+                tipInstructions(colorCount, i),
+                'L',
+                coord(endTangent(outer)),
+                'A',
+                arcRadius + outer,
+                arcRadius + outer,
+                0,
+                0,
+                negativeSweep,
+                coord(startTangent(outer)),
+                'Z'
+              ].join(' ')
+            })
+        } else {
+          // prettier-ignore
+          paths = [
+            [
+              'M', coord(startTangent(shaftRadius)),
+              'L', coord(startTangent(-shaftRadius)),
+              'A', arcRadius - shaftRadius, arcRadius - shaftRadius, 0, 0, positiveSweep, coord(endTangent(-shaftRadius)),
+              'L', coord(endTangent(-headRadius)),
+              'L', coord(endNormal(headLength)),
+              'L', coord(endTangent(headRadius)),
+              'L', coord(endTangent(shaftRadius)),
+              'A', arcRadius + shaftRadius, arcRadius + shaftRadius, 0, 0, negativeSweep, coord(startTangent(shaftRadius))
+            ].join(' ')
+          ]
+        }
+      }
+
+      const attrs = {}
+      if (layout === 'stripes') {
+        // attrs.cx = cx
+        // attrs.cy = cy
+        // attrs.fr = arcRadius - shaftRadius
+        // attrs.r = arcRadius + shaftRadius
+        return paths.map(path => ({ path }))
+      } else {
+        attrs.x1 = '0%'
+        attrs.y1 = '0%'
+        attrs.x2 = '100%'
+        attrs.y2 = '0%'
+        attrs.gradientUnits = 'objectBoundingBox'
+
         return [
-          'M',
-          coord(startTangent(shaftRadius)),
-          'L',
-          coord(startTangent(-shaftRadius)),
-          'A',
-          arcRadius - shaftRadius,
-          arcRadius - shaftRadius,
-          0,
-          0,
-          positiveSweep,
-          coord(endTangent(-shaftRadius)),
-          'L',
-          coord(endTangent(-headRadius)),
-          'L',
-          coord(endNormal(headLength)),
-          'L',
-          coord(endTangent(headRadius)),
-          'L',
-          coord(endTangent(shaftRadius)),
-          'A',
-          arcRadius + shaftRadius,
-          arcRadius + shaftRadius,
-          0,
-          0,
-          negativeSweep,
-          coord(startTangent(shaftRadius))
-        ].join(' ')
+          {
+            path: paths[0],
+            gradient: { type: 'linearGradient', id: 'arc', attrs }
+          }
+        ]
       }
     }
 
-    this.overlay = function(minWidth: any) {
-      const radius = Math.max(minWidth / 2, shaftRadius)
+    this.overlay = function (minWidth) {
+      const radius = Math.max(
+        minWidth / 2,
+        shaftRadius,
+        (this.separateArrowWidth || 0) / 2
+      )
 
       return [
         'M',

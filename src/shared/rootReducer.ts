@@ -66,6 +66,8 @@ import guideReducer, { NAME as guides } from 'shared/modules/guides/guidesDuck'
 import experimentalFeaturesReducer, {
   NAME as experimentalFeatures
 } from 'shared/modules/experimentalFeatures/experimentalFeaturesDuck'
+import { paletteReducer } from 'shared/modules/palette/palette'
+import filtersReducer from './modules/filters/filters'
 
 export default {
   [connections]: connectionsReducer,
@@ -88,5 +90,7 @@ export default {
   [udc]: udcReducer,
   [app]: appReducer,
   [guides]: guideReducer,
-  [experimentalFeatures]: experimentalFeaturesReducer
+  [experimentalFeatures]: experimentalFeaturesReducer,
+  palette: paletteReducer,
+  filters: filtersReducer
 }

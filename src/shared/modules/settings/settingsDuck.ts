@@ -105,7 +105,7 @@ export const initialState = {
   maxRows: 1000,
   maxFieldItems: 500,
   shouldReportUdc: true,
-  autoComplete: true,
+  autoComplete: false,
   scrollToTop: true,
   maxFrames: 15,
   codeFontLigatures: true,

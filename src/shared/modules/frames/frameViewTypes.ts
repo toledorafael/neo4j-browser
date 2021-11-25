@@ -26,6 +26,7 @@ export const TABLE = 'TABLE'
 export const CODE = 'CODE'
 export const ERROR = 'ERROR'
 export const TEXT = 'TEXT'
+export const COMPONENTINTERACTION = 'COMPONENTINTERACTION'
 
 export type FrameView =
   | typeof VISUALIZATION
@@ -36,3 +37,4 @@ export type FrameView =
   | typeof CODE
   | typeof ERROR
   | typeof TEXT
+  | typeof COMPONENTINTERACTION

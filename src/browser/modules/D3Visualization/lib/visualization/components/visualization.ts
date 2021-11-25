@@ -29,7 +29,8 @@ const vizFn = function(
   measureSize: any,
   graph: any,
   layout: any,
-  style: any
+  style: any,
+  localStyle: any
 ) {
   const viz: any = { style }
 
@@ -52,29 +53,39 @@ const vizFn = function(
   // This flags that a panning is ongoing and won't trigger
   // 'canvasClick' event when panning ends.
   let draw = false
+  var drawGroupMarks = false
 
   // Arbitrary dimension used to keep force layout aligned with
   // the centre of the svg view-port.
   const layoutDimension = 200
 
   let updateViz = true
+  var color = d3.scale.category20()
+  const groupIds = getGroupIDs(graph.nodes())
 
   // To be overridden
   viz.trigger = function(_event: any, ..._args: any[]) {}
 
   const onNodeClick = (node: any) => {
     updateViz = false
-    return viz.trigger('nodeClicked', node)
+    return viz.trigger('nodeClicked', node, drawGroupMarks)
   }
 
-  const onNodeDblClick = (node: any) => viz.trigger('nodeDblClicked', node)
+  const onNodeDblClick = (node: any) =>
+    viz.trigger('nodeDblClicked', node, drawGroupMarks)
 
-  const onNodeDragToggle = (node: any) => viz.trigger('nodeDragToggle', node)
-
+  const onNodeDragToggle = (node: any, groupIds: any) => {
+    if (groupIds && drawGroupMarks) {
+      const groupPaths = container.selectAll('g.fileGroup')
+      const nodeGroups = container.selectAll('g.node')
+      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+    }
+    viz.trigger('nodeDragToggle', node)
+  }
   const onRelationshipClick = (relationship: any) => {
     ;(d3.event as Event).stopPropagation()
     updateViz = false
-    return viz.trigger('relationshipClicked', relationship)
+    return viz.trigger('relationshipClicked', relationship, drawGroupMarks)
   }
 
   const onNodeMouseOver = (node: any) => viz.trigger('nodeMouseOver', node)
@@ -149,6 +160,7 @@ const vizFn = function(
     }
     return limitsReached
   }
+
   // Background click event
   // Check if panning is ongoing
   rect.on('click', () => {
@@ -216,7 +228,19 @@ const vizFn = function(
       ? () => window.performance.now()
       : () => Date.now()
 
-  const render = function() {
+  const isNodeHidden = function (d) {
+    return d.labels.every(label => localStyle.hiddenLabels.includes(label))
+  }
+
+  const isRelationshipHidden = function (d) {
+    return (
+      localStyle.hiddenRelTypes.includes(d.type) ||
+      isNodeHidden(d.source) ||
+      isNodeHidden(d.target)
+    )
+  }
+
+  const render = function () {
     if (!currentStats.firstFrame) {
       currentStats.firstFrame = now()
     }
@@ -228,6 +252,12 @@ const vizFn = function(
     const nodeGroups = container
       .selectAll('g.node')
       .attr('transform', (d: any) => `translate(${d.x},${d.y})`)
+
+    if (drawGroupMarks) {
+      const groupPaths = container.selectAll('g.fileGroup')
+
+      updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+    }
 
     for (var renderer of Array.from<any>(vizRenderers.node)) {
       nodeGroups.call(renderer.onTick, viz)
@@ -256,8 +286,7 @@ const vizFn = function(
   // Add custom drag event listeners
   force
     .drag()
-    .on('dragstart.node', (d: any) => onNodeDragToggle(d))
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
+    .on('dragstart.node', (d: any) => onNodeDragToggle(d, groupIds))
     .on('dragend.node', () => onNodeDragToggle())
 
   viz.collectStats = function() {
@@ -267,14 +296,16 @@ const vizFn = function(
     return latestStats
   }
 
-  viz.update = function() {
+  viz.update = function (toggleStripes, featureExpression = '') {
     if (!graph) {
       return
     }
 
+    // drawGroupMarks = showGroupMarks
+
     const layers = container
       .selectAll('g.layer')
-      .data(['relationships', 'nodes'])
+      .data(['relationships', 'nodes', 'fileGroups'])
     layers
       .enter()
       .append('g')
@@ -283,10 +314,18 @@ const vizFn = function(
     const nodes = graph.nodes()
     const relationships = graph.relationships()
 
+    // var groupIds
+
     const relationshipGroups = container
       .select('g.layer.relationships')
       .selectAll('g.relationship')
       .data(relationships, (d: any) => d.id)
+
+    var tip
+    baseGroup.on('click', function () {
+      tip = container.selectAll('g.tip')
+      if (tip) tip.remove()
+    })
 
     relationshipGroups
       .enter()
@@ -295,16 +334,102 @@ const vizFn = function(
       .on('mousedown', onRelationshipClick)
       .on('mouseover', onRelMouseOver)
       .on('mouseout', onRelMouseOut)
+      .on('contextmenu', function (d, i) {
+        d3.event.preventDefault()
+        d3.event.stopPropagation()
+
+        if (tip) tip.remove()
+
+        const midPoint = d.arrow.midShaftPoint(false, 'segments')
+        const rotation = ((d.naturalAngle + 180) / 180) * Math.PI
+
+        tip = container
+          .append('g')
+          .attr('class', 'tip')
+          .attr(
+            'transform',
+            'translate(' +
+              (d.source.x +
+                midPoint.x * Math.cos(rotation) -
+                midPoint.y * Math.sin(rotation) -
+                250) +
+              ',' +
+              (d.source.y +
+                midPoint.y * Math.cos(rotation) +
+                midPoint.x * Math.sin(rotation)) +
+              ')'
+          )
+
+        const foreignObject = tip
+          .append('foreignObject')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', 500)
+          .attr('height', 300)
+        const textArea = foreignObject
+          .append('xhtml:div')
+          .style('background', 'white')
+          .style('border', 'steelblue 1px solid')
+          .style('line-height', '1em')
+          .style('overflow-y', 'auto')
+          .style('max-height', '100%')
+          .style('padding', '4px')
+          .style('overflow-wrap', 'break-word')
+
+        // var textBox = tip
+        //   .append('rect')
+        //   .style('fill', 'white')
+        //   .style('stroke', 'steelblue')
+
+        for (var property in d.propertyList) {
+          if (d.propertyList[property].key !== 'samplecode') {
+            textArea
+              .append('div')
+              .text(
+                d.propertyList[property].key +
+                  ': ' +
+                  d.propertyList[property].value
+              )
+          } else {
+            var sampleCodeArr = d.propertyList[property].value.split(/\r?\n/)
+            textArea.append('div').text('samplecode: ')
+            var firstLine = d.propertyMap['linenumber'] - 2
+            for (var line in sampleCodeArr) {
+              var currLine = +firstLine + +line
+              if (currLine === +d.propertyMap['linenumber']) {
+                textArea
+                  .append('div')
+                  .text(currLine + ':' + sampleCodeArr[line])
+                  .style('font-weight', 'bold')
+              } else {
+                textArea
+                  .append('div')
+                  .text(currLine + ':' + sampleCodeArr[line])
+              }
+            }
+          }
+        }
+
+        // var bbox = tip.node().getBBox()
+        // textBox.attr('width', bbox.width + 5).attr('height', bbox.height + 5)
+      })
 
     relationshipGroups.classed(
       'selected',
       (relationship: any) => relationship.selected
     )
 
+    relationshipGroups.classed('hidden', isRelationshipHidden)
+
     geometry.onGraphChange(graph)
 
     for (var renderer of Array.from<any>(vizRenderers.relationship)) {
-      relationshipGroups.call(renderer.onGraphChange, viz)
+      relationshipGroups.call(
+        renderer.onGraphChange,
+        viz,
+        featureExpression,
+        toggleStripes
+      )
     }
 
     relationshipGroups.exit().remove()
@@ -314,6 +439,11 @@ const vizFn = function(
       .selectAll('g.node')
       .data(nodes, (d: any) => d.id)
 
+    baseGroup.on('click', function () {
+      tip = container.selectAll('g.tip')
+      if (tip) tip.remove()
+    })
+
     nodeGroups
       .enter()
       .append('g')
@@ -322,8 +452,40 @@ const vizFn = function(
       .call(clickHandler)
       .on('mouseover', onNodeMouseOver)
       .on('mouseout', onNodeMouseOut)
+      .on('contextmenu', function (d, i) {
+        d3.event.preventDefault()
+        d3.event.stopPropagation()
+
+        // Code for creating a pop-up with attribute information
+        // if (tip) tip.remove()
+
+        // tip = container.append('g')
+        //   .attr('class', 'tip')
+        //   .attr('transform', 'translate(' + (d.x + 10) + ',' + (d.y + 10) + ')')
+
+        // console.log(d.propertyMap)
+        // var textBox = tip.append('rect')
+        //   .style('fill', 'white')
+        //   .style('stroke', 'steelblue')
+
+        // var yPos = 1
+        // for (var property in d.propertyMap) {
+        //   if (property !== 'label') {
+        //     tip.append('text')
+        //       .text(property + ': ' + d.propertyMap[property])
+        //       .attr('dy', yPos + 'em')
+        //       .attr('x', 5)
+        //     yPos++
+        //   }
+        // }
+
+        // var bbox = tip.node().getBBox()
+        // textBox.attr('width', bbox.width + 5)
+        //   .attr('height', bbox.height + 5)
+      })
 
     nodeGroups.classed('selected', (node: any) => node.selected)
+    nodeGroups.classed('hidden', isNodeHidden)
 
     for (renderer of Array.from(vizRenderers.node)) {
       nodeGroups.call(renderer.onGraphChange, viz)
@@ -335,14 +497,150 @@ const vizFn = function(
 
     nodeGroups.exit().remove()
 
+    // if (drawGroupMarks) {
+    //   groupIds = getGroupIDs(nodes)
+
+    //   const groupPaths = container
+    //     .select('g.layer.fileGroups')
+    //     .selectAll('g.fileGroup')
+    //     .data(groupIds, function (d) {
+    //       return d
+    //     })
+
+    //   groupPaths
+    //     .enter() // Update to path
+    //     .append('g')
+    //     .attr('class', 'fileGroup')
+    //     .append('path')
+    //     .attr('transform', `translate(0,0)`)
+    //     .attr('stroke', function (d) {
+    //       return color(d)
+    //     })
+    //     .attr('fill', function (d) {
+    //       return color(d)
+    //     })
+    //     .attr('fill-opacity', 0.2)
+    //     .attr('stroke-opacity', 1)
+    //     .attr('data-legend', function (d) {
+    //       return d
+    //     })
+
+    //   groupPaths.exit().remove()
+    //   updateGroups(groupIds, groupPaths, nodeGroups, scaleFactor)
+    // } else {
+    //   container
+    //     .select('g.layer.fileGroups')
+    //     .selectAll('g.fileGroup')
+    //     .data({})
+    //     .exit()
+    //     .remove()
+    // }
+
     if (updateViz) {
       force.update(graph, [layoutDimension, layoutDimension])
-
       viz.resize()
       viz.trigger('updated')
     }
 
     return (updateViz = true)
+  }
+  /// Helper functions to generate groupMarks(polygons)
+
+  var scaleFactor = 1
+
+  var polygonGenerator = function (groupId, nodeGroups) {
+    var offset = 30
+    var hullCoords = []
+    var nodeCoords = nodeGroups
+      .filter(function (d) {
+        if (d.propertyMap.hasOwnProperty('filename')) {
+          return groupId === d.propertyMap.filename
+        }
+      })
+      .data()
+      .map(function (d) {
+        return [d.px, d.py]
+      })
+    nodeCoords.forEach(d => {
+      // console.log(d)
+      if (d.length > 0) {
+        hullCoords.push([d[0] - offset, d[1] - offset])
+        hullCoords.push([d[0] - offset, d[1] + offset])
+        hullCoords.push([d[0] + offset, d[1] - offset])
+        hullCoords.push([d[0] + offset, d[1] + offset])
+      }
+    })
+    // return ([d.px - offset, d.py - offset], [d.px - offset, d.py + offset], [d.px + offset, d.py - offset], [d.px + offset, d.py + offset])
+    // console.log(nodeCoords)
+    // console.log(hullCoords)
+    return d3.geom.polygon(d3.geom.hull(hullCoords))
+  }
+
+  var valueline = d3.svg
+    .line()
+    .x(function (d) {
+      return d[0]
+    })
+    .y(function (d) {
+      return d[1]
+    })
+    .interpolate('linear-closed')
+
+  function updateGroups (groupIds, fileGroups, nodeGroups, scaleFactor) {
+    if (fileGroups[0].length > 0) {
+      var polygon
+      var centroid = null
+      groupIds.forEach(function (groupId) {
+        var path = fileGroups
+          .filter(function (d) {
+            return groupId === d
+          })
+          .select('path')
+          .attr('transform', 'translate(0,0)')
+          .attr('d', function (d) {
+            polygon = polygonGenerator(d, nodeGroups)
+            centroid = polygon.centroid()
+
+            return (
+              valueline(
+                polygon.map(function (point) {
+                  return [point[0] - centroid[0], point[1] - centroid[1]]
+                })
+              ) + 'Z'
+            )
+          })
+        d3.select(path.node().parentNode).attr(
+          'transform',
+          `translate(${+centroid[0]},${+centroid[1]}) scale(${scaleFactor})`
+        )
+      })
+    }
+  }
+
+  function getGroupIDs (nodes) {
+    return d3
+      .set(
+        nodes.map(function (n) {
+          // if (n.propertyMap.hasOwnProperty('filename')) {
+          return n.propertyMap.filename
+          // }
+        })
+      )
+      .values()
+      .map(function (groupId) {
+        return {
+          groupId: groupId,
+          count: nodes.filter(function (n) {
+            return groupId === n.propertyMap.filename
+          }).length
+        }
+      })
+      .filter(function (group) {
+        return group.count > 0
+      })
+      .map(function (group) {
+        return group.groupId
+      })
   }
 
   viz.resize = function() {
@@ -356,6 +654,13 @@ const vizFn = function(
         size.height
       ].join(' ')
     )
+  }
+
+  viz.updateScaleFactor = function (newScaleFactor) {
+    scaleFactor = newScaleFactor
+    const nodeGroups = container.selectAll('g.node')
+    const fileGroups = container.selectAll('g.fileGroup')
+    updateGroups(groupIds, fileGroups, nodeGroups, scaleFactor)
   }
 
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'boundingBox' does not exist on type '{ s... Remove this comment to see the full error message

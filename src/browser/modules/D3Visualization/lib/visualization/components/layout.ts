@@ -28,17 +28,38 @@ const layout = {
       init: (render: any) => {
         const forceLayout: any = {}
 
-        const linkDistance = 45
+        const linkDistance = 300
 
         const d3force = d3.layout
           .force()
-          .linkDistance(
-            (relationship: any) =>
+          .linkDistance((relationship: any) => {
+            // const sourceFilename = relationship.source.propertyMap.filename
+            // const targetFilename = relationship.target.propertyMap.filename
+            // if (sourceFilename === targetFilename) {
+            //   return relationship.source.radius +
+            //          relationship.target.radius +
+            //          linkDistance
+            // } else {
+            //   return (relationship.source.radius +
+            //          relationship.target.radius +
+            //          4 * linkDistance)
+            // }
+            return (
               relationship.source.radius +
               relationship.target.radius +
               linkDistance
-          )
+            )
+          })
           .charge(-1000)
+          .linkStrength(relationship => {
+            const sourceFilename = relationship.source.propertyMap.filename
+            const targetFilename = relationship.target.propertyMap.filename
+            if (sourceFilename === targetFilename) {
+              return 0.2
+            } else {
+              return 1
+            }
+          })
 
         const newStatsBucket = function() {
           const bucket = {
@@ -112,6 +133,8 @@ const layout = {
         }
 
         forceLayout.drag = d3force.drag
+        forceLayout.alpha = d3force.alpha
+        forceLayout.start = d3force.start
         return forceLayout
       }
     }

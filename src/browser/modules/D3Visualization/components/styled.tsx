@@ -45,6 +45,9 @@ export const StyledSvgWrapper = styled.div`
           opacity: 0.3;
         }
       }
+      &.hidden {
+        display: none;
+      }
       &:hover {
         > .ring {
           stroke: #6ac6ff;
@@ -52,6 +55,56 @@ export const StyledSvgWrapper = styled.div`
         }
       }
     }
+    .fileGroup {
+      stroke-opacity: 1;
+      pointer-events: none;
+    }
+    .legend rect {
+      fill: white;
+      stroke: black;
+      opacity: 0.8;
+    }
+
+    circle.node {
+      fill: lightsteelblue;
+      stroke: #555;
+      stroke-width: 3px;
+    }
+    circle.leaf {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+    circle.link-expanded {
+      stroke: #555;
+      stroke-width: 3px;
+      stroke-dasharray: 2px 4px;
+    }
+    circle.helper {
+      stroke-width: 0;
+      fill: #333;
+      opacity: 0.6;
+    }
+    circle.center-of-mass {
+      fill: white;
+      stroke: red;
+      stroke-width: 5px;
+    }
+    path.hull {
+      fill: lightsteelblue;
+      fill-opacity: 0.3;
+    }
+    path.hlink {
+      stroke: #333;
+      stroke-opacity: 0.5;
+      fill: none;
+      pointer-events: none;
+    }
+    line.link {
+      stroke: red;
+      stroke-opacity: 0.7;
+      pointer-events: none;
+    }
+
     .relationship {
       > text {
         fill: ${props => props.theme.primaryText};
@@ -65,6 +118,9 @@ export const StyledSvgWrapper = styled.div`
           fill: #fdcc59;
           opacity: 0.3;
         }
+      }
+      &.hidden {
+        display: none;
       }
       &:hover {
         > .overlay {
@@ -168,6 +224,13 @@ export const StyledTokenRelationshipType = styled(StyledToken)`
 export const StyledTokenCount = styled.span`
   font-weight: normal;
 `
+export const StyledLegendContents = styled.ul`
+  float: left;
+  line-height: 1em;
+  position: relative;
+  top: 1px;
+  top: -1px;
+`
 
 export const StyledLegendInlineList = styled(StyledInlineList)`
   padding: 4px 0 0 0;
@@ -232,13 +295,169 @@ export const StyledFullSizeContainer = styled.div`
   height: 100%;
 `
 
+export const StyledInspectorFooterStatusMessage = styled.div`
+  font-weight: bold;
+`
+export const StyledSliderHolder = styled.div`
+  position: absolute;
+  top: 63px;
+  right: 0;
+  padding: 6px 6px 0 6px;
+  border-left: #e6e9ef solid 1px;
+  border-top: #e6e9ef solid 1px;
+  background: #fff;
+`
+
+export const StyleToggleGroupMarksButton = styled.button`
+  position: absolute;
+  top: 70px;
+  right: 150px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: blue;
+  border-color: black;
+  padding: 15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
+export const StyleSubmitButton = styled.button`
+  position: absolute;
+  top: 60px;
+  right: 100px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: green;
+  border-color: white;
+  padding: 15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
+export const StyledLayoutPicker = styled.div`
+  position: absolute;
+  top: 100px;
+  right: 12px;
+  border: none;
+`
+
+export const StyleRelationshipLayoutButtonGroup = styled.div`
+  display: inline-block;
+  vertical-align: top;
+  width: 200px;
+  margin-left: 8px;
+  border: none;
+  border-radius: 8px;
+  background: grey;
+  padding: 0 4px;
+`
+
+export const StyledRelationshipLayoutHeader = styled.div`
+  line-height: 32px;
+  height: 32px;
+  font-size: 1.5em;
+  user-select: none;
+  color: white;
+  text-align: center;
+  border-bottom: white 2px solid;
+  margin: 4px 0;
+`
+
+export const StyleRelationshipLayoutButton = styled.button`
+  width: 100%;
+  line-height: 32px;
+  height: 32px;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 4px;
+  background: grey;
+  color: white;
+  display: block;
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    background: darkgrey;
+  }
+  &.selected {
+    background: white;
+    color: grey;
+  }
+  margin: 4px 0;
+`
+
+export const StyleToggleButton = styled.button`
+  position: absolute;
+  top: 100px;
+  right: 120px;
+  list-style-type: none;
+  font-size: 1.5em;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: red;
+  border-color: white;
+  padding: 15px 32px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+
+export const StyleInputDiv = styled.div`
+  position: absolute;
+  top: 100px;
+  color: black;
+  width: 300px;
+  background: white;
+  border: none;
+  border-radius: 3px;
+`
+
+export const StyleTextArea = styled.textarea`
+  position: relative;
+  width: 300px;
+  height: 4em;
+  line-height: 1.2em;
+  resize: none;
+  padding: 3px;
+`
+
 export const StyledZoomHolder = styled.div<{
   fullscreen: boolean
   offset: number
 }>`
   position: ${props => (props.fullscreen ? 'fixed' : 'absolute')};
   bottom: 0;
-  right: ${props => props.offset}px
+  right: ${props => props.offset}px;
   padding: 6px 6px 0 6px;
   border-left: ${props => props.theme.inFrameBorder};
   border-right: ${props => props.theme.inFrameBorder};
@@ -251,7 +470,7 @@ export const StyledZoomButton = styled.button`
   list-style-type: none;
   margin-bottom: 10px;
   border: none;
-  color: ${props => props.theme.frameButtonTextColor}
+  color: ${props => props.theme.frameButtonTextColor};
   background: transparent;
   border-color: black;
   padding: 2px 6px 3px;
@@ -370,4 +589,73 @@ export const PaneBodySectionSmallText = styled.span`
 export const PaneBodySectionHeaderWrapper = styled.div`
   display: flex;
   flex-direction: column;
+`
+
+export const StyledPatternSelectorBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #00000077;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+`
+
+export const StyledPatternSelectorBody = styled.div`
+  background: #e6e9ef;
+`
+
+export const StyledPatternSelectorHeading = styled.div`
+  background: white;
+  margin: 1px;
+  text-align: center;
+  color: black;
+  font-size: 19.5px;
+  padding: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
+`
+
+export const StyledPatternSelectorItem = styled.div`
+  svg {
+    display: block;
+  }
+  margin: 1px;
+  background: white;
+  padding: 10px 50px;
+
+  &:hover {
+    background: #eeeeee;
+  }
+`
+
+export const StyledGraphLegend = styled.div`
+  line-height: 16px;
+  font-size: 16px;
+  position: absolute;
+  left: -1px;
+  bottom: 32px;
+  padding: 16px;
+  background: white;
+  border-top-right-radius: 2px;
+  border: grey solid 1px;
+
+  td {
+    padding: 4px 8px;
+    .legend-label {
+      width: 150px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+
+  th {
+    padding: 12px 8px 4px 8px;
+    text-align: left;
+  }
 `

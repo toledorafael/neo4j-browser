@@ -53,6 +53,8 @@ import skipPrev from 'icons/skip-prev.svg'
 import table from 'icons/table.svg'
 import text from 'icons/text.svg'
 import vizIcon from 'icons/hierarchy-9.svg'
+import visualAnalysis from 'icons/hierarchy-9.svg'
+import componentInteraction from 'icons/hierarchy-9.svg'
 
 const inactive = `
   color: #797979;
@@ -62,6 +64,9 @@ const green = `
   color: #4cd950;
 `
 
+const yellow = `
+  color: #ffff00;
+`
 const successGreen = `
   color: #4cd950;
 `
@@ -104,6 +109,24 @@ const databaseConnectionStateStyles: {
 } = {
   connected: {
     active: green,
+    inactive: inactive,
+    classModifier: 'check'
+  },
+  disconnected: {
+    active: warningRed,
+    inactive: inactive,
+    classModifier: 'delete'
+  },
+  pending: {
+    active: alertYellow,
+    inactive: inactive,
+    classModifier: 'alert'
+  }
+}
+
+const fileInteractionsStateStyles = {
+  connected: {
+    active: yellow,
     inactive: inactive,
     classModifier: 'check'
   },
@@ -210,6 +233,19 @@ export const CloudSyncIcon = ({
     />
   )
 }
+export const VisualAnalysisIcon = props => {
+  const { connectionState, ...rest } = props
+  return (
+    <IconContainer
+      activeStyle={fileInteractionsStateStyles[connectionState].active}
+      inactiveStyle={fileInteractionsStateStyles[connectionState].inactive}
+      className={fileInteractionsStateStyles[connectionState].classModifier}
+      icon={visualAnalysis}
+      width={28}
+      {...rest}
+    />
+  )
+}
 
 export const SettingsIcon = ({
   isOpen,
@@ -262,6 +298,9 @@ export const AsciiIcon = (): JSX.Element => (
 )
 export const CodeIcon = (): JSX.Element => (
   <IconContainer icon={appWindowCode} text="Code" width={LARGE_SIZE} />
+)
+export const ComponentInteractionIcon = (): JSX.Element => (
+  <IconContainer icon={componentInteraction} text='Interactions' width={20} />
 )
 export const PlanIcon = (): JSX.Element => (
   <IconContainer className="sl-hierarchy" text="Plan" />

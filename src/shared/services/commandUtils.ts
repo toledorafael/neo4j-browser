@@ -59,6 +59,11 @@ export const isCypherCommand = (cmd: any) => {
   return cleanCmd[0] !== ':'
 }
 
+export const isAnalysisCommand = (cmd: any) => {
+  const cleanCmd = cleanCommand(cmd)
+  return cleanCmd[0] === '!'
+}
+
 export const buildCommandObject = (action: any, interpret: any) => {
   const interpreted = getInterpreter(interpret, action.cmd, action.ignore)
   return { action, interpreted, useDb: action.useDb }
@@ -66,6 +71,7 @@ export const buildCommandObject = (action: any, interpret: any) => {
 
 export const getInterpreter = (interpret: any, cmd: any, ignore = false) => {
   if (ignore) return interpret('noop')
+  if (isAnalysisCommand(cmd)) return interpret('analysis')
   if (isCypherCommand(cmd)) return interpret('cypher')
   return interpret(cleanCommand(cmd).substr(1))
 }

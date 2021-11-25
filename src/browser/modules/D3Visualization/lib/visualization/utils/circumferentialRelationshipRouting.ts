@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+// FIXME add captionHeight here if this file is used again
+
 import measureText from './textMeasurement'
 import distributeCircular from './circumferentialDistribution'
 import StraightArrow from './straightArrow'

@@ -27,101 +27,189 @@ export default class StraightArrow {
   deflection = 0
 
   constructor(
-    startRadius: any,
-    endRadius: any,
-    centreDistance: any,
-    shaftWidth: any,
-    headWidth: any,
-    headHeight: any,
-    captionLayout: any
+    startRadius,
+    endRadius,
+    centreDistance,
+    shaftWidth,
+    headWidth,
+    headHeight,
+    captionLayout,
+    captionHeight
   ) {
     this.length = centreDistance - (startRadius + endRadius)
+    this.width = shaftWidth
 
     this.shaftLength = this.length - headHeight
+    this.separateArrowWidth = 0
     const startArrow = startRadius
     const endShaft = startArrow + this.shaftLength
     const endArrow = startArrow + this.length
     const shaftRadius = shaftWidth / 2
     const headRadius = headWidth / 2
 
-    this.midShaftPoint = {
-      x: startArrow + this.shaftLength / 2,
-      y: 0
+    const separateOutline = (colorCount, index) => {
+      // const hLength = 6
+      const hLength = headHeight
+      const distance = Math.min(6, startRadius / colorCount)
+      this.separateArrowWidth = distance * colorCount
+      const sRadius = distance * 0.25
+      const hRadius = distance * 0.4
+      const offset = distance * (index - (colorCount - 1) / 2)
+      const extraLength =
+        endRadius - Math.sqrt(endRadius * endRadius - offset * offset)
+
+      return [
+        'M',
+        0,
+        sRadius + offset,
+        'L',
+        endShaft,
+        sRadius + offset,
+        'L',
+        endShaft,
+        hRadius + offset,
+        'L',
+        endArrow + extraLength,
+        offset,
+        'L',
+        endShaft,
+        -hRadius + offset,
+        'L',
+        endShaft,
+        -sRadius + offset,
+        'L',
+        0,
+        -sRadius + offset,
+        'Z'
+      ].join(' ')
     }
 
-    this.outline = function(shortCaptionLength: any) {
-      if (captionLayout === 'external') {
+    this.midShaftPoint = (textAbove, arrowLayout) => ({
+      x: startArrow + this.shaftLength / 2,
+      y: textAbove
+        ? -captionHeight * 0.625 -
+          Math.max(shaftRadius, this.separateArrowWidth / 2)
+        : 0
+    })
+
+    this.secondaryMidShaftPoint = arrowLayout => ({
+      x: startArrow + this.shaftLength / 2,
+      y:
+        +captionHeight * 0.625 +
+        Math.max(shaftRadius, this.separateArrowWidth / 2)
+    })
+
+    this.getEndCenter = () => ({ x: startArrow, y: 0 })
+    this.getEndRotation = () => 0
+
+    this.outline = function (shortCaptionLength, colorCount, layout) {
+      if (layout === 'segments') {
+        const segmentLength = this.shaftLength / colorCount
+        return Array(colorCount + 1)
+          .fill()
+          .map((_, i) => {
+            if (i === colorCount) {
+              return {
+                path: [
+                  'M',
+                  endShaft,
+                  headRadius,
+                  'L',
+                  endArrow,
+                  0,
+                  'L',
+                  endShaft,
+                  -headRadius,
+                  'Z'
+                ].join(' ')
+              }
+            }
+            return {
+              path: `M ${startArrow + segmentLength * i},0 L ${startArrow +
+                segmentLength * (i + 1)},0`,
+              useStroke: true,
+              pathOffset: segmentLength * i,
+              strokeWidth: shaftWidth
+            }
+          })
+      }
+
+      let path
+      if (captionLayout === 'external' && layout !== 'segments') {
         const startBreak =
           startArrow + (this.shaftLength - shortCaptionLength) / 2
         const endBreak = endShaft - (this.shaftLength - shortCaptionLength) / 2
 
-        return [
-          'M',
-          startArrow,
-          shaftRadius,
-          'L',
-          startBreak,
-          shaftRadius,
-          'L',
-          startBreak,
-          -shaftRadius,
-          'L',
-          startArrow,
-          -shaftRadius,
+        // prettier-ignore
+        path = [
+          'M', startArrow, shaftRadius,
+          'L', startBreak, shaftRadius,
+          'L', startBreak, -shaftRadius,
+          'L', startArrow, -shaftRadius,
           'Z',
-          'M',
-          endBreak,
-          shaftRadius,
-          'L',
-          endShaft,
-          shaftRadius,
-          'L',
-          endShaft,
-          headRadius,
-          'L',
-          endArrow,
-          0,
-          'L',
-          endShaft,
-          -headRadius,
-          'L',
-          endShaft,
-          -shaftRadius,
-          'L',
-          endBreak,
-          -shaftRadius,
+          'M', endBreak, shaftRadius,
+          'L', endShaft, shaftRadius,
+          'L', endShaft, headRadius,
+          'L', endArrow, 0,
+          'L', endShaft, -headRadius,
+          'L', endShaft, -shaftRadius,
+          'L', endBreak, -shaftRadius,
           'Z'
         ].join(' ')
       } else {
-        return [
-          'M',
-          startArrow,
-          shaftRadius,
-          'L',
-          endShaft,
-          shaftRadius,
-          'L',
-          endShaft,
-          headRadius,
-          'L',
-          endArrow,
-          0,
-          'L',
-          endShaft,
-          -headRadius,
-          'L',
-          endShaft,
-          -shaftRadius,
-          'L',
-          startArrow,
-          -shaftRadius,
+        // prettier-ignore
+        path = [
+          'M', startArrow, shaftRadius,
+          'L', endShaft, shaftRadius,
+          'L', endShaft, headRadius,
+          'L', endArrow, 0,
+          'L', endShaft, -headRadius,
+          'L', endShaft, -shaftRadius,
+          'L', startArrow, -shaftRadius,
           'Z'
         ].join(' ')
       }
+      const attrs = {}
+
+      if (layout === 'separate') {
+        return Array(colorCount)
+          .fill()
+          .map((_, i) => ({
+            path: separateOutline(colorCount, i)
+          }))
+      }
+
+      if (layout === 'stripes') {
+        attrs.x1 = 0
+        attrs.y1 = shaftRadius
+        attrs.x2 = 0
+        attrs.y2 = -shaftRadius
+      } else {
+        attrs.x1 = '0%'
+        attrs.y1 = '0%'
+        attrs.x2 = '100%'
+        attrs.y2 = '0%'
+        attrs.gradientUnits = 'objectBoundingBox'
+      }
+      const id = `straight-${layout}-${shaftWidth}`
+      return [
+        {
+          path,
+          gradient: {
+            type: 'linearGradient',
+            id,
+            attrs
+          }
+        }
+      ]
     }
 
-    this.overlay = function(minWidth: any) {
-      const radius = Math.max(minWidth / 2, shaftRadius)
+    this.overlay = function (minWidth) {
+      const radius = Math.max(
+        minWidth / 2,
+        shaftRadius,
+        (this.separateArrowWidth || 0) / 2
+      )
       return [
         'M',
         startArrow,

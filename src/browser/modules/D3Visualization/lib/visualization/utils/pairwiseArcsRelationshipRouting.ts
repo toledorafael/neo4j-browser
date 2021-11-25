@@ -247,7 +247,8 @@ export default class PairwiseArcsRelationshipRouting {
                     shaftWidth,
                     headWidth,
                     headHeight,
-                    relationship.captionLayout
+                    relationship.captionLayout,
+                    relationship.captionHeight
                   )
                 } else {
                   let deflection =
@@ -265,7 +266,8 @@ export default class PairwiseArcsRelationshipRouting {
                     shaftWidth,
                     headWidth,
                     headHeight,
-                    relationship.captionLayout
+                    relationship.captionLayout,
+                    relationship.captionHeight
                   )
                 }
               }

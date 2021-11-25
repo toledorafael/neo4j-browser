@@ -25,11 +25,30 @@ export default class graphView {
   graph: any
   style: any
   viz: any
-  constructor(element: any, measureSize: any, graph: any, style: any) {
+  localStyle: any
+  constructor (
+    element: any,
+    measureSize: any,
+    graph: any,
+    style: any,
+    hiddenLabels: any,
+    hiddenRelTypes: any
+  ) {
     this.graph = graph
     this.style = style
+    this.localStyle = {
+      hiddenLabels,
+      hiddenRelTypes
+    }
     const forceLayout = layout.force()
-    this.viz = viz(element, measureSize, this.graph, forceLayout, this.style)
+    this.viz = viz(
+      element,
+      measureSize,
+      this.graph,
+      forceLayout,
+      this.style,
+      this.localStyle
+    )
     this.callbacks = {}
     const { callbacks } = this
     this.viz.trigger = (() => (event: any, ...args: any[]) =>
@@ -62,8 +81,24 @@ export default class graphView {
     return this
   }
 
-  update() {
-    this.viz.update()
+  update (showGroupMarks) {
+    this.viz.update(showGroupMarks)
+    return this
+  }
+
+  updateScaleFactor (value) {
+    this.viz.updateScaleFactor(value)
+    return this
+  }
+
+  displayGroupMarks (value) {
+    this.viz.update(value)
+    return this
+  }
+
+  highlightPresenceConditions (featureExpression) {
+    // Disable groupMarks and update featureExpression
+    this.viz.update(false, featureExpression)
     return this
   }
 

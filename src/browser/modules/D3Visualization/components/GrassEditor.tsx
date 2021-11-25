@@ -37,6 +37,8 @@ import { toKeyString } from 'shared/services/utils'
 import { GraphStyle } from './OverviewPane'
 import { GlobalState } from 'shared/globalState'
 import { Action, Dispatch } from 'redux'
+import PatternSelector from './PatternSelector.jsx'
+import { removeFilterAction } from 'shared/modules/filters/filters'
 
 type GrassEditorProps = {
   graphStyleData?: any
@@ -73,7 +75,11 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
   }
 
   updateStyle(selector: any, styleProp: any) {
+    // This function updates Style rules.
     this.graphStyle.changeForSelector(selector, styleProp)
+    // In the current implementation of condition style selector,
+    // Instead of calling the function in line  358
+    // It drops my newly added rule for conditions and stops at the end of line 63
     this.props.update(this.graphStyle.toSheet())
   }
 
@@ -89,7 +95,7 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
   ) {
     return styleProps.map((styleProp: any, i: any) => {
       const onClick = () => {
-        this.updateStyle(selector, styleProp)
+        this.updateStyle(selector, styleProp) // onClick of circleSelector, goes to line 58. A click adds a style rule
       }
       const style = styleProvider(styleProp, i)
       const text = textProvider(styleProp)
@@ -251,10 +257,45 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
     )
   }
 
-  stylePicker() {
+  dashPicker (selector, styleForItem) {
+    return (
+      <span>
+        {/* <input
+          type='text'
+          value={styleForItem.get('pattern') || ''}
+          onChange={e => {
+            this.updateStyle(selector, { pattern: e.target.value })
+          }}
+        /> */}
+        <PatternSelector
+          patterns={[
+            '',
+            'dashes 1',
+            'dashes 3',
+            'dashes 3 1',
+            'dashes 1 3',
+            'dashes 1 1 3 1',
+            'dashes 1 1 3 1 1 1'
+          ]}
+          selectPattern={pattern => {
+            this.updateStyle(selector, { pattern })
+          }}
+        />
+      </span>
+    )
+  }
+
+  stylePicker () {
+    // Based on what type of graph components is selected, we add applicable style pickers
     let pickers
     let title
+    let visible
+    let changeHandler
+    let showVisibleToggle
+    let deleteFilterButton = null
+
     if (this.props.selectedLabel) {
+      // If selected components are nodes
       const labelList =
         this.props.selectedLabel.label !== '*'
           ? [this.props.selectedLabel.label]
@@ -279,7 +320,14 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
           {this.props.selectedLabel.label || '*'}
         </StyledLabelToken>
       )
+      // visible = !this.props.hiddenNodeLabels.includes(
+      //   this.props.selectedLabel.label
+      // )
+      changeHandler = value =>
+        this.props.setNodeLabelVisibility(this.props.selectedLabel.label, value)
+      showVisibleToggle = this.props.selectedLabel.label !== '*'
     } else if (this.props.selectedRelType) {
+      // If selected components are relationships
       const relTypeSelector =
         this.props.selectedRelType.relType !== '*'
           ? { type: this.props.selectedRelType.relType }
@@ -305,12 +353,76 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
           {this.props.selectedRelType.relType || '*'}
         </StyledTokenRelationshipType>
       )
+      // visible = !this.props.hiddenRelationshipTypes.includes(
+      //   this.props.selectedRelType.relType
+      // )
+      changeHandler = value =>
+        this.props.setRelTypeVisibility(
+          this.props.selectedRelType.relType,
+          value
+        )
+      showVisibleToggle = this.props.selectedRelType.relType !== '*'
+    } else if (this.props.selectedCondition) {
+      // If selected components are conditions
+      const conditionSelector = // conditionSelector is the string users submitted from the text input box
+        this.props.selectedCondition.relType !== '*'
+          ? this.props.selectedCondition.condition
+          : ''
+      const styleForRelType = this.graphStyle.forCondition(conditionSelector) // See graphStyle.js
+      const inlineStyle = {
+        backgroundColor: styleForRelType.get('color'),
+        color: styleForRelType.get('text-color-internal')
+      }
+      pickers = [
+        this.colorPicker(styleForRelType.selector, styleForRelType),
+        this.widthPicker(styleForRelType.selector, styleForRelType),
+        this.dashPicker(styleForRelType.selector, styleForRelType)
+        // this.captionPicker(
+        //  styleForRelType.selector,
+        //  styleForRelType,
+        //  this.props.selectedCondition.,
+        // true
+        // )
+      ]
+      title = (
+        <StyledTokenRelationshipType
+          className='token token-relationship'
+          style={inlineStyle}
+        >
+          {this.props.selectedCondition.condition || '*'}
+        </StyledTokenRelationshipType>
+      )
+      deleteFilterButton = (
+        <button
+          onClick={() => {
+            this.props.removeFilter(this.props.selectedCondition.condition)
+            this.graphStyle.destroySelector(styleForRelType.selector)
+            this.props.update(this.graphStyle.toSheet())
+            this.props.deselect()
+          }}
+        >
+          Remove filter
+        </button>
+      )
     } else {
       return null
     }
+    const visibleToggle = (
+      <label>
+        Visible:
+        <input
+          type='checkbox'
+          checked={visible}
+          onChange={e => changeHandler(e.target.checked)}
+          style={{ marginLeft: '4px', accentColor: '#777777' }}
+        />
+      </label>
+    )
     return (
       <StyledInlineListStylePicker frameHeight={this.props.frameHeight}>
         {title}
+        {showVisibleToggle && visibleToggle}
+        {deleteFilterButton}
         {pickers}
       </StyledInlineListStylePicker>
     )
@@ -337,8 +449,12 @@ const mapStateToProps = (state: GlobalState) => ({
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
   update: (data: any) => {
     dispatch(actions.updateGraphStyleData(data))
+    },
+    removeFilter: filter => {
+      dispatch(removeFilterAction(filter))
+    }
   }
-})
+)
 
 export const GrassEditor = connect(
   mapStateToProps,

@@ -21,6 +21,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import DatabaseDrawer from '../DBMSInfo/DBMSInfo'
+import VisualAnalysisDrawer from '../VisualAnalysis/VisualAnalysis.jsx'
 import DocumentsDrawer from './Documents'
 import AboutDrawer from './About'
 import SettingsDrawer from './Settings'
@@ -51,7 +52,8 @@ import {
   SettingsIcon,
   AboutIcon,
   ProjectFilesIcon,
-  GuideDrawerIcon
+  GuideDrawerIcon,
+  VisualAnalysisIcon
 } from 'browser-components/icons/Icons'
 import { getCurrentDraft } from 'shared/modules/sidebar/sidebarDuck'
 import { DrawerHeader } from 'browser-components/drawer/drawer-styled'
@@ -129,6 +131,18 @@ const Sidebar = ({
         return <GuideDrawerIcon isOpen={isOpen} />
       },
       content: GuideDrawer
+    },
+    {
+      name: 'VisualAnalysis',
+      title: 'VisualAnalysis',
+      icon: function visualAnalysisIcon(isOpen: boolean): JSX.Element {
+        return <VisualAnalysisIcon
+          isOpen={isOpen}
+          connectionState={neo4jConnectionState}
+          title='VisualAnalysis'
+        />
+      },
+      content: VisualAnalysisDrawer // define drawer for visualization panels
     }
   ]
 

@@ -208,6 +208,7 @@ export const handleCommandEpic = (action$: any, store: any) =>
           cmd: action.cmd,
           isRerun: action.isRerun
         } as any)
+        // addFrame({ type: 'analysis-script',....})
       )
       const jobs = statements.map((cmd: any) => {
         const cleanCmd = cleanCommand(cmd)

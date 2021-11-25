@@ -98,7 +98,7 @@ const createItems = (
   }
 
   return items.map((text, index) => {
-    const getNodesCypher = editorCommandTemplate(text, index)
+    const getNodesCypher = editorCommandTemplate(text, index) // Change this function!!!
     return (
       <RenderType.component
         data-testid="sidebarMetaItem"
@@ -132,7 +132,7 @@ const LabelItems = ({
 }: LabelItemsProps) => {
   let labelItems: any = <p>There are no labels in database</p>
   if (labels.length) {
-    const editorCommandTemplate = (text: any, i: any) => {
+    const editorCommandTemplate = (text: any, i: any) => { // CYPHER QUERY DEFINED FOR EACH BUTTON
       if (i === 0) {
         return 'MATCH (n) RETURN n LIMIT 25'
       }
