@@ -186,7 +186,6 @@ export class Graph extends Component<any, State> {
     this.svgElement = el
     if (this.svgElement && !this.svgElement.__graphStyle) {
       this.svgElement.__graphStyle = this.state.currentLayout
-      console.log(this.svgElement.__graphStyle)
     }
     if (this.svgElement && !this.svgElement.__uid) {
       this.svgElement.__uid = Math.floor(Math.random() * Math.pow(2, 52))
@@ -271,14 +270,14 @@ export class Graph extends Component<any, State> {
       this.graph.addInternalRelationships(
         mapRelationships(internalRelationships, this.graph)
       )
-      let stats = getGraphStats(this.graph)
+      const stats = getGraphStats(this.graph)
       let conditionTypes
       if (this.state.conditionTypes) {
         conditionTypes = this.state.conditionTypes
       } else {
         conditionTypes = []
       }
-      let newstats = {
+      const newstats = {
         labels: stats.labels,
         relTypes: stats.relTypes,
         conditionTypes: conditionTypes
@@ -301,11 +300,11 @@ export class Graph extends Component<any, State> {
       this.graphView.resize()
     }
     if (prevProps.hiddenNodeLabels !== this.props.hiddenNodeLabels) {
-      this.graphView.localStyle.hiddenLabels = prevProps.hiddenNodeLabels
+      this.graphView.localStyle.hiddenLabels = this.props.hiddenNodeLabels
       this.graphView.update(this.state.showGroupMarks)
     }
     if (prevProps.hiddenRelTypes !== this.props.hiddenRelTypes) {
-      this.graphView.localStyle.hiddenRelTypes = prevProps.hiddenRelTypes
+      this.graphView.localStyle.hiddenRelTypes = this.props.hiddenRelTypes
       this.graphView.update(this.state.showGroupMarks)
     }
   }
@@ -336,7 +335,7 @@ export class Graph extends Component<any, State> {
     )
   }
 
-  adjustGroupsScale (event) {
+  adjustGroupsScale(event) {
     this.setState({ scaleFactor: event.target.value })
     this.graphView.updateScaleFactor(event.target.value)
   }
@@ -347,17 +346,17 @@ export class Graph extends Component<any, State> {
   //   this.graphView.displayGroupMarks(toggleGroupMarks)
   // }
 
-  inputSlider () {
+  inputSlider() {
     if (this.props.fullscreen) {
       return (
         <StyledSliderHolder>
           <input
-            type='range'
-            id='scaleFactorLabel'
-            min='1'
-            max='3'
+            type="range"
+            id="scaleFactorLabel"
+            min="1"
+            max="3"
             value={this.state.scaleFactor}
-            step='.1'
+            step=".1"
             onChange={this.adjustGroupsScale.bind(this)}
           />
         </StyledSliderHolder>
@@ -365,7 +364,7 @@ export class Graph extends Component<any, State> {
     }
   }
 
-  inputToggle () {
+  inputToggle() {
     if (this.props.fullscreen) {
       return (
         <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)}>
@@ -375,7 +374,7 @@ export class Graph extends Component<any, State> {
     }
   }
 
-  updateFeatureExpressionState (event) {
+  updateFeatureExpressionState(event) {
     /* if(this.state.conditionTypes) {
       this.setState(prevState => ({
         conditionTypes: [...prevState.conditionTypes, event.target.value]
@@ -388,7 +387,7 @@ export class Graph extends Component<any, State> {
     // this.setState({ featureExpression: event.target.value })
   }
 
-  handleSubmit (event) {
+  handleSubmit(event) {
     if (this.state.newConditionType) {
       this.props.addFilterAction(this.state.newConditionType)
       let conditionTypes
@@ -413,7 +412,7 @@ export class Graph extends Component<any, State> {
         this.setState({ conditionTypes: [this.state.newConditionType] })
         conditionTypes = [this.state.newConditionType]
       }
-      let stats = getGraphStats(this.graph)
+      const stats = getGraphStats(this.graph)
       Array.from(document.querySelectorAll('textArea')).forEach(
         input => (input.value = '')
       )
@@ -422,7 +421,7 @@ export class Graph extends Component<any, State> {
       // } else {
       //   conditionTypes = []
       // }
-      let newstats = {
+      const newstats = {
         labels: stats.labels,
         relTypes: stats.relTypes,
         conditionTypes: conditionTypes
@@ -437,7 +436,7 @@ export class Graph extends Component<any, State> {
     }
   }
 
-  handleToggleStripes (event) {
+  handleToggleStripes(event) {
     // const newToggleStripes = !this.state.toggleStripes
     // this.setState({ toggleStripes: newToggleStripes })
     if (this.svgElement) {
@@ -449,7 +448,7 @@ export class Graph extends Component<any, State> {
     this.graphView.update()
   }
 
-  checkPropertyList (propertyList, propertyName) {
+  checkPropertyList(propertyList, propertyName) {
     if (propertyList.length > 0) {
       for (let index = 0; index < propertyList.length; index++) {
         const element = propertyList[index]
@@ -459,7 +458,7 @@ export class Graph extends Component<any, State> {
     }
   }
 
-  inputFeatureExpression () {
+  inputFeatureExpression() {
     if (this.props.fullscreen) {
       // TODO: Add condition to only show PC form if the user is interested in learn about that
       if (
@@ -474,8 +473,7 @@ export class Graph extends Component<any, State> {
           // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}></StyleInputForm>
           <StyleInputDiv>
             <StyleTextArea
-              value={this.state.value}
-              placeholder='Feature expression'
+              placeholder="Feature expression"
               onChange={this.updateFeatureExpressionState.bind(this)}
             />
             <StyleSubmitButton onClick={this.handleSubmit.bind(this)}>
@@ -487,7 +485,7 @@ export class Graph extends Component<any, State> {
     }
   }
 
-  inputToggleStripes () {
+  inputToggleStripes() {
     if (this.props.fullscreen) {
       return (
         <StyledLayoutPicker>
@@ -551,7 +549,7 @@ export class Graph extends Component<any, State> {
     }
   }
 
-  legend () {
+  legend() {
     return (
       <StyledGraphLegend>
         <button onClick={this.props.setLightTheme}>Light</button>
@@ -560,7 +558,7 @@ export class Graph extends Component<any, State> {
         <button onClick={this.props.setDarkCustomTheme}>Dark 2</button>
         <table>
           <tr>
-            <th colspan='2'>Edge Types</th>
+            <th colSpan={2}>Edge Types</th>
           </tr>
           {this.props.stats.relTypes &&
             Object.keys(this.props.stats.relTypes).map(relType => {
@@ -570,14 +568,14 @@ export class Graph extends Component<any, State> {
               return relType === '*' ? null : (
                 <tr>
                   <td>
-                    <svg width='180' height='15' viewBox='0 -6 144 12'>
+                    <svg width="180" height="15" viewBox="0 -6 144 12">
                       <line
-                        x1='0'
-                        x2='144'
-                        y1='0'
-                        y2='0'
-                        stroke='#888'
-                        strokeWidth='5'
+                        x1="0"
+                        x2="144"
+                        y1="0"
+                        y2="0"
+                        stroke="#888"
+                        strokeWidth="5"
                         strokeDasharray={
                           (this.state.currentLayout.globalPattern &&
                             getPatternDashes(style.get('pattern'), 5)) ||
@@ -591,15 +589,15 @@ export class Graph extends Component<any, State> {
                             { x: 0, y: 0 },
                             11
                           )}
-                          stroke='black'
-                          strokeWidth='1'
-                          fill='#ffffff77'
+                          stroke="black"
+                          strokeWidth="1"
+                          fill="#ffffff77"
                         />
                       )}
                     </svg>
                   </td>
                   <td>
-                    <div className='legend-label' title={relType}>
+                    <div className="legend-label" title={relType}>
                       {relType}
                     </div>
                   </td>
@@ -607,23 +605,23 @@ export class Graph extends Component<any, State> {
               )
             })}
           <tr>
-            <th colspan='2'>Feature Expressions</th>
+            <th colSpan={2}>Feature Expressions</th>
           </tr>
           {this.props.conditionTypes &&
-            this.props.conditionTypes.map(condType => {
+            this.props.conditionTypes.map((condType: any) => {
               const style = this.props.graphStyle.forCondition(condType)
               if (style.get('color') === 'var(--graph-color0)') return null
               return (
-                <tr>
+                <tr key={condType}>
                   <td>
-                    <svg width='180' height='15' viewBox='0 -6 144 12'>
+                    <svg width="180" height="15" viewBox="0 -6 144 12">
                       <line
-                        x1='0'
-                        x2='144'
-                        y1='0'
-                        y2='0'
+                        x1="0"
+                        x2="144"
+                        y1="0"
+                        y2="0"
                         stroke={style.get('color')}
-                        strokeWidth='5'
+                        strokeWidth="5"
                         strokeDasharray={
                           this.state.currentLayout.localPattern
                             ? getPatternDashes(style.get('pattern'), 5)
@@ -633,7 +631,7 @@ export class Graph extends Component<any, State> {
                     </svg>
                   </td>
                   <td>
-                    <div className='legend-label' title={condType}>
+                    <div className="legend-label" title={condType}>
                       {condType}
                     </div>
                   </td>
@@ -645,11 +643,11 @@ export class Graph extends Component<any, State> {
     )
   }
 
-  render () {
+  render() {
     return (
       // <div>
       <StyledSvgWrapper>
-        <svg className='neod3viz' ref={this.graphInit.bind(this)} />
+        <svg className="neod3viz" ref={this.graphInit.bind(this)} />
         {/* {this.inputSlider()} */}
         {this.zoomButtons()}
         {/* {this.inputToggle()} */}

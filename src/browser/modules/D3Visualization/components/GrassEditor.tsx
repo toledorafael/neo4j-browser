@@ -46,6 +46,7 @@ type GrassEditorProps = {
   update?: any
   selectedLabel?: { label: string; propertyKeys: string[] }
   selectedRelType?: { relType: string; propertyKeys: string[] }
+  selectedCondition?: { condition: string }
   frameHeight: number
 }
 
@@ -257,7 +258,7 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
     )
   }
 
-  dashPicker (selector, styleForItem) {
+  dashPicker(selector, styleForItem) {
     return (
       <span>
         {/* <input
@@ -285,14 +286,13 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
     )
   }
 
-  stylePicker () {
+  stylePicker() {
     // Based on what type of graph components is selected, we add applicable style pickers
     let pickers
     let title
-    let visible
-    let changeHandler
     let showVisibleToggle
     let deleteFilterButton = null
+    const { visible } = this.props
 
     if (this.props.selectedLabel) {
       // If selected components are nodes
@@ -323,8 +323,6 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
       // visible = !this.props.hiddenNodeLabels.includes(
       //   this.props.selectedLabel.label
       // )
-      changeHandler = value =>
-        this.props.setNodeLabelVisibility(this.props.selectedLabel.label, value)
       showVisibleToggle = this.props.selectedLabel.label !== '*'
     } else if (this.props.selectedRelType) {
       // If selected components are relationships
@@ -356,11 +354,6 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
       // visible = !this.props.hiddenRelationshipTypes.includes(
       //   this.props.selectedRelType.relType
       // )
-      changeHandler = value =>
-        this.props.setRelTypeVisibility(
-          this.props.selectedRelType.relType,
-          value
-        )
       showVisibleToggle = this.props.selectedRelType.relType !== '*'
     } else if (this.props.selectedCondition) {
       // If selected components are conditions
@@ -386,7 +379,7 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
       ]
       title = (
         <StyledTokenRelationshipType
-          className='token token-relationship'
+          className="token token-relationship"
           style={inlineStyle}
         >
           {this.props.selectedCondition.condition || '*'}
@@ -398,7 +391,6 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
             this.props.removeFilter(this.props.selectedCondition.condition)
             this.graphStyle.destroySelector(styleForRelType.selector)
             this.props.update(this.graphStyle.toSheet())
-            this.props.deselect()
           }}
         >
           Remove filter
@@ -411,17 +403,28 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
       <label>
         Visible:
         <input
-          type='checkbox'
+          type="checkbox"
           checked={visible}
-          onChange={e => changeHandler(e.target.checked)}
+          onChange={e => this.props.setVisibility(e.target.checked)}
           style={{ marginLeft: '4px', accentColor: '#777777' }}
         />
       </label>
     )
+    const style: { [key: string]: string } = {}
+    this.props.palette.colors.forEach((color, i) => {
+      style[`--graph-color${i}`] = color
+    })
+    this.props.palette.borderColors.forEach((color, i) => {
+      style[`--border-color${i}`] = color
+    })
+    style['--graph-internal-text-color'] = this.props.palette.textColor
     return (
-      <StyledInlineListStylePicker frameHeight={this.props.frameHeight}>
+      <StyledInlineListStylePicker
+        frameHeight={this.props.frameHeight}
+        style={style}
+      >
         {title}
-        {showVisibleToggle && visibleToggle}
+        {showVisibleToggle && this.props.setVisibility && visibleToggle}
         {deleteFilterButton}
         {pickers}
       </StyledInlineListStylePicker>
@@ -443,18 +446,18 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
 }
 const mapStateToProps = (state: GlobalState) => ({
   graphStyleData: actions.getGraphStyleData(state),
-  meta: state.meta
+  meta: state.meta,
+  palette: state.palette
 })
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
   update: (data: any) => {
     dispatch(actions.updateGraphStyleData(data))
-    },
-    removeFilter: filter => {
-      dispatch(removeFilterAction(filter))
-    }
+  },
+  removeFilter: filter => {
+    dispatch(removeFilterAction(filter))
   }
-)
+})
 
 export const GrassEditor = connect(
   mapStateToProps,

@@ -43,7 +43,11 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
       setWidth,
       stats,
       toggleExpanded,
-      width
+      width,
+      hiddenNodeLabels,
+      hiddenRelationshipTypes,
+      setNodeLabelVisibility,
+      setRelTypeVisibility
     } = this.props
 
     const relevantItems = ['node', 'relationship']
@@ -102,6 +106,10 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
                         ? shownEl.item.relationshipCount
                         : null
                     }
+                    hiddenNodeLabels={hiddenNodeLabels}
+                    hiddenRelationshipTypes={hiddenRelationshipTypes}
+                    setNodeLabelVisibility={setNodeLabelVisibility}
+                    setRelTypeVisibility={setRelTypeVisibility}
                   />
                 )}
               </PaneContainer>

@@ -35,6 +35,10 @@ import { StyleableNodeLabel } from './StyleableNodeLabel'
 import { GraphStats } from '../mapper'
 import { StyleableRelType } from './StyleableRelType'
 import { ShowMoreOrAll } from 'browser-components/ShowMoreOrAll/ShowMoreOrAll'
+import { connect } from 'react-redux'
+import { GlobalState } from 'shared/globalState'
+import * as actions from 'shared/modules/grass/grassDuck'
+import neoGraphStyle from '../graphStyle'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -75,26 +79,40 @@ type GraphStyleRule = {
 type OverviewPaneProps = {
   frameHeight: number
   graphStyle: GraphStyle
+  graphStyleData: any
   hasTruncatedFields: boolean
   nodeCount: number | null
   relationshipCount: number | null
   stats: GraphStats
+  filters: any
 }
 
 export const OVERVIEW_STEP_SIZE = 50
 
 function OverviewPane({
   frameHeight,
-  graphStyle,
+  graphStyle: graphStyleProp,
+  graphStyleData,
   hasTruncatedFields,
   nodeCount,
   relationshipCount,
-  stats
+  stats,
+  filters,
+  hiddenNodeLabels,
+  hiddenRelationshipTypes,
+  setNodeLabelVisibility,
+  setRelTypeVisibility
 }: OverviewPaneProps): JSX.Element {
   const [maxLabelsCount, setMaxLabelsCount] = useState(OVERVIEW_STEP_SIZE)
   const [maxRelationshipsCount, setMaxRelationshipsCount] = useState(
     OVERVIEW_STEP_SIZE
   )
+
+  // Fix sidebar not updating immediately
+  const graphStyle = neoGraphStyle()
+  if (graphStyleData) {
+    graphStyle.loadRules(graphStyleData)
+  }
 
   const onMoreLabelsClick = (numMore: number) => {
     setMaxLabelsCount(maxLabelsCount + numMore)
@@ -136,6 +154,10 @@ function OverviewPane({
                     propertyKeys: Object.keys(labels[label].properties),
                     count: labels[label].count
                   }}
+                  setVisibility={(value: any) =>
+                    setNodeLabelVisibility(label, value)
+                  }
+                  visible={!hiddenNodeLabels.includes(label)}
                 />
               ))}
             </StyledLegendInlineList>
@@ -165,6 +187,10 @@ function OverviewPane({
                     propertyKeys: Object.keys(relTypes[relType].properties),
                     count: relTypes[relType].count
                   }}
+                  setVisibility={(value: any) =>
+                    setRelTypeVisibility(relType, value)
+                  }
+                  visible={!hiddenRelationshipTypes.includes(relType)}
                 />
               ))}
             </StyledLegendInlineList>
@@ -173,6 +199,34 @@ function OverviewPane({
               shown={visibleRelationshipKeys.length}
               moreStep={OVERVIEW_STEP_SIZE}
               onMore={onMoreRelationshipsClick}
+            />
+          </div>
+        )}
+        {filters && filters.length !== 0 && (
+          // FIXME: figure out what visible means here
+          <div>
+            <PaneBodySectionHeader
+              title={'Filters'}
+              numOfElementsVisible={filters.length}
+              totalNumOfElements={filters.length}
+            />
+            <StyledLegendInlineList>
+              {filters.map(filter => (
+                <StyleableRelType
+                  key={filter}
+                  graphStyle={graphStyle}
+                  frameHeight={frameHeight}
+                  selectedFilter={{
+                    condition: filter
+                  }}
+                />
+              ))}
+            </StyledLegendInlineList>
+            <ShowMoreOrAll
+              total={filters.length}
+              shown={filters.length}
+              moreStep={OVERVIEW_STEP_SIZE}
+              onMore={() => console.log('onMore')}
             />
           </div>
         )}
@@ -194,4 +248,7 @@ function OverviewPane({
   )
 }
 
-export default OverviewPane
+export default connect((state: GlobalState) => ({
+  graphStyleData: actions.getGraphStyleData(state),
+  filters: state.filters
+}))(OverviewPane)

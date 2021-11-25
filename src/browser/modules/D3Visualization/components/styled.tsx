@@ -343,7 +343,8 @@ export const StyleSubmitButton = styled.button`
   color: white;
   background: green;
   border-color: white;
-  padding: 15px 32px;
+  padding: 0 32px;
+  line-height: 32px;
   &:focus {
     outline: none;
   }
@@ -358,8 +359,8 @@ export const StyleSubmitButton = styled.button`
 
 export const StyledLayoutPicker = styled.div`
   position: absolute;
-  top: 100px;
-  right: 12px;
+  top: 110px;
+  left: 4px;
   border: none;
 `
 
@@ -367,7 +368,7 @@ export const StyleRelationshipLayoutButtonGroup = styled.div`
   display: inline-block;
   vertical-align: top;
   width: 200px;
-  margin-left: 8px;
+  margin-right: 8px;
   border: none;
   border-radius: 8px;
   background: grey;
@@ -434,7 +435,8 @@ export const StyleToggleButton = styled.button`
 
 export const StyleInputDiv = styled.div`
   position: absolute;
-  top: 100px;
+  top: 4px;
+  left: 4px;
   color: black;
   width: 300px;
   background: white;
@@ -484,7 +486,7 @@ export const StyledZoomButton = styled.button`
     opacity: 0.3;
     cursor: auto;
     &:hover {
-      color: ${props => props.theme.frameButtonTextColor}
+      color: ${props => props.theme.frameButtonTextColor};
     }
   }
 `
@@ -638,7 +640,7 @@ export const StyledGraphLegend = styled.div`
   font-size: 16px;
   position: absolute;
   left: -1px;
-  bottom: 32px;
+  bottom: -1px;
   padding: 16px;
   background: white;
   border-top-right-radius: 2px;

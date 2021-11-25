@@ -33,12 +33,16 @@ export type StyleableNodeLabelProps = {
   graphStyle: GraphStyle
   frameHeight: number
   onClick?: () => void
+  visible
+  setVisibility: any
 }
 export function StyleableNodeLabel({
   graphStyle,
   frameHeight,
   selectedLabel,
-  onClick
+  onClick,
+  visible,
+  setVisibility
 }: StyleableNodeLabelProps): JSX.Element {
   const graphStyleForLabel = graphStyle.forNode({
     labels: [selectedLabel.label]
@@ -55,7 +59,8 @@ export function StyleableNodeLabel({
           {...onClick}
           style={{
             backgroundColor: graphStyleForLabel.get('color'),
-            color: graphStyleForLabel.get('text-color-internal')
+            color: graphStyleForLabel.get('text-color-internal'),
+            textDecoration: visible === false ? 'line-through' : 'none'
           }}
         >
           {selectedLabel.count !== undefined
@@ -65,7 +70,12 @@ export function StyleableNodeLabel({
       }
       wide
     >
-      <GrassEditor selectedLabel={selectedLabel} frameHeight={frameHeight} />
+      <GrassEditor
+        selectedLabel={selectedLabel}
+        frameHeight={frameHeight}
+        setVisibility={setVisibility}
+        visible={visible}
+      />
     </Popup>
   )
 }

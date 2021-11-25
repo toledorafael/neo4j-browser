@@ -27,39 +27,60 @@ import { StyledRelationship } from 'browser/modules/DBMSInfo/styled'
 export type StyleableRelTypeProps = {
   graphStyle: GraphStyle
   frameHeight: number
-  selectedRelType: { relType: string; propertyKeys: string[]; count?: number }
+  selectedRelType?: { relType: string; propertyKeys: string[]; count?: number }
+  selectedFilter?: { condition: string }
 }
 export function StyleableRelType({
   selectedRelType,
+  selectedFilter,
   graphStyle,
-  frameHeight
+  frameHeight,
+  visible,
+  setVisibility
 }: StyleableRelTypeProps): JSX.Element {
-  const styleForRelType = graphStyle.forRelationship({
-    type: selectedRelType.relType
-  })
+  if (!selectedRelType && !selectedFilter) {
+    throw new TypeError(
+      'At least one of selectedRelType or selectedFilter is required'
+    )
+  }
+
+  const styleForRelType = selectedRelType
+    ? graphStyle.forRelationship({
+        type: selectedRelType.relType
+      })
+    : graphStyle.forCondition(selectedFilter.condition)
   return (
     <Popup
       on="click"
       basic
       pinned
-      key={selectedRelType.relType}
+      key={
+        (selectedRelType && selectedRelType.relType) ||
+        (selectedFilter && selectedFilter.filter)
+      }
       trigger={
         <StyledRelationship
           style={{
             backgroundColor: styleForRelType.get('color'),
-            color: styleForRelType.get('text-color-internal')
+            color: styleForRelType.get('text-color-internal'),
+            textDecoration: visible === false ? 'line-through' : 'none'
           }}
         >
-          {selectedRelType.count !== undefined
-            ? `${selectedRelType.relType} (${selectedRelType.count})`
-            : `${selectedRelType.relType}`}
+          {selectedRelType
+            ? selectedRelType.count !== undefined
+              ? `${selectedRelType.relType} (${selectedRelType.count})`
+              : `${selectedRelType.relType}`
+            : selectedFilter.condition}
         </StyledRelationship>
       }
       wide
     >
       <GrassEditor
         selectedRelType={selectedRelType}
+        selectedCondition={selectedFilter}
         frameHeight={frameHeight}
+        setVisibility={setVisibility}
+        visible={visible}
       />
     </Popup>
   )

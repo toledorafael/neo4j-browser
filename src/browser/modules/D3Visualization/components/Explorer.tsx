@@ -147,7 +147,7 @@ export class ExplorerLocal extends Component<
     }
   }
 
-  setNodeLabelVisibility (label, value) {
+  setNodeLabelVisibility(label, value) {
     if (!value) {
       if (!this.state.hiddenNodeLabels.includes(label)) {
         this.setState({
@@ -167,7 +167,7 @@ export class ExplorerLocal extends Component<
     }
   }
 
-  setRelTypeVisibility (relType, value) {
+  setRelTypeVisibility(relType, value) {
     if (!value) {
       if (!this.state.hiddenRelationshipTypes.includes(relType)) {
         this.setState({
@@ -256,7 +256,7 @@ export class ExplorerLocal extends Component<
     })
   }
 
-  onSelectedCondition (condition, propertyKeys) {
+  onSelectedCondition(condition, propertyKeys) {
     this.setState({
       selectedItem: {
         type: 'legend-item',
@@ -272,7 +272,7 @@ export class ExplorerLocal extends Component<
     })
   }
 
-  deselect () {
+  deselect() {
     this.setState({
       selectedItem: ''
     })
@@ -349,7 +349,7 @@ export class ExplorerLocal extends Component<
       ((this.state.hoveredItem && this.state.hoveredItem.type !== 'canvas') ||
         (this.state.selectedItem && this.state.selectedItem.type !== 'canvas'))
 
-    const style = {}
+    const style: { [key: string]: string } = {}
     this.props.palette.colors.forEach((color, i) => {
       style[`--graph-color${i}`] = color
     })
@@ -416,9 +416,11 @@ export class ExplorerLocal extends Component<
   }
 }
 
-export const ExplorerComponent: ConnectedComponent<any, any> = connect((state: any) => ({
-  palette: state.palette
-}))(ExplorerLocal)
+export const ExplorerComponent: ConnectedComponent<any, any> = connect(
+  (state: any) => ({
+    palette: state.palette
+  })
+)(ExplorerLocal)
 
 export const Explorer: ConnectedComponent<
   typeof ExplorerComponent,
