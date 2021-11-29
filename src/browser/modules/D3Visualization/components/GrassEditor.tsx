@@ -37,7 +37,7 @@ import { toKeyString } from 'shared/services/utils'
 import { GraphStyle } from './OverviewPane'
 import { GlobalState } from 'shared/globalState'
 import { Action, Dispatch } from 'redux'
-import PatternSelector from './PatternSelector.jsx'
+import PatternSelector from './PatternSelector'
 import { removeFilterAction } from 'shared/modules/filters/filters'
 import { PaletteState } from 'shared/modules/palette/palette'
 

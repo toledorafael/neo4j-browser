@@ -283,7 +283,7 @@ export default function neoGraphStyle() {
 
     StyleElement.prototype.applyRules = function(rules: any) {
       for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.jsx
+        const rule = rules[i] // Rules are either provided at first loading or added later via updateStyle in GrassEditor.tsx
         if (rule.matches(this.selector)) {
           // find style based on tag of selector (whether it's a node or a relationship)
           this.props = { ...this.props, ...rule.props }

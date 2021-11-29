@@ -1,4 +1,4 @@
-export function getPatternDashes (pattern, size) {
+export function getPatternDashes(pattern: string, size: number): string {
   const splits = pattern.split(' ')
   if (splits.length && splits[0] === 'dashes') {
     return splits
@@ -6,4 +6,5 @@ export function getPatternDashes (pattern, size) {
       .map(x => +x * size)
       .join(' ')
   }
+  return ''
 }

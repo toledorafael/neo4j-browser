@@ -21,7 +21,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import DatabaseDrawer from '../DBMSInfo/DBMSInfo'
-import VisualAnalysisDrawer from '../VisualAnalysis/VisualAnalysis.jsx'
+import VisualAnalysisDrawer from '../VisualAnalysis/VisualAnalysis'
 import DocumentsDrawer from './Documents'
 import AboutDrawer from './About'
 import SettingsDrawer from './Settings'
@@ -136,11 +136,13 @@ const Sidebar = ({
       name: 'VisualAnalysis',
       title: 'VisualAnalysis',
       icon: function visualAnalysisIcon(isOpen: boolean): JSX.Element {
-        return <VisualAnalysisIcon
-          isOpen={isOpen}
-          connectionState={neo4jConnectionState}
-          title='VisualAnalysis'
-        />
+        return (
+          <VisualAnalysisIcon
+            isOpen={isOpen}
+            connectionState={neo4jConnectionState}
+            title="VisualAnalysis"
+          />
+        )
       },
       content: VisualAnalysisDrawer // define drawer for visualization panels
     }

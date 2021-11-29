@@ -1,4 +1,8 @@
-export function getShapeDef (shapeName, { x, y }, size) {
+export function getShapeDef(
+  shapeName: string,
+  { x, y }: { x: number; y: number },
+  size: number
+): string {
   if (shapeName === 'square') {
     return `M ${x + 2} ${y - size / 2} l ${size} 0 l 0 ${size} l ${-size} 0 Z`
   } else if (shapeName === 'rectangle') {
@@ -33,5 +37,7 @@ export function getShapeDef (shapeName, { x, y }, size) {
       `a ${size / 2} ${size / 2} 0 0 0 ${-size / 2} ${-size / 2}` +
       `a ${size / 2} ${size / 2} 0 0 0 ${-size / 2} ${size / 2}`
     )
+  } else {
+    return ''
   }
 }

@@ -7,7 +7,15 @@ import {
   StyledPatternSelectorHeading
 } from './styled'
 
-export default function ({ patterns, selectPattern = console.log }) {
+interface PatternSelectorProps {
+  patterns: string[]
+  selectPattern: (value: string) => void
+}
+
+export default function PatternSelector({
+  patterns,
+  selectPattern = console.log
+}: PatternSelectorProps): JSX.Element {
   const [show, setShow] = useState(false)
   return (
     <React.Fragment>
@@ -30,14 +38,14 @@ export default function ({ patterns, selectPattern = console.log }) {
                   setShow(false)
                 }}
               >
-                <svg width='200' height='8' viewBox='0 0 200 8'>
+                <svg width="200" height="8" viewBox="0 0 200 8">
                   <line
-                    x1='0'
-                    x2='200'
-                    y1='4'
-                    y2='4'
-                    strokeWidth='8'
-                    stroke='black'
+                    x1="0"
+                    x2="200"
+                    y1="4"
+                    y2="4"
+                    strokeWidth="8"
+                    stroke="black"
                     strokeDasharray={getPatternDashes(pattern, 8)}
                   />
                 </svg>

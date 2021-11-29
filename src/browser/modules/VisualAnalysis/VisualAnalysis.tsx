@@ -23,14 +23,19 @@ import { connect } from 'react-redux'
 import { withBus } from 'react-suber'
 import { executeCommand } from 'shared/modules/commands/commandsDuck'
 import { getCurrentUser } from 'shared/modules/currentUser/currentUserDuck'
-import { VisualAnalysisItems } from './MenuItems.jsx'
+import { VisualAnalysisItems } from './MenuItems'
 // import { VisualAnalysisItems } from './MenuItems'
 // import { UserDetails } from '../DatabaseInfo/UserDetails'
 // import DatabaseKernelInfo from '../DatabaseInfo/DatabaseKernelInfo'
-import { Drawer, DrawerBody, DrawerHeader } from 'browser-components/drawer/drawer-styled'
+import {
+  Drawer,
+  DrawerBody,
+  DrawerHeader
+} from 'browser-components/drawer/drawer-styled'
+import { GlobalState } from 'shared/globalState'
 
-export class VisualAnalysis extends Component {
-  constructor (props) {
+export class VisualAnalysis extends Component<any> {
+  constructor(props: any) {
     super(props)
     this.state = {
       moreStep: 50,
@@ -39,25 +44,25 @@ export class VisualAnalysis extends Component {
       propertiesMax: 50
     }
   }
-  onMoreClick (type) {
-    return num => {
-      this.setState({ [type + 'Max']: this.state[type + 'Max'] + num })
+  onMoreClick(type: any) {
+    return (num: any) => {
+      this.setState({ [type + 'Max']: (this.state as any)[type + 'Max'] + num })
     }
   }
-  render () {
-    const {
-      labels = [],
-      // relationshipTypes = [],
-      // properties = [],
-      // databaseKernelInfo,
-      // relationships,
-      nodes
-    } = this.props.meta
+  render() {
+    // const {
+    //   labels = [],
+    //   // relationshipTypes = [],
+    //   // properties = [],
+    //   // databaseKernelInfo,
+    //   // relationships,
+    //   nodes
+    // } = this.props.meta
     // const { user, onItemClick } = this.props
     const { onItemClick } = this.props
 
     return (
-      <Drawer id='vis-drawer'>
+      <Drawer id="vis-drawer">
         <DrawerHeader>Visual Analysis</DrawerHeader>
         <DrawerBody>
           {/* <LabelItems
@@ -69,22 +74,19 @@ export class VisualAnalysis extends Component {
             moreStep={this.state.moreStep}
           /> */}
 
-          <VisualAnalysisItems
-            onItemClick={onItemClick}
-          />
-
+          <VisualAnalysisItems onItemClick={onItemClick} />
         </DrawerBody>
       </Drawer>
     )
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: GlobalState) => {
   return { meta: state.meta, user: getCurrentUser(state) }
 }
-const mapDispatchToProps = (_, ownProps) => {
+const mapDispatchToProps = (_: any, ownProps: any) => {
   return {
-    onItemClick: cmd => {
+    onItemClick: (cmd: any) => {
       const action = executeCommand(cmd)
       ownProps.bus.send(action.type, action)
     }
@@ -92,8 +94,5 @@ const mapDispatchToProps = (_, ownProps) => {
 }
 
 export default withBus(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(VisualAnalysis)
+  connect(mapStateToProps, mapDispatchToProps)(VisualAnalysis)
 )
