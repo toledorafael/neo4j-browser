@@ -29,6 +29,8 @@ export type StyleableRelTypeProps = {
   frameHeight: number
   selectedRelType?: { relType: string; propertyKeys: string[]; count?: number }
   selectedFilter?: { condition: string }
+  visible?: boolean
+  setVisibility?: (value: boolean) => void
 }
 export function StyleableRelType({
   selectedRelType,
@@ -48,7 +50,9 @@ export function StyleableRelType({
     ? graphStyle.forRelationship({
         type: selectedRelType.relType
       })
-    : graphStyle.forCondition(selectedFilter.condition)
+    : selectedFilter
+    ? graphStyle.forCondition(selectedFilter.condition)
+    : null
   return (
     <Popup
       on="click"
@@ -56,7 +60,7 @@ export function StyleableRelType({
       pinned
       key={
         (selectedRelType && selectedRelType.relType) ||
-        (selectedFilter && selectedFilter.filter)
+        (selectedFilter && selectedFilter.condition)
       }
       trigger={
         <StyledRelationship
@@ -70,7 +74,7 @@ export function StyleableRelType({
             ? selectedRelType.count !== undefined
               ? `${selectedRelType.relType} (${selectedRelType.count})`
               : `${selectedRelType.relType}`
-            : selectedFilter.condition}
+            : selectedFilter && selectedFilter.condition}
         </StyledRelationship>
       }
       wide

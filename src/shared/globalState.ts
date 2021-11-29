@@ -62,6 +62,8 @@ import {
   NAME as experimentalFeatures,
   initialState as experimentalFeaturesInitialState
 } from './modules/experimentalFeatures/experimentalFeaturesDuck'
+import { PaletteState } from './modules/palette/palette'
+import { FilterState } from './modules/filters/filters'
 
 export interface GlobalState {
   [settings]: typeof settingsInitialState
@@ -85,4 +87,6 @@ export interface GlobalState {
   [app]: Record<string, unknown>
   [experimentalFeatures]: typeof experimentalFeaturesInitialState
   [guides]: GuideState
+  palette: PaletteState
+  filters: FilterState
 }

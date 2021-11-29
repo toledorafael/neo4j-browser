@@ -20,9 +20,16 @@
 
 export default class LoopArrow {
   midShaftPoint: any
+  secondaryMidShaftPoint: any
   outline: any
   overlay: any
   shaftLength: any
+  width: any
+  separateArrowWidth: any
+  separateDistance: any
+  gradient: any
+  getEndCenter: any
+  getEndRotation: any
   constructor(
     nodeRadius: any,
     straightLength: any,
@@ -62,7 +69,7 @@ export default class LoopArrow {
         cy + (localLoopRadius + displacement) * Math.cos(sweep)
       )
     }
-    this.midShaftPoint = (textAbove, arrowLayout) => {
+    this.midShaftPoint = (_textAbove: any, arrowLayout: any) => {
       if (arrowLayout === 'separate') {
         return normalPoint(
           0,
@@ -73,7 +80,7 @@ export default class LoopArrow {
       return normalPoint(0, r3, shaftRadius + captionHeight / 2 + 2)
     }
 
-    this.secondaryMidShaftPoint = arrowLayout => {
+    this.secondaryMidShaftPoint = (arrowLayout: string) => {
       if (arrowLayout === 'separate') {
         return normalPoint(
           0,
@@ -84,14 +91,19 @@ export default class LoopArrow {
       return normalPoint(0, r3, shaftRadius + captionHeight * 2 + 2)
     }
 
-    const startPoint = (radius, displacement) =>
+    const startPoint = (radius: any, displacement: any) =>
       normalPoint((Math.PI + spread) / 2, radius, displacement)
     const endPoint = (radius: any, displacement: any) =>
       normalPoint(-(Math.PI + spread) / 2, radius, displacement)
 
-    this.gradient = function (id, colors, toggleStrips, segment) {
+    this.gradient = function(
+      id: any,
+      _colors: any,
+      toggleStrips: any,
+      segment: any
+    ) {
       const type = segment === 1 ? 'radialGradient' : 'linearGradient'
-      const attrs = {}
+      const attrs: Record<string, any> = {}
       if (segment === 1) {
         attrs.cx = 0
         attrs.cy = r3 / Math.cos(spread / 2)
@@ -111,7 +123,7 @@ export default class LoopArrow {
       return { type, attrs, gradientId }
     }
 
-    const arcPoint = (radius, angle) => {
+    const arcPoint = (radius: number, angle: number) => {
       const cy = r3 / Math.cos(spread / 2)
       return new Point(-Math.sin(angle) * radius, Math.cos(angle) * radius + cy)
     }
@@ -119,7 +131,7 @@ export default class LoopArrow {
     this.getEndCenter = () => startPoint(r1, (this.separateArrowWidth || 0) / 2)
     this.getEndRotation = () => 90 - (spread * 90) / Math.PI
 
-    const separateOutline = (colorCount, index) => {
+    const separateOutline = (colorCount: number, index: number) => {
       // const hLength = 6
       const hLength = headLength
       const distance = Math.min(6, r1 / colorCount)
@@ -171,7 +183,7 @@ export default class LoopArrow {
       ].join(' ')
     }
 
-    this.outline = function (_, colorCount, layout) {
+    this.outline = function(_: never, colorCount: number, layout: string) {
       const inner = loopRadius - shaftRadius
       const outer = loopRadius + shaftRadius
 
@@ -184,7 +196,7 @@ export default class LoopArrow {
 
       if (layout === 'separate') {
         return Array(colorCount)
-          .fill()
+          .fill(0)
           .map((_, i) => ({
             path: separateOutline(colorCount, i)
           }))
@@ -286,7 +298,7 @@ export default class LoopArrow {
           if (Math.abs(endR - (Math.PI - spread) / 2) < 0.0001) {
             endR += 0.001 // prevent being too close to semicircle
           }
-          let isLargeArc = endR > (Math.PI - spread) / 2
+          const isLargeArc = endR > (Math.PI - spread) / 2
           // prettier-ignore
           section = [
             'M', startPoint(r1 + start, 0),
@@ -303,13 +315,13 @@ export default class LoopArrow {
             'L', endPoint(r3 - end, 0)
           ].join(' ')
         } else if (end < startLength + arcLength) {
-          let startR =
+          const startR =
             (start - startLength) / loopRadius - (Math.PI + spread) / 2
           let endR = (end - startLength) / loopRadius - (Math.PI + spread) / 2
           if (Math.abs(endR - startR - Math.PI / 2) < 0.0001) {
             endR += 0.001
           }
-          let isLargeArc = endR - startR > Math.PI
+          const isLargeArc = endR - startR > Math.PI
           // prettier-ignore
           section = [
             'M', arcPoint(loopRadius, startR),
@@ -322,7 +334,7 @@ export default class LoopArrow {
           if (Math.abs(startR + (Math.PI - spread) / 2) < 0.0001) {
             startR -= 0.001 // prevent being too close to semicircle
           }
-          let isLargeArc = startR < -(Math.PI - spread) / 2
+          const isLargeArc = startR < -(Math.PI - spread) / 2
 
           // prettier-ignore
           section = [

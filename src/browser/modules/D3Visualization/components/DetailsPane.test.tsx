@@ -27,6 +27,7 @@ describe('<DetailsPane />', () => {
   const mockGraphStyle = {
     forNode: null,
     forRelationship: null,
+    forCondition: null,
     loadRules: null,
     resetToDefault: null,
     rules: [],

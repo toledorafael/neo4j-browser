@@ -475,10 +475,10 @@ const availableCommands = [
   },
   {
     name: 'analysis',
-    match: cmd => /^analysis$/.test(cmd),
-    exec: (action, cmdchar, put, store) => {
+    match: (cmd: any) => /^analysis$/.test(cmd),
+    exec: (action: any, _cmdchar: any, put: any, store: any) => {
       const state = store.getState()
-      const newAction = Object.assign(action, {cmd: action.cmd.substr(1)})
+      const newAction = Object.assign(action, { cmd: action.cmd.substr(1) })
       const [id, request] = handleCypherCommand(
         newAction,
         put,
@@ -486,21 +486,21 @@ const availableCommands = [
         shouldUseCypherThread(state),
         newAction.type === SINGLE_COMMAND_QUEUED
           ? getUserDirectTxMetadata({
-            hasServerSupport: canSendTxMetadata(store.getState())
-          })
+              hasServerSupport: canSendTxMetadata(store.getState())
+            })
           : getBackgroundTxMetadata({
-            hasServerSupport: canSendTxMetadata(store.getState())
-          })
+              hasServerSupport: canSendTxMetadata(store.getState())
+            })
       )
-      put(cypher(newAction.cmd))
+      // put(cypher(newAction.cmd)) FIXME - this doesn't work
       put(frames.add({ ...newAction, type: 'analysis', requestId: id }))
       return request
-        .then(res => {
+        .then((res: any) => {
           put(updateQueryResult(id, res, REQUEST_STATUS_SUCCESS))
           put(successfulCypher(newAction.cmd))
           return res
         })
-        .catch(function (e) {
+        .catch(function(e: any) {
           const request = getRequest(store.getState(), id)
           // Only update error statuses for pending queries
           if (request.status !== REQUEST_STATUS_PENDING) {

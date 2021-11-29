@@ -33,8 +33,8 @@ export type StyleableNodeLabelProps = {
   graphStyle: GraphStyle
   frameHeight: number
   onClick?: () => void
-  visible
-  setVisibility: any
+  visible?: boolean
+  setVisibility?: (value: boolean) => void
 }
 export function StyleableNodeLabel({
   graphStyle,

@@ -24,20 +24,25 @@ export default class ArcArrow {
   outline: any
   overlay: any
   shaftLength: any
+  width: any
+  separateArrowWidth: any
+  secondaryMidShaftPoint: any
+  getEndCenter: any
+  getEndRotation: any
   constructor(
-    startRadius,
-    endRadius,
-    endCentre,
-    deflection,
-    arrowWidth,
-    headWidth,
-    headLength,
-    captionLayout,
-    captionHeight
+    startRadius: any,
+    endRadius: any,
+    endCentre: any,
+    deflection: any,
+    arrowWidth: any,
+    headWidth: any,
+    headLength: any,
+    captionLayout: any,
+    captionHeight: any
   ) {
     this.deflection = deflection
     this.width = arrowWidth
-    const square = l => l * l
+    const square = (l: any) => l * l
 
     const deflectionRadians = (this.deflection * Math.PI) / 180
     const startAttach = {
@@ -104,7 +109,7 @@ export default class ArcArrow {
     if (this.deflection > 0) {
       midShaftAngle += Math.PI
     }
-    this.midShaftPoint = (textAbove, arrowLayout) => ({
+    this.midShaftPoint = (textAbove: any, arrowLayout: string) => ({
       x: cx + arcRadius * Math.sin(midShaftAngle),
       y:
         cy -
@@ -112,12 +117,12 @@ export default class ArcArrow {
         (!textAbove
           ? 0
           : arrowLayout === 'separate'
-            ? captionHeight * 0.625 +
+          ? captionHeight * 0.625 +
             (this.separateArrowWidth || Math.min(startRadius, endRadius)) / 2
-            : captionHeight * 0.625 + shaftRadius)
+          : captionHeight * 0.625 + shaftRadius)
     })
 
-    this.secondaryMidShaftPoint = arrowLayout => ({
+    this.secondaryMidShaftPoint = (arrowLayout: string) => ({
       x: cx + arcRadius * Math.sin(midShaftAngle),
       y:
         cy -
@@ -183,7 +188,7 @@ export default class ArcArrow {
         ? (startAngle * 180) / Math.PI
         : 180 + (startAngle * 180) / Math.PI
 
-    const tipInstructions = function (colorCount, index) {
+    const tipInstructions = function(colorCount: number, index: number) {
       const instructions = []
       const inner = -shaftRadius + (index / colorCount) * arrowWidth
       const outer = -shaftRadius + ((index + 1) / colorCount) * arrowWidth
@@ -227,7 +232,7 @@ export default class ArcArrow {
       return instructions.join(' ')
     }
 
-    const separateOutline = (colorCount, index) => {
+    const separateOutline = (colorCount: number, index: number) => {
       const distance = Math.min(
         6,
         Math.min(startRadius, endRadius) / colorCount
@@ -275,10 +280,14 @@ export default class ArcArrow {
       ].join(' ')
     }
 
-    this.outline = function (shortCaptionLength, colorCount, layout) {
+    this.outline = function(
+      shortCaptionLength: number,
+      colorCount: number,
+      layout: string
+    ) {
       if (layout === 'separate') {
         return Array(colorCount)
-          .fill()
+          .fill(0)
           .map((_, i) => ({
             path: separateOutline(colorCount, i)
           }))
@@ -289,7 +298,7 @@ export default class ArcArrow {
         if (sweepAngle > Math.PI) sweepAngle = sweepAngle - 2 * Math.PI
         const segmentAngle = sweepAngle / colorCount
         return Array(colorCount + 1)
-          .fill()
+          .fill(0)
           .map((_, i) => {
             if (i === colorCount) {
               return {
@@ -321,7 +330,7 @@ export default class ArcArrow {
       if (startAngle > endAngle || shaftRadius >= arcRadius) {
         if (layout === 'stripes') {
           paths = Array(colorCount)
-            .fill()
+            .fill(0)
             .map((_, i) => {
               const inner = -shaftRadius + (i / colorCount) * arrowWidth
               const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
@@ -359,7 +368,7 @@ export default class ArcArrow {
 
         if (layout === 'stripes') {
           paths = Array(colorCount)
-            .fill()
+            .fill(0)
             .map((_, i) => {
               const inner = -shaftRadius + (i / colorCount) * arrowWidth
               const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
@@ -434,7 +443,7 @@ export default class ArcArrow {
       } else {
         if (layout === 'stripes') {
           paths = Array(colorCount)
-            .fill()
+            .fill(0)
             .map((_, i) => {
               const inner = -shaftRadius + (i / colorCount) * arrowWidth
               const outer = -shaftRadius + ((i + 1) / colorCount) * arrowWidth
@@ -479,7 +488,7 @@ export default class ArcArrow {
         }
       }
 
-      const attrs = {}
+      const attrs: Record<string, any> = {}
       if (layout === 'stripes') {
         // attrs.cx = cx
         // attrs.cy = cy
@@ -502,7 +511,7 @@ export default class ArcArrow {
       }
     }
 
-    this.overlay = function (minWidth) {
+    this.overlay = function(minWidth: number) {
       const radius = Math.max(
         minWidth / 2,
         shaftRadius,

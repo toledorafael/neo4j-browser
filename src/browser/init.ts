@@ -31,7 +31,7 @@ import '@relate-by-ui/css/semantic/dist/relate-by.min.css'
 
 // non web env (just for tests)
 if (typeof btoa === 'undefined') {
-  global.btoa = function(str) {
+  global.btoa = function(str: any) {
     return Buffer.from(str, 'binary').toString('base64')
   }
 }

@@ -24,6 +24,10 @@ interface NodeInspectorPanelProps {
   stats: GraphStats
   toggleExpanded: () => void
   width: number
+  hiddenNodeLabels: string[]
+  hiddenRelationshipTypes: string[]
+  setNodeLabelVisibility: (label: string, value: boolean) => void
+  setRelTypeVisibility: (type: string, value: boolean) => void
 }
 
 export type NodeInspectorPanelState = {

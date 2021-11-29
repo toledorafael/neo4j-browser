@@ -124,7 +124,9 @@ const databaseConnectionStateStyles: {
   }
 }
 
-const fileInteractionsStateStyles = {
+const fileInteractionsStateStyles: {
+  [key: string]: { active: string; inactive: string; classModifier: string }
+} = {
   connected: {
     active: yellow,
     inactive: inactive,
@@ -233,8 +235,11 @@ export const CloudSyncIcon = ({
     />
   )
 }
-export const VisualAnalysisIcon = props => {
-  const { connectionState, ...rest } = props
+export const VisualAnalysisIcon = ({
+  connectionState,
+  ...rest
+}: SidebarIconProps & { connectionState: string }): JSX.Element => {
+  // const { connectionState, ...rest } = props
   return (
     <IconContainer
       activeStyle={fileInteractionsStateStyles[connectionState].active}
@@ -300,7 +305,7 @@ export const CodeIcon = (): JSX.Element => (
   <IconContainer icon={appWindowCode} text="Code" width={LARGE_SIZE} />
 )
 export const ComponentInteractionIcon = (): JSX.Element => (
-  <IconContainer icon={componentInteraction} text='Interactions' width={20} />
+  <IconContainer icon={componentInteraction} text="Interactions" width={20} />
 )
 export const PlanIcon = (): JSX.Element => (
   <IconContainer className="sl-hierarchy" text="Plan" />

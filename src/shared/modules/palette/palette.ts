@@ -144,20 +144,40 @@ const darkCustomPalette = {
 
 const initialState = darkPalette
 
-export function resetPaletteAction () {
+export interface PaletteState {
+  colors: string[]
+  borderColors: string[]
+  textColor: string
+}
+
+interface ResetPaletteAction {
+  type: 'palette/RESET'
+}
+
+interface PresetPaletteAction {
+  type: 'palette/PRESET'
+  name: string
+}
+
+type PaletteAction = ResetPaletteAction | PresetPaletteAction
+
+export function resetPaletteAction(): ResetPaletteAction {
   return {
     type: 'palette/RESET'
   }
 }
 
-export function presetPaletteAction (name) {
+export function presetPaletteAction(name: string): PresetPaletteAction {
   return {
     type: 'palette/PRESET',
     name
   }
 }
 
-export function paletteReducer (state = initialState, action) {
+export function paletteReducer(
+  state: PaletteState = initialState,
+  action: PaletteAction
+): PaletteState {
   if (action.type === 'palette/RESET') {
     return initialState
   }

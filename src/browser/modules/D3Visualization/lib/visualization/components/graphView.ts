@@ -26,7 +26,7 @@ export default class graphView {
   style: any
   viz: any
   localStyle: any
-  constructor (
+  constructor(
     element: any,
     measureSize: any,
     graph: any,
@@ -81,24 +81,8 @@ export default class graphView {
     return this
   }
 
-  update (showGroupMarks) {
-    this.viz.update(showGroupMarks)
-    return this
-  }
-
-  updateScaleFactor (value) {
-    this.viz.updateScaleFactor(value)
-    return this
-  }
-
-  displayGroupMarks (value) {
-    this.viz.update(value)
-    return this
-  }
-
-  highlightPresenceConditions (featureExpression) {
-    // Disable groupMarks and update featureExpression
-    this.viz.update(false, featureExpression)
+  update() {
+    this.viz.update()
     return this
   }
 

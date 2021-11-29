@@ -34,6 +34,7 @@ describe('<OverviewPane />', () => {
   const mockGraphStyle = {
     forNode: null,
     forRelationship: null,
+    forCondition: null,
     loadRules: null,
     resetToDefault: null,
     rules: [],
@@ -85,6 +86,10 @@ describe('<OverviewPane />', () => {
         nodeCount={nodeCount}
         relationshipCount={relationshipCount}
         stats={graphStats}
+        hiddenNodeLabels={[]}
+        hiddenRelationshipTypes={[]}
+        setRelTypeVisibility={() => {}}
+        setNodeLabelVisibility={() => {}}
       />
     )
   }

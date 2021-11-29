@@ -39,8 +39,7 @@ import {
   setNodePropertiesExpandedByDefault
 } from 'shared/modules/frames/framesDuck'
 import { Action, Dispatch } from 'redux'
-import { InspectorComponent } from './Inspector'
-import { LegendComponent } from './Legend'
+import { PaletteState } from 'shared/modules/palette/palette'
 
 const deduplicateNodes = (nodes: any) => {
   return nodes.reduce(
@@ -75,6 +74,7 @@ type ExplorerComponentProps = {
 type ExporerReduxProps = {
   nodePropertiesExpandedByDefault: boolean
   setNodePropertiesExpandedByDefault: (expandedByDefault: boolean) => void
+  palette: PaletteState
 }
 
 type ExplorerComponentState = {
@@ -88,6 +88,8 @@ type ExplorerComponentState = {
   freezeLegend: boolean
   width: number
   nodePropertiesExpanded: boolean
+  hiddenNodeLabels: string[]
+  hiddenRelationshipTypes: string[]
 }
 type FullExplorerProps = ExplorerComponentProps & ExporerReduxProps
 
@@ -147,7 +149,7 @@ export class ExplorerLocal extends Component<
     }
   }
 
-  setNodeLabelVisibility(label, value) {
+  setNodeLabelVisibility(label: string, value: boolean): void {
     if (!value) {
       if (!this.state.hiddenNodeLabels.includes(label)) {
         this.setState({
@@ -167,7 +169,7 @@ export class ExplorerLocal extends Component<
     }
   }
 
-  setRelTypeVisibility(relType, value) {
+  setRelTypeVisibility(relType: string, value: boolean): void {
     if (!value) {
       if (!this.state.hiddenRelationshipTypes.includes(relType)) {
         this.setState({
@@ -230,53 +232,6 @@ export class ExplorerLocal extends Component<
     }
   }, 200)
 
-  onSelectedLabel(label, propertyKeys) {
-    this.setState({
-      selectedItem: {
-        type: 'legend-item',
-        item: {
-          selectedLabel: { label: label, propertyKeys: propertyKeys },
-          selectedRelType: null,
-          selectedCondition: null
-        }
-      }
-    })
-  }
-
-  onSelectedRelType(relType, propertyKeys) {
-    this.setState({
-      selectedItem: {
-        type: 'legend-item',
-        item: {
-          selectedLabel: null,
-          selectedRelType: { relType: relType, propertyKeys: propertyKeys },
-          selectedCondition: null
-        }
-      }
-    })
-  }
-
-  onSelectedCondition(condition, propertyKeys) {
-    this.setState({
-      selectedItem: {
-        type: 'legend-item',
-        item: {
-          selectedLabel: null,
-          selectedRelType: null,
-          selectedCondition: {
-            condition: condition,
-            propertyKeys: propertyKeys
-          }
-        }
-      }
-    })
-  }
-
-  deselect() {
-    this.setState({
-      selectedItem: ''
-    })
-  }
   onItemSelect(selectedItem: VizItem): void {
     this.setState({ selectedItem })
   }
@@ -318,36 +273,6 @@ export class ExplorerLocal extends Component<
     const graphStyle = this.state.freezeLegend
       ? neoGraphStyle()
       : this.state.graphStyle
-    let legend
-    if (this.state.freezeLegend) {
-      legend = (
-        <LegendComponent
-          stats={this.state.stats}
-          graphStyle={neoGraphStyle()}
-          hiddenNodeLabels={this.state.hiddenNodeLabels}
-          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
-          onSelectedLabel={this.onSelectedLabel.bind(this)}
-          onSelectedRelType={this.onSelectedRelType.bind(this)}
-          onSelectedCondition={this.onSelectedCondition.bind(this)}
-        />
-      )
-    } else {
-      legend = (
-        <LegendComponent
-          stats={this.state.stats}
-          graphStyle={this.state.graphStyle}
-          hiddenNodeLabels={this.state.hiddenNodeLabels}
-          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
-          onSelectedLabel={this.onSelectedLabel.bind(this)}
-          onSelectedRelType={this.onSelectedRelType.bind(this)}
-          onSelectedCondition={this.onSelectedCondition.bind(this)}
-        />
-      )
-    }
-    const inspectingItemType =
-      !this.state.inspectorContracted &&
-      ((this.state.hoveredItem && this.state.hoveredItem.type !== 'canvas') ||
-        (this.state.selectedItem && this.state.selectedItem.type !== 'canvas'))
 
     const style: { [key: string]: string } = {}
     this.props.palette.colors.forEach((color, i) => {
@@ -404,8 +329,6 @@ export class ExplorerLocal extends Component<
           hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           setNodeLabelVisibility={this.setNodeLabelVisibility.bind(this)}
           setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
-          // onExpandToggled={this.onInspectorExpandToggled.bind(this)}
-          deselect={this.deselect.bind(this)}
         />
       </StyledFullSizeContainer>
     )

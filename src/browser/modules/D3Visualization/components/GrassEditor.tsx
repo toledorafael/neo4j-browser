@@ -19,7 +19,7 @@
  */
 
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import { connect, ConnectedComponent } from 'react-redux'
 import neoGraphStyle from '../graphStyle'
 import {
   StyledPickerSelector,
@@ -39,6 +39,7 @@ import { GlobalState } from 'shared/globalState'
 import { Action, Dispatch } from 'redux'
 import PatternSelector from './PatternSelector.jsx'
 import { removeFilterAction } from 'shared/modules/filters/filters'
+import { PaletteState } from 'shared/modules/palette/palette'
 
 type GrassEditorProps = {
   graphStyleData?: any
@@ -48,9 +49,16 @@ type GrassEditorProps = {
   selectedRelType?: { relType: string; propertyKeys: string[] }
   selectedCondition?: { condition: string }
   frameHeight: number
+  visible?: boolean
+  setVisibility?: (value: boolean) => void
 }
 
-export class GrassEditorComponent extends Component<GrassEditorProps> {
+export class GrassEditorComponent extends Component<
+  GrassEditorProps & {
+    palette: PaletteState
+    removeFilter: (value: string) => void
+  }
+> {
   graphStyle: any
   nodeDisplaySizes: any
   picker: any
@@ -258,7 +266,7 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
     )
   }
 
-  dashPicker(selector, styleForItem) {
+  dashPicker(selector: any, _styleForItem: any) {
     return (
       <span>
         {/* <input
@@ -278,7 +286,7 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
             'dashes 1 1 3 1',
             'dashes 1 1 3 1 1 1'
           ]}
-          selectPattern={pattern => {
+          selectPattern={(pattern: string) => {
             this.updateStyle(selector, { pattern })
           }}
         />
@@ -357,10 +365,10 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
       showVisibleToggle = this.props.selectedRelType.relType !== '*'
     } else if (this.props.selectedCondition) {
       // If selected components are conditions
-      const conditionSelector = // conditionSelector is the string users submitted from the text input box
-        this.props.selectedCondition.relType !== '*'
-          ? this.props.selectedCondition.condition
-          : ''
+      const conditionSelector = this.props.selectedCondition.condition // conditionSelector is the string users submitted from the text input box
+      // this.props.selectedCondition.relType !== '*'
+      //   ? this.props.selectedCondition.condition
+      //   : ''
       const styleForRelType = this.graphStyle.forCondition(conditionSelector) // See graphStyle.js
       const inlineStyle = {
         backgroundColor: styleForRelType.get('color'),
@@ -388,7 +396,9 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
       deleteFilterButton = (
         <button
           onClick={() => {
-            this.props.removeFilter(this.props.selectedCondition.condition)
+            if (this.props.selectedCondition) {
+              this.props.removeFilter(this.props.selectedCondition.condition)
+            }
             this.graphStyle.destroySelector(styleForRelType.selector)
             this.props.update(this.graphStyle.toSheet())
           }}
@@ -405,7 +415,11 @@ export class GrassEditorComponent extends Component<GrassEditorProps> {
         <input
           type="checkbox"
           checked={visible}
-          onChange={e => this.props.setVisibility(e.target.checked)}
+          onChange={e =>
+            this.props.setVisibility &&
+            this.props.setVisibility(e.target.checked)
+          }
+          // @ts-ignore accent-color not in current version of css-types
           style={{ marginLeft: '4px', accentColor: '#777777' }}
         />
       </label>
@@ -454,12 +468,12 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
   update: (data: any) => {
     dispatch(actions.updateGraphStyleData(data))
   },
-  removeFilter: filter => {
+  removeFilter: (filter: string) => {
     dispatch(removeFilterAction(filter))
   }
 })
 
-export const GrassEditor = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(GrassEditorComponent)
+export const GrassEditor: ConnectedComponent<
+  typeof GrassEditorComponent,
+  GrassEditorProps
+> = connect(mapStateToProps, mapDispatchToProps)(GrassEditorComponent)

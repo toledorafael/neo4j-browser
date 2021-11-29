@@ -161,10 +161,10 @@ export const selectorStringToArray = (selector: any) => {
     .map(r => r.replace(/\\./g, '.'))
 }
 
-export const selectorArrayToString = selectors => {
+export const selectorArrayToString = (selectors: any) => {
   if (selectors.includes('condRule')) {
     return selectors.join('.')
   }
-  const escaped = selectors.map(r => r.replace(/\./g, '\\.'))
+  const escaped = selectors.map((r: any) => r.replace(/\./g, '\\.'))
   return escaped.join('.')
 }

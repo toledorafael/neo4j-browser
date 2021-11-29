@@ -145,6 +145,7 @@ export class SysInfoFrame extends Component<
   ): void {
     if (prevState.autoRefresh !== this.state.autoRefresh) {
       if (this.state.autoRefresh) {
+        // @ts-ignore
         this.timer = setInterval(
           this.getSysInfo,
           this.state.autoRefreshInterval * 1000

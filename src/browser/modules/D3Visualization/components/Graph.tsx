@@ -28,7 +28,6 @@ import {
   StyledSvgWrapper,
   StyledZoomButton,
   StyledSliderHolder,
-  StyleToggleGroupMarksButton,
   StyleInputDiv,
   StyleSubmitButton,
   StyleTextArea,
@@ -48,11 +47,20 @@ import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { connect } from 'react-redux'
 import { presetPaletteAction } from 'shared/modules/palette/palette'
 import { addFilterAction } from 'shared/modules/filters/filters'
+import { GlobalState } from 'shared/globalState'
+import { string } from 'prop-types'
 
-const relationshipLayouts = {
+interface RelationshipLayout {
+  arrowLayout: 'stripes' | 'segments' | 'separate'
+  globalShape?: boolean
+  globalPattern?: boolean
+  globalText?: boolean
+  textAbove?: boolean
+  localPattern?: boolean
+}
+
+const relationshipLayouts: Record<string, RelationshipLayout> = {
   stripes: {
-    id: 'stripes',
-    display: 'Stripes',
     arrowLayout: 'stripes',
     globalShape: true
   },
@@ -61,8 +69,6 @@ const relationshipLayouts = {
     globalText: true
   },
   'segments-shape': {
-    id: 'segments-shape',
-    display: 'Segments (symbols)',
     arrowLayout: 'segments',
     globalShape: true,
     textAbove: true
@@ -73,15 +79,11 @@ const relationshipLayouts = {
     globalText: true
   },
   'segments-pattern': {
-    id: 'segments-pattern',
-    display: 'Segments (patterns)',
     arrowLayout: 'segments',
     globalPattern: true,
     textAbove: true
   },
   separate: {
-    id: 'separate',
-    display: 'Separate Links',
     arrowLayout: 'separate',
     globalShape: true,
     textAbove: true
@@ -92,8 +94,6 @@ const relationshipLayouts = {
     globalText: true
   },
   'segments-local-pattern': {
-    id: 'segments-local-pattern',
-    display: 'Patterns',
     arrowLayout: 'segments',
     globalShape: true,
     localPattern: true,
@@ -107,7 +107,15 @@ const relationshipLayouts = {
   }
 }
 
-const featureItems = [
+interface FeatureItem {
+  display: string
+  items: {
+    display: string
+    id: keyof typeof relationshipLayouts
+  }[]
+}
+
+const featureItems: FeatureItem[] = [
   {
     display: 'Segments',
     items: [
@@ -175,11 +183,11 @@ export class Graph extends Component<any, State> {
     zoomInLimitReached: false,
     zoomOutLimitReached: false,
     shouldResize: false,
-    showGroupMarks: false,
     featureExpressionLayout: featureItems[0],
     currentLayout: relationshipLayouts[featureItems[0].items[0].id],
     scaleFactor: 1,
-    featureExpression: 'Enter feature expression...'
+    featureExpression: 'Enter feature expression...',
+    newConditionType: ''
   }
 
   graphInit(el: any) {
@@ -261,7 +269,7 @@ export class Graph extends Component<any, State> {
       this.graphEH.bindEventHandlers()
       this.props.onGraphModelChange(getGraphStats(this.graph))
       this.graphView.resize()
-      this.graphView.update(this.state.toggleStripes)
+      this.graphView.update()
     }
   }
 
@@ -271,27 +279,20 @@ export class Graph extends Component<any, State> {
         mapRelationships(internalRelationships, this.graph)
       )
       const stats = getGraphStats(this.graph)
-      let conditionTypes
-      if (this.state.conditionTypes) {
-        conditionTypes = this.state.conditionTypes
-      } else {
-        conditionTypes = []
-      }
       const newstats = {
         labels: stats.labels,
-        relTypes: stats.relTypes,
-        conditionTypes: conditionTypes
+        relTypes: stats.relTypes
       }
       // this.props.onGraphModelChange(getGraphStats(this.graph))
       this.props.onGraphModelChange(newstats)
-      this.graphView.update(this.state.toggleStripes)
+      this.graphView.update()
       this.graphEH.onItemMouseOut()
     }
   }
 
   componentDidUpdate(prevProps: any) {
     if (prevProps.styleVersion !== this.props.styleVersion) {
-      this.graphView.update(this.state.toggleStripes)
+      this.graphView.update()
     }
     if (
       this.props.fullscreen !== prevProps.fullscreen ||
@@ -301,11 +302,11 @@ export class Graph extends Component<any, State> {
     }
     if (prevProps.hiddenNodeLabels !== this.props.hiddenNodeLabels) {
       this.graphView.localStyle.hiddenLabels = this.props.hiddenNodeLabels
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update()
     }
     if (prevProps.hiddenRelTypes !== this.props.hiddenRelTypes) {
       this.graphView.localStyle.hiddenRelTypes = this.props.hiddenRelTypes
-      this.graphView.update(this.state.showGroupMarks)
+      this.graphView.update()
     }
   }
 
@@ -335,120 +336,35 @@ export class Graph extends Component<any, State> {
     )
   }
 
-  adjustGroupsScale(event) {
-    this.setState({ scaleFactor: event.target.value })
-    this.graphView.updateScaleFactor(event.target.value)
-  }
-
-  // toggleGroupMarks (event) {
-  //   const toggleGroupMarks = !this.state.toggleGroupMarks
-  //   this.setState({ showGroupMarks: toggleGroupMarks })
-  //   this.graphView.displayGroupMarks(toggleGroupMarks)
-  // }
-
-  inputSlider() {
-    if (this.props.fullscreen) {
-      return (
-        <StyledSliderHolder>
-          <input
-            type="range"
-            id="scaleFactorLabel"
-            min="1"
-            max="3"
-            value={this.state.scaleFactor}
-            step=".1"
-            onChange={this.adjustGroupsScale.bind(this)}
-          />
-        </StyledSliderHolder>
-      )
-    }
-  }
-
-  inputToggle() {
-    if (this.props.fullscreen) {
-      return (
-        <StyleToggleGroupMarksButton onClick={this.toggleGroupMarks.bind(this)}>
-          Toggle File Marks
-        </StyleToggleGroupMarksButton>
-      )
-    }
-  }
-
-  updateFeatureExpressionState(event) {
-    /* if(this.state.conditionTypes) {
-      this.setState(prevState => ({
-        conditionTypes: [...prevState.conditionTypes, event.target.value]
-      }))
-    } else {
-      this.setState({conditionTypes: [event.target.value]})
-    } */
+  updateFeatureExpressionState(event: any) {
     this.setState({ newConditionType: event.target.value })
-
-    // this.setState({ featureExpression: event.target.value })
   }
 
-  handleSubmit(event) {
+  handleSubmit() {
     if (this.state.newConditionType) {
       this.props.addFilterAction(this.state.newConditionType)
-      let conditionTypes
-      if (this.state.conditionTypes) {
-        if (
-          this.state.conditionTypes.indexOf(this.state.newConditionType) === -1
-        ) {
-          this.setState(prevState => ({
-            conditionTypes: [
-              ...prevState.conditionTypes,
-              this.state.newConditionType
-            ]
-          }))
-          conditionTypes = [
-            ...this.state.conditionTypes,
-            this.state.newConditionType
-          ]
-        } else {
-          conditionTypes = [...this.state.conditionTypes]
-        }
-      } else {
-        this.setState({ conditionTypes: [this.state.newConditionType] })
-        conditionTypes = [this.state.newConditionType]
-      }
       const stats = getGraphStats(this.graph)
       Array.from(document.querySelectorAll('textArea')).forEach(
-        input => (input.value = '')
+        (input: any) => (input.value = '')
       )
-      // if (!this.state.conditionTypes) {
-      // conditionTypes = this.state.conditionTypes
-      // } else {
-      //   conditionTypes = []
-      // }
       const newstats = {
         labels: stats.labels,
-        relTypes: stats.relTypes,
-        conditionTypes: conditionTypes
+        relTypes: stats.relTypes
       }
       // this.props.onGraphModelChange(getGraphStats(this.graph))
       this.props.onGraphModelChange(newstats)
-
-      // This command triggers the highlighting of edges based on a feature expression
-      // submitted by the user. Since we are using the button for a different purpose
-      // and the highlighting will be done in a different way, this feature should be refactored.
-      // this.graphView.highlightPresenceConditions(this.state.featureExpression)
     }
   }
 
-  handleToggleStripes(event) {
-    // const newToggleStripes = !this.state.toggleStripes
-    // this.setState({ toggleStripes: newToggleStripes })
+  handleToggleStripes() {
     if (this.svgElement) {
       this.svgElement.__graphStyle.toggleStripes = !this.svgElement.__graphStyle
         .toggleStripes
     }
-    // this.graphView.displayGroupMarks(toggleGroupMarks)
-    // this.graphView.update(newToggleStripes)
     this.graphView.update()
   }
 
-  checkPropertyList(propertyList, propertyName) {
+  checkPropertyList(propertyList: any[], propertyName: string) {
     if (propertyList.length > 0) {
       for (let index = 0; index < propertyList.length; index++) {
         const element = propertyList[index]
@@ -456,6 +372,7 @@ export class Graph extends Component<any, State> {
       }
       return false
     }
+    return false
   }
 
   inputFeatureExpression() {
@@ -483,6 +400,7 @@ export class Graph extends Component<any, State> {
         )
       }
     }
+    return null
   }
 
   inputToggleStripes() {
@@ -526,7 +444,7 @@ export class Graph extends Component<any, State> {
                     ? 'selected'
                     : ''
                 }
-                key={layout.id}
+                key={layout.display}
                 onClick={() => {
                   if (this.state.featureExpressionLayout !== layout) {
                     this.setState({
@@ -547,6 +465,7 @@ export class Graph extends Component<any, State> {
         </StyledLayoutPicker>
       )
     }
+    return null
   }
 
   legend() {
@@ -661,7 +580,7 @@ export class Graph extends Component<any, State> {
 }
 
 export const GraphComponent = connect(
-  state => ({
+  (state: GlobalState) => ({
     conditionTypes: state.filters
   }),
   dispatch => ({
@@ -669,6 +588,6 @@ export const GraphComponent = connect(
     setDarkTheme: () => dispatch(presetPaletteAction('dark')),
     setLightCustomTheme: () => dispatch(presetPaletteAction('lightCustom')),
     setDarkCustomTheme: () => dispatch(presetPaletteAction('darkCustom')),
-    addFilterAction: filter => dispatch(addFilterAction(filter))
+    addFilterAction: (filter: string) => dispatch(addFilterAction(filter))
   })
 )(Graph)

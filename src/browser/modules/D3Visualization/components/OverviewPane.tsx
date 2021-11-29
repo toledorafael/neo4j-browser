@@ -39,6 +39,7 @@ import { connect } from 'react-redux'
 import { GlobalState } from 'shared/globalState'
 import * as actions from 'shared/modules/grass/grassDuck'
 import neoGraphStyle from '../graphStyle'
+import { FilterState } from 'shared/modules/filters/filters'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -65,6 +66,7 @@ function PaneBodySectionHeader({
 export type GraphStyle = {
   forNode: any
   forRelationship: any
+  forCondition: any
   loadRules: any
   resetToDefault: any
   rules: GraphStyleRule[]
@@ -84,14 +86,18 @@ type OverviewPaneProps = {
   nodeCount: number | null
   relationshipCount: number | null
   stats: GraphStats
-  filters: any
+  filters: FilterState
+  hiddenNodeLabels: string[]
+  hiddenRelationshipTypes: string[]
+  setNodeLabelVisibility: (label: string, value: boolean) => void
+  setRelTypeVisibility: (type: string, value: boolean) => void
 }
 
 export const OVERVIEW_STEP_SIZE = 50
 
 function OverviewPane({
   frameHeight,
-  graphStyle: graphStyleProp,
+  // graphStyle: graphStyleProp,
   graphStyleData,
   hasTruncatedFields,
   nodeCount,

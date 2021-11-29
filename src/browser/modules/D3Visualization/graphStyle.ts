@@ -293,9 +293,9 @@ export default function neoGraphStyle() {
       return this
     }
 
-    StyleElement.prototype.applyCondRules = function (rules, solvers) {
+    StyleElement.prototype.applyCondRules = function(rules: any, solvers: any) {
       if (this.selector.tag === 'relationship') {
-        var presenceCondition = ''
+        let presenceCondition = ''
 
         if ('condition' in this.selector.classes[0].propertyMap) {
           presenceCondition = this.selector.classes[0].propertyMap['condition']
@@ -305,7 +305,7 @@ export default function neoGraphStyle() {
         }
 
         for (let i = 0; i < rules.length; i++) {
-          let rule = rules[i]
+          const rule = rules[i]
           // if rule concerns a condition
           // and presence condition is not true or empty
           if (
@@ -313,7 +313,7 @@ export default function neoGraphStyle() {
             presenceCondition !== '' &&
             presenceCondition !== 'true'
           ) {
-            let featureExpression = rule.selector.classes[0]
+            const featureExpression = rule.selector.classes[0]
 
             // If no solver was created for this presence condition then create one
             if (!solvers[presenceCondition]) {
@@ -414,7 +414,7 @@ export default function neoGraphStyle() {
       return this
     }
 
-    StyleElement.prototype.get = function (attr: any) {
+    StyleElement.prototype.get = function(attr: any) {
       return this.props[attr] || ''
     }
 
@@ -434,7 +434,7 @@ export default function neoGraphStyle() {
       }
     }
 
-    const parseSelector = function (key: any) {
+    const parseSelector = function(key: any) {
       let tokens
       if (key.includes('condRule')) {
         tokens = key.split('.')
@@ -465,7 +465,7 @@ export default function neoGraphStyle() {
       return new Selector('relationship', classes)
     }
 
-    const conditionSelector = function (cond) {
+    const conditionSelector = function(cond: any) {
       cond = cond || null
       let classes
       if (typeof cond === 'string' || cond instanceof String) {
@@ -478,10 +478,11 @@ export default function neoGraphStyle() {
       // and both have classes, an array of length 0 or 1
       // However, while the classes of relationshipSelector stores relationship types
       // classes of conditionSelector stores condition name
+      // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
       return new Selector('relationship', classes)
     }
 
-    const findRule = function (selector: any, rules: any) {
+    const findRule = function(selector: any, rules: any) {
       for (let i = 0; i < rules.length; i++) {
         const rule = rules[i]
         if (rule.matchesExact(selector)) {
@@ -504,35 +505,35 @@ export default function neoGraphStyle() {
       return defaultColors[index]
     }
 
-    const findAvailableDefaultShapes = function (rules) {
+    const findAvailableDefaultShapes = function(rules: any) {
       const usedShapes = rules
-        .filter(rule => {
+        .filter((rule: any) => {
           return rule.props.shape != null
         })
-        .map(rule => {
+        .map((rule: any) => {
           return rule.props.shape
         })
-      let index =
+      const index =
         usedShapes.length > defaultShapes.length - 1 ? 0 : usedShapes.length
       return defaultShapes[index]
     }
 
-    const findAvailableDefaultPatterns = function (rules) {
+    const findAvailableDefaultPatterns = function(rules: any) {
       const usedPatterns = rules
-        .filter(rule => {
+        .filter((rule: any) => {
           return rule.props.pattern != null
         })
-        .map(rule => {
+        .map((rule: any) => {
           return rule.props.pattern
         })
-      let index =
+      const index =
         usedPatterns.length > defaultPatterns.length - 1
           ? 0
           : usedPatterns.length
       return defaultPatterns[index]
     }
 
-    const getDefaultNodeCaption = function (item: any) {
+    const getDefaultNodeCaption = function(item: any) {
       if (
         !item ||
         // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'boolean' ... Remove this comment to see the full error message
@@ -571,15 +572,15 @@ export default function neoGraphStyle() {
       return new StyleElement(selector).applyRules(this.rules)
     }
 
-    GraphStyle.prototype.checkColorChange = function () {
+    GraphStyle.prototype.checkColorChange = function() {
       for (let i = 0; i < this.rules.length; i++) {
-        let rule = this.rules[i]
+        const rule = this.rules[i]
         if (this.ruleColor[i] !== rule.props.color) return true
       }
       return false
     }
 
-    GraphStyle.prototype.calculateCondStyle = function (selector) {
+    GraphStyle.prototype.calculateCondStyle = function(selector: any) {
       // if (selector.classes[0].id in this.lastNumberOfRulesApplied) {
       //   if (this.rules.length !== this.lastNumberOfRulesApplied[selector.classes[0].id] || this.checkColorChange()) {
       //     this.lastNumberOfRulesApplied[selector.classes[0].id] = this.rules.length
@@ -599,10 +600,11 @@ export default function neoGraphStyle() {
       //   }
       //   return new StyleElement(selector).applyCondRules(this.rules)
       // }
+      // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
       return new StyleElement(selector).applyCondRules(this.rules, this.solvers)
     }
 
-    GraphStyle.prototype.forEntity = function (item: any) {
+    GraphStyle.prototype.forEntity = function(item: any) {
       return this.calculateStyle(selector(item))
     }
 
@@ -642,14 +644,13 @@ export default function neoGraphStyle() {
       }
     }
 
-    GraphStyle.prototype.setDefaultRelationshipStyling = function (
-      selector,
-      item
+    GraphStyle.prototype.setDefaultRelationshipStyling = function(
+      selector: any
     ) {
       let defaultShape = true
       let defaultPattern = true
       for (let i = 0; i < this.rules.length; i++) {
-        let rule = this.rules[i]
+        const rule = this.rules[i]
         if (rule.selector.classes.length > 0 && rule.matches(selector)) {
           if (rule.props.hasOwnProperty('shape')) {
             defaultShape = false
@@ -659,6 +660,7 @@ export default function neoGraphStyle() {
           }
         }
       }
+      // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
       const minimalSelector = new Selector(
         selector.tag,
         selector.classes.sort().slice(0, 1)
@@ -677,7 +679,10 @@ export default function neoGraphStyle() {
       }
     }
 
-    GraphStyle.prototype.changeForSelector = function (selector: any, props: any) {
+    GraphStyle.prototype.changeForSelector = function(
+      selector: any,
+      props: any
+    ) {
       let rule = findRule(selector, this.rules)
       if (rule == null) {
         // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
@@ -695,12 +700,12 @@ export default function neoGraphStyle() {
       }
     }
 
-    GraphStyle.prototype.destroySelector = function (selector) {
+    GraphStyle.prototype.destroySelector = function(selector: any) {
       const rule = findRule(selector, this.rules)
       if (rule) this.destroyRule(rule)
     }
 
-    GraphStyle.prototype.importGrass = function (string: any) {
+    GraphStyle.prototype.importGrass = function(string: any) {
       try {
         const rules = this.parse(string)
         return this.loadRules(rules)
@@ -864,17 +869,17 @@ export default function neoGraphStyle() {
       return this.calculateStyle(selector)
     }
 
-    GraphStyle.prototype.forCondition = function (cond) {
+    GraphStyle.prototype.forCondition = function(cond: any) {
       const selector = conditionSelector(cond)
       return this.calculateStyle(selector)
     }
 
-    GraphStyle.prototype.forCondRel = function (rel) {
+    GraphStyle.prototype.forCondRel = function(rel: any) {
       const selector = conditionSelector(rel)
       // TODO: if it is called from ongraphchange then calculatecondstyle
       // if called from ontick just return the selector for the relationship with the appropriate styling rules
-      let resultCond = this.calculateCondStyle(selector)
-      let result = this.calculateStyle(selector)
+      const resultCond = this.calculateCondStyle(selector)
+      const result = this.calculateStyle(selector)
       return resultCond
     }
     return GraphStyle

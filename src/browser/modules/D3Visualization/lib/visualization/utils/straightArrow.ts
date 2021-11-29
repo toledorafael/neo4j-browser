@@ -25,16 +25,21 @@ export default class StraightArrow {
   overlay: any
   shaftLength: any
   deflection = 0
+  width: any
+  separateArrowWidth: any
+  secondaryMidShaftPoint: any
+  getEndCenter: any
+  getEndRotation: any
 
   constructor(
-    startRadius,
-    endRadius,
-    centreDistance,
-    shaftWidth,
-    headWidth,
-    headHeight,
-    captionLayout,
-    captionHeight
+    startRadius: any,
+    endRadius: any,
+    centreDistance: any,
+    shaftWidth: any,
+    headWidth: any,
+    headHeight: any,
+    captionLayout: any,
+    captionHeight: any
   ) {
     this.length = centreDistance - (startRadius + endRadius)
     this.width = shaftWidth
@@ -47,7 +52,7 @@ export default class StraightArrow {
     const shaftRadius = shaftWidth / 2
     const headRadius = headWidth / 2
 
-    const separateOutline = (colorCount, index) => {
+    const separateOutline = (colorCount: number, index: number) => {
       // const hLength = 6
       const hLength = headHeight
       const distance = Math.min(6, startRadius / colorCount)
@@ -84,7 +89,7 @@ export default class StraightArrow {
       ].join(' ')
     }
 
-    this.midShaftPoint = (textAbove, arrowLayout) => ({
+    this.midShaftPoint = (textAbove: any, _arrowLayout: any) => ({
       x: startArrow + this.shaftLength / 2,
       y: textAbove
         ? -captionHeight * 0.625 -
@@ -92,7 +97,7 @@ export default class StraightArrow {
         : 0
     })
 
-    this.secondaryMidShaftPoint = arrowLayout => ({
+    this.secondaryMidShaftPoint = (_arrowLayout: any) => ({
       x: startArrow + this.shaftLength / 2,
       y:
         +captionHeight * 0.625 +
@@ -102,11 +107,15 @@ export default class StraightArrow {
     this.getEndCenter = () => ({ x: startArrow, y: 0 })
     this.getEndRotation = () => 0
 
-    this.outline = function (shortCaptionLength, colorCount, layout) {
+    this.outline = function(
+      shortCaptionLength: number,
+      colorCount: number,
+      layout: string
+    ) {
       if (layout === 'segments') {
         const segmentLength = this.shaftLength / colorCount
         return Array(colorCount + 1)
-          .fill()
+          .fill(0)
           .map((_, i) => {
             if (i === colorCount) {
               return {
@@ -169,11 +178,11 @@ export default class StraightArrow {
           'Z'
         ].join(' ')
       }
-      const attrs = {}
+      const attrs: Record<string, any> = {}
 
       if (layout === 'separate') {
         return Array(colorCount)
-          .fill()
+          .fill(0)
           .map((_, i) => ({
             path: separateOutline(colorCount, i)
           }))
@@ -204,7 +213,7 @@ export default class StraightArrow {
       ]
     }
 
-    this.overlay = function (minWidth) {
+    this.overlay = function(minWidth: number) {
       const radius = Math.max(
         minWidth / 2,
         shaftRadius,

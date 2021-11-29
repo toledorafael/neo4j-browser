@@ -1,15 +1,32 @@
 const ADD_FILTER = 'filters/ADD'
 const REMOVE_FILTER = 'filters/REMOVE'
 
-export function addFilterAction (filter) {
+interface AddFilterAction {
+  type: typeof ADD_FILTER
+  filter: string
+}
+
+interface RemoveFilterAction {
+  type: typeof REMOVE_FILTER
+  filter: string
+}
+
+type FilterAction = AddFilterAction | RemoveFilterAction
+
+export type FilterState = string[]
+
+export function addFilterAction(filter: string): AddFilterAction {
   return { type: ADD_FILTER, filter }
 }
 
-export function removeFilterAction (filter) {
+export function removeFilterAction(filter: string): RemoveFilterAction {
   return { type: REMOVE_FILTER, filter }
 }
 
-export default function (state = [], action) {
+export default function(
+  state: FilterState = [],
+  action: FilterAction
+): FilterState {
   if (action.type === ADD_FILTER) {
     if (state.includes(action.filter)) return state
     return [...state, action.filter]
