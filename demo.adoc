@@ -4,43 +4,37 @@ https://toledorafael.github.io/neo4j-browser/
 
 == Login
 
-* URL: `bolt://fe0f3c2f.databases.neo4j.io`
+* URL: `bolt://7700b2ee.databases.neo4j.io:7687`
 * Username: `neo4j`
-* Password: `rhjFjXmAp1mAVNtiYkhqMf1hHGUdf9mRuRy9LyaGtFI`
+* Password: `0stYahwzlsJY3mSsJqxryOBixz1stUddecbKbiy0N2I`
 
 == Query 1
 [source]
 ----
-MATCH p=({id:'f1'})-->({id:'f2'}) RETURN p
+MATCH p=(n)-[r:varWrite|write|read]->(m) WHERE EXISTS(r.condition) AND r.condition <> "true" RETURN p
 ----
+
+T1 - How many varWrites in this graph may happen in a directed weighted graph (kDirected /\ !kUndirected /\ kWeighted)?
+
+T2 - How many links are introduced when we enable the feature kDFS in a variant with original configuration equal to kUndirected /\ kWeighted /\ !kDirected /\ !kDFS /\ !kBFS?
 
 == Query 2
 [source]
 ----
-MATCH p=({id:'f3'})-[*2..]->({id:'f4'}) RETURN p
+MATCH (n)-[r]-(m) WHERE r.condition <> 'true' and 
+(m.id = "decl;unknownFeature;GraphApp::DFS(int,int,std::string,);;" or 
+m.id = "decl;unknownFeature;GraphApp::BFS(int,std::string,);;") 
+RETURN *
 ----
 
-In which of the following configuration can the alterBehavior path occur?
+Considering the variants:
 
-* FC1: `!k4 /\ !k5 /\ k6 /\ k7`
-* FC2: `k4 /\ k5 /\ !k6 /\ !k7`
-* FC3: `!k4 /\ k5 /\ k6 /\ k7`
+V1: kUndirected /\ kWeighted /\ kDFS /\ !kBFS /\ !kDirected
 
-== Query 3
-[source]
-----
-MATCH p=()-->({id:"f7"}) 
-MATCH q=()-->({id:"f5"})
-RETURN p,q
-----
+V2: kDirected /\ kWeighted /\ kBFS /\ !kDFS /\ !kUndirected
 
-In which of the following configurations can function f9 alters the behavior of another function?
+V3: kUndirected /\ kWeighted /\ kBFS /\ !kDFS /\ !kDirected
 
-In which of the following configurations can function f10 alters the behavior of another function?
+V4: kDirected /\ kWeighted /\ kDFS /\ !kBFS /\ !kUndirected
 
-In which of the following configuration can both of those facts occur?
-
-* `!k8 /\ k9 /\ k10 /\ k11 /\ !k13`
-* `!k9 /\ k10 /\ !k11 /\ k12 /\ k13`
-* `k8 /\ k9 /\ !k10 /\ k11 /\ !k12`
-* `k8 /\ !k9 /\ k10 /\ k11 /\ k12 /\ k13`
+T3 - Which functions can be called by both GraphApp::DFS and GraphApp::BFS in all variants?
