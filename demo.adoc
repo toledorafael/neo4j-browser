@@ -14,9 +14,9 @@ https://toledorafael.github.io/neo4j-browser/
 MATCH p=(n)-[r:varWrite|write|read]->(m) WHERE EXISTS(r.condition) AND r.condition <> "true" RETURN p
 ----
 
-T1 - How many varWrites in this graph may happen in a directed weighted graph (kDirected /\ !kUndirected /\ kWeighted)?
+- How many varWrites in this graph may happen in a directed weighted graph (kDirected /\ !kUndirected /\ kWeighted)?
 
-T2 - How many links are introduced when we enable the feature kDFS in a variant with original configuration equal to kUndirected /\ kWeighted /\ !kDirected /\ !kDFS /\ !kBFS?
+- How many links are introduced when we enable the feature kDFS in a variant with original configuration equal to kUndirected /\ kWeighted /\ !kDirected /\ !kDFS /\ !kBFS?
 
 == Query 2
 [source]
@@ -34,6 +34,6 @@ V3: kUndirected /\ !kWeighted /\ kBFS /\ !kDFS /\ !kDirected
 
 V4: kUndirected /\ kWeighted /\ kBFS /\ !kDFS /\ !kDirected
 
-T3 - Which variant includes the majority of call-write-varWrite paths?
+- Which variant includes the majority of call-write-varWrite paths?
 
-T4 - Which variant includes only one of the call-write-varWrite paths?
+- Which variant includes only one of the call-write-varWrite paths?
