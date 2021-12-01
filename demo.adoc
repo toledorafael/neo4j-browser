@@ -34,6 +34,6 @@ V3: kUndirected /\ !kWeighted /\ kBFS /\ !kDFS /\ !kDirected
 
 V4: kUndirected /\ kWeighted /\ kBFS /\ !kDFS /\ !kDirected
 
-T3 - Which variant includes all of the call-write-varWrite paths?
+T3 - Which variant includes the majority of call-write-varWrite paths?
 
 T4 - Which variant includes only one of the call-write-varWrite paths?
