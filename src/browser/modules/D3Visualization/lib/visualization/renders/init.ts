@@ -333,7 +333,7 @@ const relationshipShape = new Renderer({
       .classed('shape', true)
       .attr('stroke', 'black')
       .attr('strokeWidth', '1')
-      .attr('fill', '#ffffff77')
+      .attr('fill', '#ffffff')
 
     return shapes.exit().remove()
   },
