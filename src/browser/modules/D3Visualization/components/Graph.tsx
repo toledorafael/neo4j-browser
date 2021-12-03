@@ -126,11 +126,11 @@ const featureItems: FeatureItem[] = [
       {
         id: 'segments-shape',
         display: 'Symbols'
-      },
-      {
-        id: 'segments-pattern',
-        display: 'Pattern'
       }
+      // {
+      //   id: 'segments-pattern',
+      //   display: 'Pattern'
+      // }
     ]
   },
   {
