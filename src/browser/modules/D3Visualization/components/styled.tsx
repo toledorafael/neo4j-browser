@@ -593,42 +593,21 @@ export const PaneBodySectionHeaderWrapper = styled.div`
   flex-direction: column;
 `
 
-export const StyledPatternSelectorBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #00000077;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  z-index: 1000;
-`
-
 export const StyledPatternSelectorBody = styled.div`
-  background: #e6e9ef;
-`
-
-export const StyledPatternSelectorHeading = styled.div`
-  background: white;
-  margin: 1px;
-  text-align: center;
-  color: black;
-  font-size: 19.5px;
-  padding: 8px;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
+  margin-left: -2px;
+  margin-right: -2px;
 `
 
 export const StyledPatternSelectorItem = styled.div`
   svg {
     display: block;
   }
-  margin: 1px;
+  display: inline-block;
   background: white;
-  padding: 10px 50px;
+  margin: 2px;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
 
   &:hover {
     background: #eeeeee;
