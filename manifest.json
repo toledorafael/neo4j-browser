@@ -6,13 +6,14 @@
   "background_color": "#fff",
   "icons": [
     {
-      "src": "./assets/images/device-icons/neo4j-desktop.svg",
+      "src": "./assets/images/device-icons/neo4j-browser.svg",
       "type": "svg"
     }
   ],
   "description": "Neo4j Browser is the general purpose user interface for working with Neo4j. Query, visualize, administrate and monitor the database.",
   "homepage": "https://neo4j.com/developer/guide-neo4j-browser/",
   "neo4jDesktop": {
-    "apiVersion": "^1.2.0"
-  }
+    "apiVersion": "^1.4.0"
+  },
+  "version": "4.4.0"
 }
