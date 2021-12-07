@@ -51,6 +51,7 @@ type GrassEditorProps = {
   frameHeight: number
   visible?: boolean
   setVisibility?: (value: boolean) => void
+  patternSelectorVisible?: boolean
 }
 
 export class GrassEditorComponent extends Component<
@@ -378,8 +379,7 @@ export class GrassEditorComponent extends Component<
       }
       pickers = [
         this.colorPicker(styleForRelType.selector, styleForRelType, true),
-        this.widthPicker(styleForRelType.selector, styleForRelType),
-        this.dashPicker(styleForRelType.selector, styleForRelType)
+        this.widthPicker(styleForRelType.selector, styleForRelType)
         // this.captionPicker(
         //  styleForRelType.selector,
         //  styleForRelType,
@@ -387,6 +387,9 @@ export class GrassEditorComponent extends Component<
         // true
         // )
       ]
+      if (this.props.patternSelectorVisible) {
+        pickers.push(this.dashPicker(styleForRelType.selector, styleForRelType))
+      }
       title = (
         <StyledTokenRelationshipType
           className="token token-relationship"

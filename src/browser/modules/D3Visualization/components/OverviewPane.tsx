@@ -91,6 +91,7 @@ type OverviewPaneProps = {
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
+  patternSelectorVisible: boolean
 }
 
 export const OVERVIEW_STEP_SIZE = 50
@@ -107,7 +108,8 @@ function OverviewPane({
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
-  setRelTypeVisibility
+  setRelTypeVisibility,
+  patternSelectorVisible
 }: OverviewPaneProps): JSX.Element {
   const [maxLabelsCount, setMaxLabelsCount] = useState(OVERVIEW_STEP_SIZE)
   const [maxRelationshipsCount, setMaxRelationshipsCount] = useState(
@@ -225,6 +227,7 @@ function OverviewPane({
                   selectedFilter={{
                     condition: filter
                   }}
+                  patternSelectorVisible={patternSelectorVisible}
                 />
               ))}
             </StyledLegendInlineList>

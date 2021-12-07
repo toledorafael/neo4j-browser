@@ -29,6 +29,7 @@ export type StyleableRelTypeProps = {
   frameHeight: number
   selectedRelType?: { relType: string; propertyKeys: string[]; count?: number }
   selectedFilter?: { condition: string }
+  patternSelectorVisible?: boolean
   visible?: boolean
   setVisibility?: (value: boolean) => void
 }
@@ -37,6 +38,7 @@ export function StyleableRelType({
   selectedFilter,
   graphStyle,
   frameHeight,
+  patternSelectorVisible,
   visible,
   setVisibility
 }: StyleableRelTypeProps): JSX.Element {
@@ -83,6 +85,7 @@ export function StyleableRelType({
         selectedRelType={selectedRelType}
         selectedCondition={selectedFilter}
         frameHeight={frameHeight}
+        patternSelectorVisible={patternSelectorVisible}
         setVisibility={setVisibility}
         visible={visible}
       />

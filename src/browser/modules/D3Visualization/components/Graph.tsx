@@ -423,12 +423,12 @@ export class Graph extends Component<any, State> {
                 }
                 key={layout.id}
                 onClick={() => {
+                  const newLayout = relationshipLayouts[layout.id]
                   this.setState({
-                    currentLayout: relationshipLayouts[layout.id]
+                    currentLayout: newLayout
                   })
-                  this.svgElement &&
-                    (this.svgElement.__graphStyle =
-                      relationshipLayouts[layout.id])
+                  this.props.setPatternLayoutVisible(newLayout.localPattern)
+                  this.svgElement && (this.svgElement.__graphStyle = newLayout)
                   this.graphView.update()
                 }}
               >
@@ -450,13 +450,14 @@ export class Graph extends Component<any, State> {
                 key={layout.display}
                 onClick={() => {
                   if (this.state.featureExpressionLayout !== layout) {
+                    const newLayout = relationshipLayouts[layout.items[0].id]
                     this.setState({
                       featureExpressionLayout: layout,
-                      currentLayout: relationshipLayouts[layout.items[0].id]
+                      currentLayout: newLayout
                     })
+                    this.props.setPatternSelectorVisible(newLayout.localPattern)
                     this.svgElement &&
-                      (this.svgElement.__graphStyle =
-                        relationshipLayouts[layout.items[0].id])
+                      (this.svgElement.__graphStyle = newLayout)
                     this.graphView.update()
                   }
                 }}
