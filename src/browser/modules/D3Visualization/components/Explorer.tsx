@@ -283,6 +283,9 @@ export class ExplorerLocal extends Component<
     this.props.palette.borderColors.forEach((color, i) => {
       style[`--border-color${i}`] = color
     })
+    this.props.palette.conditionColors.forEach((color, i) => {
+      style[`--condition-color${i}`] = color
+    })
     style['--graph-internal-text-color'] = this.props.palette.textColor
     style['--graph-condition-text-color'] = this.props.palette.condColor
 

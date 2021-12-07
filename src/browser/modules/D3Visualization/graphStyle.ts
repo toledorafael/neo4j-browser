@@ -185,7 +185,7 @@ export default function neoGraphStyle() {
 
   const condColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => {
     return {
-      color: `var(--border-color${i})`,
+      color: `var(--condition-color${i})`,
       'text-color-internal': 'var(--graph-condition-text-color)'
     }
   })
