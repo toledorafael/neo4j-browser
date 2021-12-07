@@ -343,6 +343,9 @@ export class Graph extends Component<any, State> {
   handleSubmit() {
     if (this.state.newConditionType) {
       this.props.addFilterAction(this.state.newConditionType)
+
+      this.props.graphStyle.addCondition(this.state.newConditionType)
+      this.props.updateStyle(this.props.graphStyle.toSheet())
       const stats = getGraphStats(this.graph)
       Array.from(document.querySelectorAll('textArea')).forEach(
         (input: any) => (input.value = '')

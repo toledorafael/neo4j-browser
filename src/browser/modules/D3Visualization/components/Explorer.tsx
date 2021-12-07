@@ -282,6 +282,7 @@ export class ExplorerLocal extends Component<
       style[`--border-color${i}`] = color
     })
     style['--graph-internal-text-color'] = this.props.palette.textColor
+    style['--graph-condition-text-color'] = this.props.palette.condColor
 
     return (
       <StyledFullSizeContainer id="svg-vis" style={style}>
@@ -305,6 +306,7 @@ export class ExplorerLocal extends Component<
           }
           hiddenNodeLabels={this.state.hiddenNodeLabels}
           hiddenRelTypes={this.state.hiddenRelationshipTypes}
+          updateStyle={this.props.updateStyle}
         />
         <NodeInspectorPanel
           frameHeight={this.props.frameHeight}

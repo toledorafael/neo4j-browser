@@ -126,13 +126,15 @@ export class GrassEditorComponent extends Component<
     })
   }
 
-  colorPicker(selector: any, styleForLabel: any) {
+  colorPicker(selector: any, styleForLabel: any, isCondition: boolean) {
     return (
       <StyledInlineListItem key="color-picker">
         <StyledInlineList>
           <StyledInlineListItem>Color:</StyledInlineListItem>
           {this.circleSelector(
-            this.graphStyle.defaultColors(),
+            isCondition
+              ? this.graphStyle.condColors()
+              : this.graphStyle.defaultColors(),
             (color: any) => {
               return { backgroundColor: color.color }
             },
@@ -315,7 +317,7 @@ export class GrassEditorComponent extends Component<
         cursor: 'default'
       }
       pickers = [
-        this.colorPicker(styleForLabel.selector, styleForLabel),
+        this.colorPicker(styleForLabel.selector, styleForLabel, false),
         this.sizePicker(styleForLabel.selector, styleForLabel),
         this.captionPicker(
           styleForLabel.selector,
@@ -345,7 +347,7 @@ export class GrassEditorComponent extends Component<
         cursor: 'default'
       }
       pickers = [
-        this.colorPicker(styleForRelType.selector, styleForRelType),
+        this.colorPicker(styleForRelType.selector, styleForRelType, false),
         this.widthPicker(styleForRelType.selector, styleForRelType),
         this.captionPicker(
           styleForRelType.selector,
@@ -375,7 +377,7 @@ export class GrassEditorComponent extends Component<
         color: styleForRelType.get('text-color-internal')
       }
       pickers = [
-        this.colorPicker(styleForRelType.selector, styleForRelType),
+        this.colorPicker(styleForRelType.selector, styleForRelType, true),
         this.widthPicker(styleForRelType.selector, styleForRelType),
         this.dashPicker(styleForRelType.selector, styleForRelType)
         // this.captionPicker(
@@ -432,6 +434,7 @@ export class GrassEditorComponent extends Component<
       style[`--border-color${i}`] = color
     })
     style['--graph-internal-text-color'] = this.props.palette.textColor
+    style['--graph-condition-text-color'] = this.props.palette.condColor
     return (
       <StyledInlineListStylePicker
         frameHeight={this.props.frameHeight}

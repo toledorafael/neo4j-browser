@@ -381,17 +381,24 @@ const relationshipType = new Renderer({
       .attr('font-size', (rel: any) =>
         viz.style.forRelationship(rel).get('font-size')
       )
-      .attr('fill', (rel: any) => {
-        return viz.style
-          .forRelationship(rel)
-          .get(
-            `text-color-${
-              checkPropertyList(rel.propertyList, 'condition') &&
-              layout.textAbove
-                ? 'external'
-                : rel.captionLayout
-            }`
-          )
+      .style('fill', (rel: any) => {
+        return checkPropertyList(rel.propertyList, 'condition') &&
+          layout.textAbove
+          ? '#000000'
+          : rel.captionLayout === 'external'
+          ? '#000000'
+          : 'var(--graph-condition-text-color)'
+        // FIXME: get rid of hard code
+        // return viz.style
+        //   .forRelationship(rel)
+        //   .get(
+        //     `text-color-${
+        //       checkPropertyList(rel.propertyList, 'condition') &&
+        //       layout.textAbove
+        //         ? 'external'
+        //         : rel.captionLayout
+        //     }`
+        //   )
       })
 
     return texts.exit().remove()

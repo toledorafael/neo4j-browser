@@ -29,7 +29,8 @@ const lightPalette = {
     '#cc3c6c',
     '#447666'
   ],
-  textColor: '#000000'
+  textColor: '#000000',
+  condColor: '#ffffff'
 }
 
 const darkPalette = {
@@ -63,7 +64,8 @@ const darkPalette = {
     '#da7194',
     '#569480'
   ],
-  textColor: '#ffffff'
+  textColor: '#ffffff',
+  condColor: '#000000'
 }
 
 const lightCustomPalette = {
@@ -101,7 +103,8 @@ const lightCustomPalette = {
     '#ffe119',
     '#bfef45'
   ],
-  textColor: '#000000'
+  textColor: '#000000',
+  condColor: '#000000'
 }
 
 const darkCustomPalette = {
@@ -139,7 +142,8 @@ const darkCustomPalette = {
     '#4363d8',
     '#911eb4'
   ],
-  textColor: '#ffffff'
+  textColor: '#ffffff',
+  condColor: '#ffffff'
 }
 
 const initialState = darkPalette
@@ -148,6 +152,7 @@ export interface PaletteState {
   colors: string[]
   borderColors: string[]
   textColor: string
+  condColor: string
 }
 
 interface ResetPaletteAction {

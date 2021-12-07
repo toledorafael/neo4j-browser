@@ -183,6 +183,13 @@ export default function neoGraphStyle() {
     }
   })
 
+  const condColors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => {
+    return {
+      color: `var(--border-color${i})`,
+      'text-color-internal': 'var(--graph-condition-text-color)'
+    }
+  })
+
   const defaultShapes = [
     {
       shape: ''
@@ -491,6 +498,18 @@ export default function neoGraphStyle() {
       }
     }
 
+    const findAvailableCondColor = function(rules: any[]) {
+      const usedColors = rules
+        .filter(rule => rule.selector.classes.includes('condRule'))
+        .filter(rule => rule.props.color !== null)
+        .map(rule => rule.props.color)
+
+      for (const entry of condColors) {
+        if (!usedColors.includes(entry.color)) return entry
+      }
+      return condColors[0]
+    }
+
     const findAvailableDefaultColor = function(rules: any) {
       const usedColors = rules
         .filter((rule: any) => {
@@ -693,6 +712,13 @@ export default function neoGraphStyle() {
       return rule
     }
 
+    GraphStyle.prototype.addCondition = function(condition: string) {
+      return this.changeForSelector(
+        this.forCondition(condition).selector,
+        findAvailableCondColor(this.rules)
+      )
+    }
+
     GraphStyle.prototype.destroyRule = function(rule: any) {
       const idx = this.rules.indexOf(rule)
       if (idx != null) {
@@ -827,6 +853,10 @@ export default function neoGraphStyle() {
 
     GraphStyle.prototype.defaultColors = function() {
       return defaultColors
+    }
+
+    GraphStyle.prototype.condColors = function() {
+      return condColors
     }
 
     GraphStyle.prototype.interpolate = function(str: any, item: any) {
