@@ -427,7 +427,7 @@ export class Graph extends Component<any, State> {
                   this.setState({
                     currentLayout: newLayout
                   })
-                  this.props.setPatternLayoutVisible(newLayout.localPattern)
+                  this.props.setPatternSelectorVisible(newLayout.localPattern)
                   this.svgElement && (this.svgElement.__graphStyle = newLayout)
                   this.graphView.update()
                 }}
