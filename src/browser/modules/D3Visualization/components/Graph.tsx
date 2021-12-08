@@ -475,10 +475,15 @@ export class Graph extends Component<any, State> {
   legend() {
     return (
       <StyledGraphLegend>
-        <button onClick={this.props.setLightTheme}>Light</button>
-        <button onClick={this.props.setDarkTheme}>Dark</button>
-        <button onClick={this.props.setLightCustomTheme}>Light 2</button>
-        <button onClick={this.props.setDarkCustomTheme}>Dark 2</button>
+        <button
+          onClick={this.props.setLightTheme}
+          style={{ marginRight: '8px' }}
+        >
+          Theme 1
+        </button>
+        <button onClick={this.props.setDarkTheme}>Theme 2</button>
+        {/* <button onClick={this.props.setLightCustomTheme}>Light 2</button>
+        <button onClick={this.props.setDarkCustomTheme}>Dark 2</button> */}
         <table>
           <tr>
             <th colSpan={2}>Edge Types</th>

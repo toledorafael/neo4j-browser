@@ -232,12 +232,16 @@ function updateArrow(pathGroups: any, viz: any) {
         setupGradient(svgEl, id, pathDef.gradient, colors)
         return 'url(#' + id + ')'
       } else {
-        return colors[Math.min(i, colors.length - 1)] || '#888888'
+        return (
+          colors[Math.min(i, colors.length - 1)] || 'var(--condition-color0)'
+        )
       }
     })
     .attr('stroke', ({ pathDef, colors }: any, i: number) => {
       if (pathDef.useStroke) {
-        return colors[Math.min(i, colors.length - 1)] || '#888888'
+        return (
+          colors[Math.min(i, colors.length - 1)] || 'var(--condition-color0)'
+        )
       }
       return 'none'
     })
