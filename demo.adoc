@@ -11,29 +11,51 @@ https://toledorafael.github.io/neo4j-browser/
 == Query 1
 [source]
 ----
-MATCH p=(n)-[r:varWrite|write|read]->(m) WHERE EXISTS(r.condition) AND r.condition <> "true" RETURN p
+MATCH p=(n{id:"f2"})-[r:alterBehaviour]->(m{id:"f1"}) 
+MATCH q=(n)-[t:write]->()-[s:varWrite]->()-[u:varInfFunc]->(m)
+return p,q
 ----
 
-- How many varWrites in this graph may happen in a directed weighted graph (kDirected /\ !kUndirected /\ kWeighted)?
+=== Task 1.1
+Which facts are present in a variant with the following configuration?
 
-- How many links are introduced when we enable the feature kDFS in a variant with original configuration equal to kUndirected /\ kWeighted /\ !kDirected /\ !kDFS /\ !kBFS?
+* CommandInterpreter /\ !ControllerSystem
+
+=== Task 1.2
+What would happen if the feature ControllerSystem is enabled in the previous configuration?
+
+* CommandInterpreter /\ ControllerSystem
+
+=== Task 1.3
+How many of the following configurations include the alterBehaviour link?
+
+* FC1: CommandInterpreter /\ !ControllerSystem
+* FC2: CommandInterpreter /\ ControllerSystem
+* FC3: CommandInterpreter /\ ControllerSystem /\ !FunctionalSafetyUnit /\ LinearInterpolatedMotion
+* FC4: CommandInterpreter /\ ControllerSystem /\ FunctionalSafetyUnit /\ LinearInterpolatedMotion
 
 == Query 2
 [source]
 ----
-MATCH p=()-[r:call]->()-[q:write]->()-[:varWrite]->() where r.condition <> 'true' and q.condition <> 'true' return p
+MATCH p=(n)-[r:alterBehaviour]->(m) 
+MATCH q=(n)-[t:write]->()-[s:varWrite*3]->()-[u:varInfFunc]->(m)
+return p,q
 ----
 
-Considering the variants:
+=== Task 2.1
+Which facts are present in a variant with the following configuration?
 
-V1: kUndirected /\ kWeighted /\ kDFS /\ !kBFS /\ !kDirected
+* CoordinateSystem /\ !OpticalEncoder /\ !SafetyMonitoredStop /\ ShockDetectionFunction
 
-V2: kDirected /\ kWeighted /\ kBFS /\ !kDFS /\ !kUndirected
+=== Task 2.2
+What would happen if the feature CoordinateSystem was disabled and feature SafetyMonitoredStop was enabled?
 
-V3: kUndirected /\ !kWeighted /\ kBFS /\ !kDFS /\ !kDirected
+* !CoordinateSystem /\ !OpticalEncoder /\ SafetyMonitoredStop /\ ShockDetectionFunction
 
-V4: kUndirected /\ kWeighted /\ kBFS /\ !kDFS /\ !kDirected
+=== Task 2.3
+How many of the following configurations include all the alterBehaviour links?
 
-- Which variant includes the majority of call-write-varWrite paths?
-
-- Which variant includes only one of the call-write-varWrite paths?
+* FC1: CoordinateSystem /\ !OpticalEncoder /\ !SafetyMonitoredStop /\ !ShockDetectionFunction
+* FC2: !OpticalEncoder /\ !CoordinateSystem /\ SafetyMonitoredStop /\ ShockDetectionFunction
+* FC3: CoordinateSystem /\ SafetyMonitoredStop /\ ShockDetectionFunction
+* FC4: OpticalEncoder /\ SafetyMonitoredStop /\ ShockDetectionFunction
