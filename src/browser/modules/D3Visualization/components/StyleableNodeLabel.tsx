@@ -44,9 +44,18 @@ export function StyleableNodeLabel({
   visible,
   setVisibility
 }: StyleableNodeLabelProps): JSX.Element {
-  const graphStyleForLabel = graphStyle.forNode({
-    labels: [selectedLabel.label]
-  })
+  let backgroundColor
+  let color
+  if (selectedLabel.label && selectedLabel.label !== '*') {
+    const graphStyleForLabel = graphStyle.forNode({
+      labels: [selectedLabel.label]
+    })
+    backgroundColor = graphStyleForLabel.get('color')
+    color = graphStyleForLabel.get('text-color-internal')
+  } else {
+    backgroundColor = 'var(--graph-color0)'
+    color = 'var(--graph-internal-text-color)'
+  }
 
   return (
     <Popup
@@ -58,8 +67,8 @@ export function StyleableNodeLabel({
         <StyledLabel
           {...onClick}
           style={{
-            backgroundColor: graphStyleForLabel.get('color'),
-            color: graphStyleForLabel.get('text-color-internal'),
+            backgroundColor,
+            color,
             textDecoration: visible === false ? 'line-through' : 'none'
           }}
         >
