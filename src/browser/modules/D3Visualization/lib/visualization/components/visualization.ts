@@ -269,7 +269,7 @@ const vizFn = function(
     return (currentStats.lastFrame = now())
   }
 
-  const force = layout.init(render)
+  const force = layout.init(render, () => viz.trigger('initialLayoutFinished'))
 
   // Add custom drag event listeners
   force

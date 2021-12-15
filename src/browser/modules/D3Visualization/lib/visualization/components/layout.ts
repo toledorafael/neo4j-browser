@@ -25,7 +25,7 @@ import cloneArray from '../utils/arrays'
 const layout = {
   force: () => {
     return {
-      init: (render: any) => {
+      init: (render: any, onLayoutFinishCallback?: Function) => {
         const forceLayout: any = {}
 
         const linkDistance = 135
@@ -87,23 +87,60 @@ const layout = {
               : () => Date.now()
 
           const d3Tick = d3force.tick
+          let startTick = now()
+          let step = maxStepsPerTick
+          let firstRender = true
           return (d3force.tick = function() {
-            const startTick = now()
-            let step = maxStepsPerTick
-            while (step-- && now() - startTick < maxComputeTime) {
-              const startCalcs = now()
-              currentStats.layoutSteps++
+            const dynamicUpdate = d3force.nodes().length <= 50
+            console.log(d3force.alpha())
+            step--
+            const startCalcs = now()
+            currentStats.layoutSteps++
 
-              collision.avoidOverlap(d3force.nodes())
+            collision.avoidOverlap(d3force.nodes())
 
-              if (d3Tick()) {
-                maxStepsPerTick = 2
-                return true
+            if (d3Tick()) {
+              maxStepsPerTick = 2
+              if (firstRender) {
+                console.log('Here')
+                console.log(onLayoutFinishCallback)
+                onLayoutFinishCallback && onLayoutFinishCallback()
               }
-              currentStats.layoutTime += now() - startCalcs
+              firstRender = false
+              render()
+              if (!dynamicUpdate) {
+                d3force.nodes().forEach(node => {
+                  node.fixed = true
+                })
+                d3force.resume = () => d3force.alpha(0.0051)
+              }
+              return true
             }
-            render()
+            currentStats.layoutTime += now() - startCalcs
+            if (
+              (dynamicUpdate || !firstRender) &&
+              !(step && now() - startTick < maxComputeTime)
+            ) {
+              render()
+              startTick = now()
+              step = maxStepsPerTick
+            }
             return false
+
+            // while (step-- && now() - startTick < maxComputeTime) {
+            //   const startCalcs = now()
+            //   currentStats.layoutSteps++
+
+            //   collision.avoidOverlap(d3force.nodes())
+
+            //   if (d3Tick()) {
+            //     maxStepsPerTick = 2
+            //     return true
+            //   }
+            //   currentStats.layoutTime += now() - startCalcs
+            // }
+            // render()
+            // return false
           } as any)
         }
 

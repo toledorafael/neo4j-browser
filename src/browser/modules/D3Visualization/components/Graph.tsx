@@ -187,7 +187,8 @@ export class Graph extends Component<any, State> {
     currentLayout: relationshipLayouts[featureItems[0].items[0].id],
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...',
-    newConditionType: ''
+    newConditionType: '',
+    showLoadingOverlay: false
   }
 
   graphInit(el: any) {
@@ -237,6 +238,11 @@ export class Graph extends Component<any, State> {
         this.props.getAutoCompleteCallback(this.addInternalRelationships)
       this.props.assignVisElement &&
         this.props.assignVisElement(this.svgElement, this.graphView)
+      if (Object.keys(this.graph.nodeMap).length > 50) {
+        this.setState({
+          showLoadingOverlay: true
+        })
+      }
     }
   }
 
@@ -268,6 +274,9 @@ export class Graph extends Component<any, State> {
       )
       this.graphEH.bindEventHandlers()
       this.props.onGraphModelChange(getGraphStats(this.graph))
+      this.graphView.on('initialLayoutFinished', () =>
+        this.setState({ showLoadingOverlay: false })
+      )
       this.graphView.resize()
       this.graphView.update()
     }
@@ -575,6 +584,24 @@ export class Graph extends Component<any, State> {
     return (
       // <div>
       <StyledSvgWrapper>
+        {this.state.showLoadingOverlay && (
+          <div
+            style={{
+              position: 'absolute',
+              height: '100%',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#F9FCFF',
+              lineHeight: '2em'
+            }}
+          >
+            <div>Loading layout</div>
+            <div>Animations have been turned off for large graphs</div>
+          </div>
+        )}
         <svg className="neod3viz" ref={this.graphInit.bind(this)} />
         {/* {this.inputSlider()} */}
         {this.zoomButtons()}
