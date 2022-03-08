@@ -255,9 +255,9 @@ export function App(props: any) {
               )}
               <StyledApp>
                 <StyledBody>
-                  <ErrorBoundary>
+                  {/* <ErrorBoundary>
                     <Sidebar openDrawer={drawer} onNavClick={handleNavClick} />
-                  </ErrorBoundary>
+                  </ErrorBoundary> */}
                   <StyledMainWrapper id={MAIN_WRAPPER_DOM_ID}>
                     <Main
                       activeConnection={activeConnection}
