@@ -156,16 +156,16 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        If you click on any node or link of the graph the overview on the
-        sidebar is replaced by the list of attributes of the selected element.
-        To return to the overview, you need to deslect the clicked entity. You
-        can do that by clicking on the background or on the selected entity
-        once.
+        If you hover, or click, on any node or link of the graph the overview on
+        the sidebar is replaced by the list of attributes of the selected
+        element. To return to the overview, you need to deslect the clicked
+        entity. You can do that by clicking on the background or on the selected
+        entity once.
       </h5>
       <h5>
         As a first task, try to find the node that represents the function
         GraphApp::updateNodeName. (hint: the label of such a node should be
-        "...")
+        'AnalyzedCode/graphProductLine/GraphApp.h:GraphApp::updateNodeName')
       </h5>
       <figure>
         <pre className="code">
@@ -233,7 +233,8 @@ const slides = [
     <div className="col-sm-9">
       <h5>
         Now find the link representing the function call highlighted in the
-        code. (hint: the label of the end node should be "...")
+        code. (hint: the label of the end node should be
+        'AnalyzedCode/graphProductLine/Node.h:Node::setName')
       </h5>
       <figure>
         <pre className="code">
