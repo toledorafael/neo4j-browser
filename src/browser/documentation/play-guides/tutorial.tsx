@@ -25,6 +25,7 @@
 import React from 'react'
 import ManualLink from 'browser-components/ManualLink'
 import Slide from '../../modules/Carousel/Slide'
+// import customizationGif from './assets/images/customizeVisual.gif'
 
 const title = 'Tutorial'
 const category = 'graphExamples'
@@ -125,8 +126,10 @@ const slides = [
         Now click on the following query and hit the play button beside the top
         bar to visualize the graphical representation of this program.
       </h5>
-      <pre className="pre-scrollable code runnable">
-        {'MATCH (tom {name: "Tom Hanks"}) RETURN tom'}
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "GraphApp::updateNodeName" RETURN *'
+        }
       </pre>
     </div>
   </Slide>,
@@ -309,6 +312,10 @@ const slides = [
       </p> */}
     </div>
     <div className="col-sm-9">
+      <img
+        src="./assets/images/customizeVisual.gif"
+        alt="Customization options"
+      />
       <h5>
         To experiment with the customization options, perform the following
         tasks:{' '}
@@ -321,7 +328,6 @@ const slides = [
           available option
         </li>
       </ol>
-      Add gif
       <h5>You can move to the next slide when you are done.</h5>
       {/* <p className="lead">List all Tom Hanks movies...</p>
       <figure>
@@ -383,7 +389,7 @@ const slides = [
     </p> */}
     </div>
     <div className="col-sm-9">
-      Add figure showing the intended colours and width
+      <img src="./assets/images/coloredGraph.png" height="400" />
       {/* <p className="lead">List all Tom Hanks movies...</p>
     <figure>
       <pre className="pre-scrollable code runnable">
