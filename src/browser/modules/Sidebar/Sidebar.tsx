@@ -21,19 +21,19 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import DatabaseDrawer from '../DBMSInfo/DBMSInfo'
-import VisualAnalysisDrawer from '../VisualAnalysis/VisualAnalysis'
-import DocumentsDrawer from './Documents'
+// import VisualAnalysisDrawer from '../VisualAnalysis/VisualAnalysis'
+// import DocumentsDrawer from './Documents'
 import AboutDrawer from './About'
-import SettingsDrawer from './Settings'
-import GuideDrawer from './GuideDrawer'
-import Favorites from './favorites'
-import StaticScripts from './static-scripts'
-import ProjectFilesDrawer from './ProjectFiles'
+// import SettingsDrawer from './Settings'
+// import GuideDrawer from './GuideDrawer'
+// import Favorites from './favorites'
+// import StaticScripts from './static-scripts'
+// import ProjectFilesDrawer from './ProjectFiles'
 import TabNavigation, {
-  NavItem,
-  STANDARD_DRAWER_WIDTH
+  NavItem
+  // STANDARD_DRAWER_WIDTH
 } from 'browser-components/TabNavigation/Navigation'
-import BrowserSync from '../Sync/BrowserSync'
+// import BrowserSync from '../Sync/BrowserSync'
 import { GlobalState } from 'shared/globalState'
 import { isUserSignedIn } from 'shared/modules/sync/syncDuck'
 import { utilizeBrowserSync } from 'shared/modules/features/featuresDuck'
@@ -46,17 +46,17 @@ import { isRelateAvailable } from 'shared/modules/app/appDuck'
 
 import {
   DatabaseIcon,
-  FavoritesIcon,
-  DocumentsIcon,
-  CloudSyncIcon,
-  SettingsIcon,
-  AboutIcon,
-  ProjectFilesIcon,
-  GuideDrawerIcon,
-  VisualAnalysisIcon
+  // FavoritesIcon,
+  // DocumentsIcon,
+  // CloudSyncIcon,
+  // SettingsIcon,
+  AboutIcon
+  // ProjectFilesIcon,
+  // GuideDrawerIcon,
+  // VisualAnalysisIcon
 } from 'browser-components/icons/Icons'
 import { getCurrentDraft } from 'shared/modules/sidebar/sidebarDuck'
-import { DrawerHeader } from 'browser-components/drawer/drawer-styled'
+// import { DrawerHeader } from 'browser-components/drawer/drawer-styled'
 
 interface SidebarProps {
   openDrawer: string
@@ -73,12 +73,12 @@ const Sidebar = ({
   openDrawer,
   onNavClick,
   neo4jConnectionState,
-  showStaticScripts,
-  syncConnected,
-  loadSync,
-  isRelateAvailable,
-  scriptDraft
-}: SidebarProps) => {
+  // showStaticScripts,
+  // syncConnected,
+  loadSync
+}: // isRelateAvailable,
+// scriptDraft
+SidebarProps) => {
   const topNavItemsList: NavItem[] = [
     {
       name: 'DBMS',
@@ -93,93 +93,93 @@ const Sidebar = ({
         )
       },
       content: DatabaseDrawer
-    },
-    {
-      name: 'Favorites',
-      title: 'Favorites',
-      icon: function favIcon(isOpen: boolean): JSX.Element {
-        return <FavoritesIcon isOpen={isOpen} title="Favorites" />
-      },
-      content: function FavoritesDrawer(): JSX.Element {
-        return (
-          <div style={{ width: STANDARD_DRAWER_WIDTH }}>
-            <DrawerHeader> Favorites </DrawerHeader>
-            <Favorites />
-            {showStaticScripts && <StaticScripts />}
-          </div>
-        )
-      }
-    },
-    ...(isRelateAvailable
-      ? [
-          {
-            name: 'Project Files',
-            title: 'Project Files',
-            icon: function projectFilesIcon(isOpen: boolean): JSX.Element {
-              return <ProjectFilesIcon isOpen={isOpen} title="Project Files" />
-            },
-            content: function ProjectDrawer(): JSX.Element {
-              return <ProjectFilesDrawer scriptDraft={scriptDraft || ''} />
-            }
-          }
-        ]
-      : []),
-    {
-      name: 'Guides',
-      title: 'Guides',
-      icon: function GuideDrawerIconComp(isOpen: boolean): JSX.Element {
-        return <GuideDrawerIcon isOpen={isOpen} />
-      },
-      content: GuideDrawer
-    },
-    {
-      name: 'VisualAnalysis',
-      title: 'VisualAnalysis',
-      icon: function visualAnalysisIcon(isOpen: boolean): JSX.Element {
-        return (
-          <VisualAnalysisIcon
-            isOpen={isOpen}
-            connectionState={neo4jConnectionState}
-            title="VisualAnalysis"
-          />
-        )
-      },
-      content: VisualAnalysisDrawer // define drawer for visualization panels
     }
+    // {
+    //   name: 'Favorites',
+    //   title: 'Favorites',
+    //   icon: function favIcon(isOpen: boolean): JSX.Element {
+    //     return <FavoritesIcon isOpen={isOpen} title="Favorites" />
+    //   },
+    //   content: function FavoritesDrawer(): JSX.Element {
+    //     return (
+    //       <div style={{ width: STANDARD_DRAWER_WIDTH }}>
+    //         <DrawerHeader> Favorites </DrawerHeader>
+    //         <Favorites />
+    //         {showStaticScripts && <StaticScripts />}
+    //       </div>
+    //     )
+    //   }
+    // },
+    // ...(isRelateAvailable
+    //   ? [
+    //       {
+    //         name: 'Project Files',
+    //         title: 'Project Files',
+    //         icon: function projectFilesIcon(isOpen: boolean): JSX.Element {
+    //           return <ProjectFilesIcon isOpen={isOpen} title="Project Files" />
+    //         },
+    //         content: function ProjectDrawer(): JSX.Element {
+    //           return <ProjectFilesDrawer scriptDraft={scriptDraft || ''} />
+    //         }
+    //       }
+    //     ]
+    //   : []),
+    // {
+    //   name: 'Guides',
+    //   title: 'Guides',
+    //   icon: function GuideDrawerIconComp(isOpen: boolean): JSX.Element {
+    //     return <GuideDrawerIcon isOpen={isOpen} />
+    //   },
+    //   content: GuideDrawer
+    // },
+    // {
+    //   name: 'VisualAnalysis',
+    //   title: 'VisualAnalysis',
+    //   icon: function visualAnalysisIcon(isOpen: boolean): JSX.Element {
+    //     return (
+    //       <VisualAnalysisIcon
+    //         isOpen={isOpen}
+    //         connectionState={neo4jConnectionState}
+    //         title="VisualAnalysis"
+    //       />
+    //     )
+    //   },
+    //   content: VisualAnalysisDrawer // define drawer for visualization panels
+    // }
   ]
 
   const bottomNavItemsList: NavItem[] = [
-    {
-      name: 'Documents',
-      title: 'Help &amp; Resources',
-      icon: function docsIcon(isOpen: boolean): JSX.Element {
-        return <DocumentsIcon isOpen={isOpen} title="Help &amp; Resources" />
-      },
-      content: DocumentsDrawer,
-      enableCannyBadge: true
-    },
-    {
-      name: 'Sync',
-      title: 'Browser Sync',
-      icon: function syncIcon(isOpen: boolean): JSX.Element {
-        return (
-          <CloudSyncIcon
-            isOpen={isOpen}
-            connected={syncConnected}
-            title="Browser Sync"
-          />
-        )
-      },
-      content: BrowserSync
-    },
-    {
-      name: 'Settings',
-      title: 'Settings',
-      icon: function settingIcon(isOpen: boolean): JSX.Element {
-        return <SettingsIcon isOpen={isOpen} title="Browser Settings" />
-      },
-      content: SettingsDrawer
-    },
+    // {
+    //   name: 'Documents',
+    //   title: 'Help &amp; Resources',
+    //   icon: function docsIcon(isOpen: boolean): JSX.Element {
+    //     return <DocumentsIcon isOpen={isOpen} title="Help &amp; Resources" />
+    //   },
+    //   content: DocumentsDrawer,
+    //   enableCannyBadge: true
+    // },
+    // {
+    //   name: 'Sync',
+    //   title: 'Browser Sync',
+    //   icon: function syncIcon(isOpen: boolean): JSX.Element {
+    //     return (
+    //       <CloudSyncIcon
+    //         isOpen={isOpen}
+    //         connected={syncConnected}
+    //         title="Browser Sync"
+    //       />
+    //     )
+    //   },
+    //   content: BrowserSync
+    // },
+    // {
+    //   name: 'Settings',
+    //   title: 'Settings',
+    //   icon: function settingIcon(isOpen: boolean): JSX.Element {
+    //     return <SettingsIcon isOpen={isOpen} title="Browser Settings" />
+    //   },
+    //   content: SettingsDrawer
+    // },
     {
       name: 'About',
       title: 'About Neo4j',

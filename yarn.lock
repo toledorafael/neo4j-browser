@@ -265,19 +265,19 @@
   dependencies:
     "@babel/types" "^7.10.3"
 
-"@babel/helper-get-function-arity@^7.10.4", "@babel/helper-get-function-arity@^7.16.0":
-  version "7.16.0"
-  resolved "https://neo.jfrog.io/neo/api/npm/npm/@babel/helper-get-function-arity/-/helper-get-function-arity-7.16.0.tgz#0088c7486b29a9cb5d948b1a1de46db66e089cfa"
-  integrity sha1-AIjHSGspqctdlIsaHeRttm4InPo=
-  dependencies:
-    "@babel/types" "^7.16.0"
-
 "@babel/helper-get-function-arity@^7.14.5":
   version "7.14.5"
   resolved "https://neo.jfrog.io/neo/api/npm/npm/@babel/helper-get-function-arity/-/helper-get-function-arity-7.14.5.tgz#25fbfa579b0937eee1f3b805ece4ce398c431815"
   integrity sha1-Jfv6V5sJN+7h87gF7OTOOYxDGBU=
   dependencies:
     "@babel/types" "^7.14.5"
+
+"@babel/helper-get-function-arity@^7.16.0":
+  version "7.16.0"
+  resolved "https://neo.jfrog.io/neo/api/npm/npm/@babel/helper-get-function-arity/-/helper-get-function-arity-7.16.0.tgz#0088c7486b29a9cb5d948b1a1de46db66e089cfa"
+  integrity sha1-AIjHSGspqctdlIsaHeRttm4InPo=
+  dependencies:
+    "@babel/types" "^7.16.0"
 
 "@babel/helper-hoist-variables@^7.14.5":
   version "7.14.5"
@@ -402,7 +402,7 @@
   resolved "https://neo.jfrog.io/neo/api/npm/npm/@babel/helper-plugin-utils/-/helper-plugin-utils-7.10.4.tgz#2f75a831269d4f677de49986dff59927533cf375"
   integrity sha1-L3WoMSadT2d95JmG3/WZJ1M883U=
 
-"@babel/helper-plugin-utils@^7.0.0", "@babel/helper-plugin-utils@^7.10.4", "@babel/helper-plugin-utils@^7.12.13", "@babel/helper-plugin-utils@^7.13.0", "@babel/helper-plugin-utils@^7.14.5", "@babel/helper-plugin-utils@^7.8.0", "@babel/helper-plugin-utils@^7.8.3":
+"@babel/helper-plugin-utils@^7.0.0", "@babel/helper-plugin-utils@^7.10.1", "@babel/helper-plugin-utils@^7.10.4", "@babel/helper-plugin-utils@^7.12.13", "@babel/helper-plugin-utils@^7.13.0", "@babel/helper-plugin-utils@^7.14.5", "@babel/helper-plugin-utils@^7.8.0", "@babel/helper-plugin-utils@^7.8.3":
   version "7.14.5"
   resolved "https://neo.jfrog.io/neo/api/npm/npm/@babel/helper-plugin-utils/-/helper-plugin-utils-7.14.5.tgz#5ac822ce97eec46741ab70a517971e443a70c5a9"
   integrity sha1-WsgizpfuxGdBq3ClF5ceRDpwxak=
@@ -1486,7 +1486,7 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@babel/types@^7.10.4", "@babel/types@^7.11.5", "@babel/types@^7.16.0":
+"@babel/types@^7.11.5", "@babel/types@^7.16.0":
   version "7.16.0"
   resolved "https://neo.jfrog.io/neo/api/npm/npm/@babel/types/-/types-7.16.0.tgz#db3b313804f96aadd0b776c4823e127ad67289ba"
   integrity sha1-2zsxOAT5aq3Qt3bEgj4SetZyibo=
@@ -5143,11 +5143,6 @@ core-js-compat@^3.14.0, core-js-compat@^3.16.0:
   dependencies:
     browserslist "^4.16.6"
     semver "7.0.0"
-
-core-js-pure@^3.0.0:
-  version "3.6.5"
-  resolved "https://neo.jfrog.io/neo/api/npm/npm/core-js-pure/-/core-js-pure-3.6.5.tgz#c79e75f5e38dbc85a662d91eea52b8256d53b813"
-  integrity sha1-x5519eONvIWmYtke6lK4JW1TuBM=
 
 core-js-pure@^3.16.0:
   version "3.16.1"
