@@ -59,7 +59,8 @@ const Main = React.memo(function Main(props: any) {
       <ErrorBoundary>
         <Editor />
       </ErrorBoundary>
-      {props.showUdcConsentBanner && (
+      {/* Remove consent Banner */}
+      {/* {props.showUdcConsentBanner && (
         <UdcConsentBanner>
           <span>
             To help make Neo4j Browser better we collect information on product
@@ -71,7 +72,7 @@ const Main = React.memo(function Main(props: any) {
           </span>
           <DismissConsentBanner onClick={props.dismissConsentBanner} />
         </UdcConsentBanner>
-      )}
+      )} */}
       {dbIsUnavailable && (
         <ErrorBanner>
           Database '{useDb}' is unavailable. Run{' '}
