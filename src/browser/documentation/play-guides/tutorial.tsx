@@ -41,8 +41,9 @@ const slides = [
     <div className="col-sm-9">
       <p>
         The interface comprises the top bar, where you can run queries over the
-        database, and the list of visualization frames, with each showing the
-        results of an executed query.
+        database, and the list of visualization frames, in which you can
+        visualize and inspect the results of an executed query. A visualization
+        frame can be maximized to fullscreen and closed whenever you want.
       </p>
       <p>This guide will show you how to:</p>
       <ol className="big">
@@ -55,26 +56,11 @@ const slides = [
         Note that you are not expected to learn the language used to query the
         database as all required queries will be provided to you during the
         study. Click on the arrows on the sides or bottom of this visualization
-        frame to navigate through the tutorial
+        frame to navigate through the tutorial.
       </p>
     </div>
   </Slide>,
   <Slide key="s2">
-    {/* // [Begin Video 2]
-
-// Figure on the right shows the code in the file. Note that... [Explain code]. The graphical representation of that portion of the code is the subgraph returned by the query. Note that... [map some of the characteristics of the code to the graph]
-
-// Inside the visualization frame, the user has the option to change some parameters of the visualization, like color, size of nodes, and width of links. For example, if we click on the type cVariable on the top bar, a menu with the options of visual parameters appear on the bottom bar, like the color, size, and preference on which property should appear as a node label in the visualization. As a preparation for our study, I will ask you to follow this color scheme:
-
-// cVariable = Green
-
-// cFunction = Purple
-
-// cClass = Yellow
-
-// You can move to the next video, once you finish setting up the colors 
-
-// [End Video 2] */}
     <div className="col-sm-3">
       <h3>Graphical software data</h3>
       <p className="lead">
@@ -86,25 +72,6 @@ const slides = [
         established in the code.{' '}
       </p>
       <br />
-      {/* <p>
-        To the right is a giant code block containing a single Cypher query
-        statement composed of multiple CREATE clauses. This will create the
-        movie graph.
-      </p>
-      <ol>
-        <li>Click on the code block</li>
-        <li>Notice it gets copied to the editor above ↑</li>
-        <li>Click the editor's play button to execute</li>
-        <li>Wait for the query to finish</li>
-      </ol>
-      <p className="text-center text-warning bg-warning">
-        WARNING: This adds data to the current database, each time it is run!
-      </p>
-      <hr />
-      <p>
-        <small>:help</small> <a help-topic="cypher">cypher</a>{' '}
-        <a help-topic="create">CREATE</a>
-      </p> */}
     </div>
     <div className="col-sm-9">
       <h5>
@@ -124,7 +91,8 @@ const slides = [
       </figure>
       <h5>
         Now click on the following query and hit the play button beside the top
-        bar to visualize the graphical representation of this program.
+        bar to create a new visualization frame with the graphical
+        representation of this program.
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
@@ -141,21 +109,10 @@ const slides = [
         The frame shows at the center the nodes and links representing the
         results for the query. The sidebar on the right provides an overview of
         the node labels and relationships types present in the visualization.
+        Feel free to inspect new visualization frame and come back to the
+        tutorial whenever you are ready.
       </p>
       <br />
-      {/* <h3>Find</h3>
-      <p>Example queries for finding individual nodes.</p>
-      <ol>
-        <li>Click on any query example</li>
-        <li>Run the query from the editor</li>
-        <li>Notice the syntax pattern</li>
-        <li>Try looking for other movies or actors</li>
-      </ol>
-      <hr />
-      <p>
-        <small>:help</small> <a help-topic="match">MATCH</a>{' '}
-        <a help-topic="where">WHERE</a> <a help-topic="return">RETURN</a>
-      </p> */}
     </div>
     <div className="col-sm-9">
       <h5>
@@ -170,43 +127,8 @@ const slides = [
         GraphApp::updateNodeName. (hint: the label of such a node should be
         'AnalyzedCode/graphProductLine/GraphApp.h:GraphApp::updateNodeName')
       </h5>
-      <figure>
-        <pre className="code">
-          {`void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
-   for (int i=0; i < nodes.size(); i++) {
-       if (nodes[i]->getName() == nodeName) {
-           nodes[i]->setName(newName);
-       }
-   }
-}`}
-        </pre>
-      </figure>
-      {/* <p className="lead">Find the actor named "Tom Hanks"...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {'MATCH (tom {name: "Tom Hanks"}) RETURN tom'}
-        </pre>
-      </figure>
-      <p className="lead">Find the movie with title "Cloud Atlas"...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {'MATCH (cloudAtlas {title: "Cloud Atlas"}) RETURN cloudAtlas'}
-        </pre>
-      </figure>
-      <p className="lead">Find 10 people...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          MATCH (people:Person) RETURN people.name LIMIT 10
-        </pre>
-      </figure>
-      <p className="lead">Find movies released in the 1990s...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {
-            'MATCH (nineties:Movie) WHERE nineties.released >= 1990 AND nineties.released < 2000 RETURN nineties.title'
-          }
-        </pre>
-      </figure> */}
+      <br />
+      <img src="./assets/images/codeSnippet.png" width={700} />
     </div>
   </Slide>,
   <Slide key="s4">
@@ -219,19 +141,6 @@ const slides = [
         the node labels and relationships types present in the visualization.
       </p>
       <br />
-      {/* <h3>Find</h3>
-    <p>Example queries for finding individual nodes.</p>
-    <ol>
-      <li>Click on any query example</li>
-      <li>Run the query from the editor</li>
-      <li>Notice the syntax pattern</li>
-      <li>Try looking for other movies or actors</li>
-    </ol>
-    <hr />
-    <p>
-      <small>:help</small> <a help-topic="match">MATCH</a>{' '}
-      <a help-topic="where">WHERE</a> <a help-topic="return">RETURN</a>
-    </p> */}
     </div>
     <div className="col-sm-9">
       <h5>
@@ -239,57 +148,11 @@ const slides = [
         code. (hint: the label of the end node should be
         'AnalyzedCode/graphProductLine/Node.h:Node::setName')
       </h5>
-      <figure>
-        <pre className="code">
-          {`void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
- for (int i=0; i < nodes.size(); i++) {
-     if (nodes[i]->getName() == nodeName) {`}
-        </pre>
-        <pre className="code highlighted">
-          {' '}
-          {`     nodes[i]->setName(newName);`}{' '}
-        </pre>
-        <pre className="code">
-          {' '}
-          {` }
- }
-}`}
-        </pre>
-      </figure>
-      {/* <p className="lead">Find the actor named "Tom Hanks"...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {'MATCH (tom {name: "Tom Hanks"}) RETURN tom'}
-      </pre>
-    </figure>
-    <p className="lead">Find the movie with title "Cloud Atlas"...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {'MATCH (cloudAtlas {title: "Cloud Atlas"}) RETURN cloudAtlas'}
-      </pre>
-    </figure>
-    <p className="lead">Find 10 people...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        MATCH (people:Person) RETURN people.name LIMIT 10
-      </pre>
-    </figure>
-    <p className="lead">Find movies released in the 1990s...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {
-          'MATCH (nineties:Movie) WHERE nineties.released >= 1990 AND nineties.released < 2000 RETURN nineties.title'
-        }
-      </pre>
-    </figure> */}
+      <br />
+      <img src="./assets/images/codeSnippetHighlighted.png" width={700} />
     </div>
   </Slide>,
   <Slide key="s5">
-    {/* The answer for that question is...
-
-// If you answered anything different than that, take some time to review the visualization and make sure you understand the mistake you made before moving to the next questions.
-
-// The questions are listed here.  */}
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -299,17 +162,6 @@ const slides = [
         star sign (*) represent visual attributes applied to all nodes or links.
       </p>
       <br />
-      {/* <h3>Query</h3>
-      <p>Finding patterns within the graph.</p>
-      <ol>
-        <li>Actors are people who acted in movies</li>
-        <li>Directors are people who directed a movie</li>
-        <li>What other relationships exist?</li>
-      </ol>
-      <hr />
-      <p>
-        <small>:help</small> <a help-topic="match">MATCH</a>
-      </p> */}
     </div>
     <div className="col-sm-9">
       <img
@@ -329,46 +181,9 @@ const slides = [
         </li>
       </ol>
       <h5>You can move to the next slide when you are done.</h5>
-      {/* <p className="lead">List all Tom Hanks movies...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {
-            'MATCH (tom:Person {name: "Tom Hanks"})-[:ACTED_IN]->(tomHanksMovies) RETURN tom,tomHanksMovies'
-          }
-        </pre>
-      </figure>
-      <p className="lead">Who directed "Cloud Atlas"?</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {
-            'MATCH (cloudAtlas {title: "Cloud Atlas"})<-[:DIRECTED]-(directors) RETURN directors.name'
-          }
-        </pre>
-      </figure>
-      <p className="lead">Tom Hanks' co-actors...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {
-            'MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors) RETURN coActors.name'
-          }
-        </pre>
-      </figure>
-      <p className="lead">How people are related to "Cloud Atlas"...</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {
-            'MATCH (people:Person)-[relatedTo]-(:Movie {title: "Cloud Atlas"}) RETURN people.name, Type(relatedTo), relatedTo'
-          }
-        </pre>
-      </figure> */}
     </div>
   </Slide>,
   <Slide key="s6">
-    {/* The answer for that question is...
-
-// If you answered anything different than that, take some time to review the visualization and make sure you understand the mistake you made before moving to the next questions.
-
-// The questions are listed here.  */}
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -376,212 +191,111 @@ const slides = [
         the following:
       </p>
       <br />
-      {/* <h3>Query</h3>
-    <p>Finding patterns within the graph.</p>
-    <ol>
-      <li>Actors are people who acted in movies</li>
-      <li>Directors are people who directed a movie</li>
-      <li>What other relationships exist?</li>
-    </ol>
-    <hr />
-    <p>
-      <small>:help</small> <a help-topic="match">MATCH</a>
-    </p> */}
     </div>
     <div className="col-sm-9">
       <img src="./assets/images/coloredGraph.png" height="400" />
-      {/* <p className="lead">List all Tom Hanks movies...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {
-          'MATCH (tom:Person {name: "Tom Hanks"})-[:ACTED_IN]->(tomHanksMovies) RETURN tom,tomHanksMovies'
-        }
-      </pre>
-    </figure>
-    <p className="lead">Who directed "Cloud Atlas"?</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {
-          'MATCH (cloudAtlas {title: "Cloud Atlas"})<-[:DIRECTED]-(directors) RETURN directors.name'
-        }
-      </pre>
-    </figure>
-    <p className="lead">Tom Hanks' co-actors...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {
-          'MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors) RETURN coActors.name'
-        }
-      </pre>
-    </figure>
-    <p className="lead">How people are related to "Cloud Atlas"...</p>
-    <figure>
-      <pre className="pre-scrollable code runnable">
-        {
-          'MATCH (people:Person)-[relatedTo]-(:Movie {title: "Cloud Atlas"}) RETURN people.name, Type(relatedTo), relatedTo'
-        }
-      </pre>
-    </figure> */}
     </div>
   </Slide>,
   <Slide key="s7">
     <div className="col-sm-3">
       <h3>Configurable software graph</h3>
-      <br />
-      {/* <h3>Solve</h3>
-      <p>
-        You've heard of the classic "Six Degrees of Kevin Bacon"? That is simply
-        a shortest path query called the "Bacon Path".
+      <p className="lead">
+        Software systems are developed as a set of functionalities. Each unit of
+        functionality, or feature, satisfies a requirement or represents a
+        design decision. The set of features provide options to the developers
+        to configure the system to individual users by turning some features on
+        and others off. Hence configurable software systems may include all the
+        available features or a subset of them.
       </p>
-      <ol>
-        <li>Variable length patterns</li>
-        <li>Built-in shortestPath() algorithm</li>
-      </ol>
+      <br />
     </div>
     <div className="col-sm-9">
-      <p className="lead">
-        Movies and actors up to 4 "hops" away from Kevin Bacon
-      </p>
+      <h5>
+        The links in the graphs that you are going to interact are annotated
+        with their respective presence conditions. The conditions are boolean
+        expressions that show the feature configuration in which the action
+        represented by the link may occur. For example, consider the following
+        code snippet:
+      </h5>
       <figure>
-        <pre className="pre-scrollable code runnable">
-          {`MATCH (bacon:Person {name:"Kevin Bacon"})-[*1..4]-(hollywood)
-RETURN DISTINCT hollywood`}
+        <pre className="code">
+          {`void GraphApp::connectedComponents() {
+    if ((kBFS || kDFS) && kUndirected) {
+        clearVisited();
+        int compNum = 0;
+        ...
+    }
+}`}
         </pre>
       </figure>
-      <p className="lead">
-        Bacon path, the shortest path of any relationships to Meg Ryan
-      </p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {`MATCH p=shortestPath(
-(bacon:Person {name:"Kevin Bacon"})-[*]-(meg:Person {name:"Meg Ryan"})
-)
-RETURN p`}
-        </pre>
-        <aside className="warn">
-          Note you only need to compare property values like this when first
-          creating relationships
-        </aside>
-      </figure> */}
+      <h5>
+        Note that the boolean variables used in the if-condition represent flags
+        that indicate whether a feature is enabled or not. Hence, for the
+        instructions to be executed, the feature kUndirected must be enabled,
+        meaning it must have value 'true', along with either kBFS or kDFS. A
+        graph representing the function call, the variable declaration, variable
+        write, and their presence conditions looks like the following:
+      </h5>
+      <img src="./assets/images/presenceCondition.png" />
+      <h5>
+        The presence conditions are composed by AND ('/\'), OR ('\/'), and NOT
+        ('!') operations.
+      </h5>
+      {/* TODO: Add table showing the symbols meaning */}
     </div>
   </Slide>,
   <Slide key="s8">
     <div className="col-sm-3">
-      <h5>The Movie Graph</h5>
+      <h3>Demo task</h3>
       <br />
-      {/* <h3>Recommend</h3>
-      <p>
-        Let's recommend new co-actors for Tom Hanks. A basic recommendation
-        approach is to find connections past an immediate neighborhood which are
-        themselves well connected.
-      </p>
-      <p>For Tom Hanks, that means:</p>
-      <ol>
-        <li>
-          Find actors that Tom Hanks hasn't yet worked with, but his co-actors
-          have.
-        </li>
-        <li>Find someone who can introduce Tom to his potential co-actor.</li>
-      </ol> */}
     </div>
     <div className="col-sm-9">
-      {/* <p className="lead">
-        Extend Tom Hanks co-actors, to find co-co-actors who haven't worked with
-        Tom Hanks...
-      </p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {`MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors),
-  (coActors)-[:ACTED_IN]->(m2)<-[:ACTED_IN]-(cocoActors)
-WHERE NOT (tom)-[:ACTED_IN]->()<-[:ACTED_IN]-(cocoActors) AND tom <> cocoActors
-RETURN cocoActors.name AS Recommended, count(*) AS Strength ORDER BY Strength DESC`}
-        </pre>
-      </figure>
-      <p className="lead">Find someone to introduce Tom Hanks to Tom Cruise</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          {`MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors),
-  (coActors)-[:ACTED_IN]->(m2)<-[:ACTED_IN]-(cruise:Person {name:"Tom Cruise"})
-RETURN tom, m, coActors, m2, cruise`}
-        </pre>
-      </figure> */}
+      <h5>
+        The tasks comprising this study will ask you to determine the presence
+        of links in specific feature configurations. As an example, consider the
+        graph returned by the following query:
+      </h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "GraphApp::BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++"RETURN *'
+        }
+      </pre>
+      <h5>
+        Which of the following feature configurations present more of graph
+        links:
+        <ol>
+          <li>Variant 1: kWeighted /\ !kUndirected</li>
+          <li>Variant 2: !kWeighted /\ kUndirected</li>
+        </ol>
+      </h5>
+      Note that a feature is not considered disabled unless it is specified in
+      the configuration.
     </div>
   </Slide>,
   <Slide key="s9">
     <div className="col-sm-3">
-      <h5>The Movie Graph</h5>
-      <br />
-      <h3>Clean up</h3>
-      <p>When you're done experimenting, you can remove the movie data set.</p>
-      <p>Note:</p>
-      <ol>
-        <li>Nodes can't be deleted if relationships exist</li>
-        <li>Delete both nodes and relationships together</li>
-      </ol>
-      <p className="text-center text-warning bg-warning">
-        WARNING: This will remove all Person and Movie nodes!
-      </p>
-      <hr />
-      <p>
-        <small>:help</small> <a help-topic="delete">DELETE</a>
-      </p>
+      <h3>Demo task</h3>
+      <p className="lead"></p>
     </div>
     <div className="col-sm-9">
-      <p className="lead">
-        Delete all Movie and Person nodes, and their relationships
-      </p>
-      <figure>
-        <pre className="pre-scrollable code runnable">
-          MATCH (n) DETACH DELETE n
-        </pre>
-      </figure>
-      <p className="lead">Prove that the Movie Graph is gone</p>
-      <figure>
-        <pre className="pre-scrollable code runnable">MATCH (n) RETURN n</pre>
-      </figure>
+      <h5>
+        The correct answer for the task is Variant 1 with four links, while
+        Variant 2 includes three links. If your answer was incorrect, take your
+        time to go back to the graph to understand where you made a mistake.
+      </h5>
     </div>
   </Slide>,
   <Slide key="s10">
-    <div className="col-sm-4">
-      <h3>Next steps</h3>
-
-      <ul className="undecorated">
-        <li>
-          <a play-topic="northwind-graph">Northwind Graph</a> - from RDBMS to
-          graph
-        </li>
-        <li>
-          <a help-topic="cypher">Cypher</a> - Learn Cypher syntax
-        </li>
-        <li>
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://portal.graphgist.org/"
-          >
-            Explore more guides: Graph Gists Portal
-          </a>
-        </li>
-      </ul>
+    <div className="col-sm-3">
+      <h3>End of tutorial</h3>
+      <p className="lead">
+        Now that you are familiar with the interface, you are ready to start the
+        study.
+      </p>
     </div>
-    <div className="col-sm-4">
-      <h3>Documentation</h3>
-      <ul className="undecorated">
-        <li>
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://neo4j.com/developer/"
-          >
-            Developer resources
-          </a>
-        </li>
-        <li>
-          <ManualLink chapter="cypher-manual" page="/">
-            Neo4j Cypher Manual
-          </ManualLink>
-        </li>
-      </ul>
+    <div className="col-sm-9">
+      {/* TODO: add instructions to initiate the study */}
+      {/* TODO: Add gif showing how to see attributes */}
     </div>
   </Slide>
 ]
