@@ -104,13 +104,15 @@ export function App(props: any) {
     props.theme,
     LIGHT_THEME
   )
-  // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
-  const themeData = themes[derivedTheme] || themes[LIGHT_THEME]
+
+  // const themeData = themes[derivedTheme] || themes[LIGHT_THEME]
+  // Setting it to light theme always
+  const themeData = themes[LIGHT_THEME]
 
   // update cypher editor theme
   useEffect(() => {
-    editor.setTheme(derivedTheme)
-  }, [derivedTheme])
+    editor.setTheme(LIGHT_THEME)
+  }, [LIGHT_THEME])
 
   useKeyboardShortcuts(props.bus)
 
