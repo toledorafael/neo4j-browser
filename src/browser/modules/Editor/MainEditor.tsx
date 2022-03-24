@@ -56,12 +56,14 @@ import { EditorButton, FrameButton } from 'browser-components/buttons'
 import {
   ExpandIcon,
   ContractIcon,
-  CloseIcon
+  CloseIcon,
+  DownloadIcon
 } from 'browser-components/icons/Icons'
 import updateFileIcon from 'icons/update-file.svg'
 import updateFavoriteIcon from 'icons/update-favorite.svg'
 import fileIcon from 'icons/file.svg'
 import runIcon from 'icons/run-icon.svg'
+import downloadIcon from 'icons/download-bottom.svg'
 import {
   ADD_PROJECT_FILE,
   REMOVE_PROJECT_FILE
@@ -194,6 +196,37 @@ export function MainEditor({
     setFullscreen(false)
   }
 
+  function downloadLog() {
+    const headers = ['participantID', 'task1answer']
+    const userLog = headers.reduce((acc, header) => {
+      console.log(header)
+      console.log(localStorage.getItem(header))
+      console.log(JSON.stringify(localStorage.getItem(header)))
+      if (acc !== '') {
+        acc = [acc, JSON.stringify(localStorage.getItem(header))].join(',')
+      } else {
+        acc = JSON.stringify(localStorage.getItem(header))
+      }
+      return acc
+    }, '')
+    // Create a blob with the data we want to download as a file
+    const blob = new Blob([[headers, userLog].join('\n')], {
+      type: 'text/json'
+    })
+    // Create an anchor element and dispatch a click event on it
+    // to trigger a download
+    const a = document.createElement('a')
+    a.download = 'log.json'
+    a.href = window.URL.createObjectURL(blob)
+    const clickEvt = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    })
+    a.dispatchEvent(clickEvt)
+    a.remove()
+  }
+
   const buttons = [
     {
       onClick: toggleFullscreen,
@@ -208,6 +241,12 @@ export function MainEditor({
       title: 'Close',
       icon: <CloseIcon />,
       testId: 'discard'
+    },
+    {
+      onClick: downloadLog,
+      title: 'Download',
+      icon: <DownloadIcon />,
+      testId: 'download'
     }
   ]
 
