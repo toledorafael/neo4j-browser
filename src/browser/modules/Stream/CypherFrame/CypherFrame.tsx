@@ -165,7 +165,7 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
     // we want to show an initial view.
     // This happens on first render of a response and on re-runs
     if (this.props.request.status !== REQUEST_STATUS_PENDING) {
-      const openView = initialView(this.props, this.state)
+      const openView = initialView(this.props)
       if (openView !== this.state.openView) {
         const hasVis = openView === viewTypes.ERRORS ? false : this.state.hasVis
         this.setState({ openView, hasVis })
@@ -178,17 +178,15 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
     // When frame re-use leads to result without visualization
     const doneLoading = this.props.request.status === REQUEST_STATUS_SUCCESS
     const currentlyShowingViz = this.state.openView === viewTypes.VISUALIZATION
-    if (doneLoading && currentlyShowingViz && !this.canShowViz()) {
-      const view = initialView(this.props, {
-        ...this.state,
-        openView: undefined // initial view was not meant to override another view
-      })
+    // if (doneLoading && currentlyShowingViz && !this.canShowViz()) {
+    if (doneLoading && !this.canShowViz()) {
+      const view = initialView(this.props)
       if (view) this.setState({ openView: view })
     }
   }
 
   componentDidMount(): void {
-    const view = initialView(this.props, this.state)
+    const view = initialView(this.props)
     if (view) this.setState({ openView: view })
   }
 
