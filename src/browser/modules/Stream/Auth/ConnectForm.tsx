@@ -60,11 +60,13 @@ interface ConnectFormProps {
   onConnectClick: (doneFn?: () => void) => void
   onHostChange: (fallbackScheme: string, newHost: string) => void
   onUsernameChange: (event: any) => void
+  onParticipantIDChange: (event: any) => void
   onPasswordChange: (event: any) => void
   onDatabaseChange: (event: any) => void
   database: string
   password: string
   username: string
+  participantID: string
   used: boolean
   supportsMultiDb: boolean
   SSOError?: string
@@ -213,7 +215,20 @@ export default function ConnectForm(props: ConnectFormProps): JSX.Element {
         {props.authenticationMethod === NATIVE && (
           <StyledConnectionFormEntry>
             <StyledConnectionLabel>
-              Username
+              Participant ID
+              <StyledConnectionTextInput
+                data-testid="participant"
+                onChange={props.onParticipantIDChange}
+                defaultValue={props.participantID}
+              />
+            </StyledConnectionLabel>
+          </StyledConnectionFormEntry>
+        )}
+
+        {props.authenticationMethod === NATIVE && (
+          <StyledConnectionFormEntry>
+            <StyledConnectionLabel>
+              Database Username
               <StyledConnectionTextInput
                 data-testid="username"
                 onChange={props.onUsernameChange}

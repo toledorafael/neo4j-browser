@@ -177,6 +177,13 @@ export class ConnectionForm extends Component<any, ConnectionFormState> {
     this.props.error({})
   }
 
+  onParticipantIDChange = (event: any) => {
+    const participantID = event.target.value
+    this.setState({ participantID })
+    localStorage.setItem('participantID', participantID)
+    this.props.error({})
+  }
+
   onUsernameChange = (event: any) => {
     const username = event.target.value
     this.setState({ username })
@@ -391,6 +398,7 @@ export class ConnectionForm extends Component<any, ConnectionFormState> {
         <ConnectForm
           onConnectClick={this.connect.bind(this)}
           onHostChange={this.onHostChange.bind(this)}
+          onParticipantIDChange={this.onParticipantIDChange}
           onUsernameChange={this.onUsernameChange}
           onPasswordChange={this.onPasswordChange}
           onDatabaseChange={this.onDatebaseChange}
@@ -401,6 +409,7 @@ export class ConnectionForm extends Component<any, ConnectionFormState> {
           SSOError={this.state.SSOError}
           SSOProviders={this.state.SSOProviders || []}
           SSOLoading={this.state.SSOLoading}
+          participantID={this.state.participantID}
           username={this.state.username}
           password={this.state.password}
           database={this.state.requestedUseDb}
