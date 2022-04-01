@@ -312,7 +312,6 @@ export class ExplorerLocal extends Component<
           hiddenNodeLabels={this.state.hiddenNodeLabels}
           hiddenRelTypes={this.state.hiddenRelationshipTypes}
           setPatternSelectorVisible={(value: boolean) => {
-            console.log(value)
             this.setState({ patternSelectorVisible: value })
           }}
           updateStyle={this.props.updateStyle}

@@ -92,7 +92,6 @@ const layout = {
           let firstRender = true
           return (d3force.tick = function() {
             const dynamicUpdate = d3force.nodes().length <= 50
-            console.log(d3force.alpha())
             step--
             const startCalcs = now()
             currentStats.layoutSteps++
@@ -102,8 +101,6 @@ const layout = {
             if (d3Tick()) {
               maxStepsPerTick = 2
               if (firstRender) {
-                console.log('Here')
-                console.log(onLayoutFinishCallback)
                 onLayoutFinishCallback && onLayoutFinishCallback()
               }
               firstRender = false
