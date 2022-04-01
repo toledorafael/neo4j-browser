@@ -180,6 +180,7 @@ export class Graph extends Component<any, State> {
   graphView: any
   svgElement: any
   state = {
+    start: Date.now(),
     zoomInLimitReached: false,
     zoomOutLimitReached: false,
     shouldResize: false,
@@ -352,7 +353,33 @@ export class Graph extends Component<any, State> {
   handleSubmit() {
     if (this.state.newConditionType) {
       this.props.addFilterAction(this.state.newConditionType)
-
+      const timestamp = Math.floor((Date.now() - this.state.start) / 1000)
+      // Logging filter creation
+      let filterLog = localStorage.getItem('filter')
+      if (filterLog) {
+        const newFilterLog =
+          ', ' +
+          timestamp +
+          ': ' +
+          JSON.stringify(this.state.newConditionType) +
+          '}'
+        // console.log(filterLog)
+        // console.log(filterLog.substring(0, filterLog.length - 1))
+        filterLog = filterLog.substring(0, filterLog.length - 1) + newFilterLog
+        // console.log(typeof filterObj)
+        // filterObj[timestamp] = this.state.newConditionType
+        // Object.assign(filterObj, {timestamp : this.state.newConditionType})
+        // console.log(filterObj)
+        localStorage.setItem('filter', filterLog)
+      } else {
+        const newFilterLog =
+          '{' +
+          timestamp +
+          ': ' +
+          JSON.stringify(this.state.newConditionType) +
+          '}'
+        localStorage.setItem('filter', newFilterLog)
+      }
       this.props.graphStyle.addCondition(this.state.newConditionType)
       this.props.updateStyle(this.props.graphStyle.toSheet())
       const stats = getGraphStats(this.graph)

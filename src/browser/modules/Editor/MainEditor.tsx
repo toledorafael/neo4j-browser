@@ -197,7 +197,7 @@ export function MainEditor({
   }
 
   function downloadLog() {
-    const headers = ['participantID', 'task1answer']
+    const headers = ['participantID', 'task1answer', 'filter']
     const userLog = headers.reduce((acc, header) => {
       console.log(header)
       console.log(localStorage.getItem(header))
