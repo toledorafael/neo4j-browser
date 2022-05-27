@@ -100,6 +100,7 @@ import playStart from './play-guides/tutorial'
 import playTypography from './play-guides/typography'
 import playUnfound from './play-guides/unfound'
 import playWritecode from './play-guides/write-code'
+import playStudy from './play-guides/study'
 
 // Migrated sidebar guides
 import guideConcepts from './sidebar-guides/concepts'
@@ -173,6 +174,7 @@ type PlayChapter =
   | 'typography'
   | 'unfound'
   | 'writeCode'
+  | 'study'
 
 export function isPlayChapter(name: string): name is PlayChapter {
   return name in docs.play.chapters
@@ -351,7 +353,8 @@ const docs: AllDocumentation = {
       start: playStart,
       typography: playTypography,
       unfound: playUnfound,
-      writeCode: playWritecode
+      writeCode: playWritecode,
+      study: playStudy
     }
   },
   // Guides are play-guides but migrated to be viewable in the sidebar
