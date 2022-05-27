@@ -35,48 +35,48 @@ const slides = [
       <h3>Tutorial</h3>
       <p className="lead">
         In this tutorial, you will learn how to use <em>Neo4j Browser</em> to
-        visualize analysis results of configurable software.
+        visualize analysis results of configurable program.
       </p>
     </div>
     <div className="col-sm-9">
       <p>
-        The interface comprises the top bar, where you can run queries over the
+        This interface comprises the top bar, where you can run queries over the
         database, and the list of visualization frames, in which you can
-        visualize and inspect the results of an executed query. A visualization
-        frame can be maximized to fullscreen and closed whenever you want.
+        visualize and inspect the results of the query. A visualization frame
+        can be maximized to fullscreen and closed whenever you want by clicking
+        the icons at the top.
       </p>
       <p>This guide will show you how to:</p>
       <ol className="big">
-        <li>Run a query about configurable software data</li>
+        <li>Run a query about configurable program data</li>
         <li>Customize the visualization of the results</li>
-        <li>Add filters representing different software variants</li>
+        <li>Add filters representing different program variants</li>
       </ol>
       <p></p>
       <p>
-        Note that you are not expected to learn the language used to query the
-        database as all required queries will be provided to you during the
-        study. Click on the arrows on the sides or bottom of this visualization
-        frame to navigate through the tutorial.
+        Note that you are not expected to learn the query language all required
+        queries will be provided to you during the study. Click on the arrows on
+        the sides or bottom of this visualization frame to navigate through the
+        tutorial.
       </p>
     </div>
   </Slide>,
   <Slide key="s2">
     <div className="col-sm-3">
-      <h3>Graphical software data</h3>
+      <h3>Graphical program data</h3>
       <p className="lead">
         {' '}
         A program comprises entities (e.g., classes, variables, functions) and
         the relationships between them (e.g., function calls, variable reads,
-        class containment.) A graph representing such a program would include
-        nodes serving as the entities and links indicating the relationships
+        class containment.) A graph representing such a program includes nodes
+        representing as the entities and links indicating the relationships
         established in the code.{' '}
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        Consider an example function that updates the name attribute of a Node
-        object that composes a graph data structure:
+        Consider a function that updates the name attribute of a Node object:
       </h5>
       <figure>
         <pre className="code">
@@ -96,63 +96,66 @@ const slides = [
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "GraphApp::updateNodeName" RETURN *'
+          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateNodeName" RETURN *'
         }
       </pre>
     </div>
   </Slide>,
   <Slide key="s3">
     <div className="col-sm-3">
-      <h3>Graphical software data</h3>
+      <h3>Graphical program data</h3>
       <p className="lead">
-        After running the query, a new visualization frame should be created.
-        The frame shows at the center the nodes and links representing the
-        results for the query. The sidebar on the right provides an overview of
-        the node labels and relationships types present in the visualization.
-        Feel free to inspect new visualization frame and come back to the
-        tutorial whenever you are ready.
+        The new frame shows the returned by the executed query. The sidebar on
+        the right provides an overview of the node labels and relationships
+        types present in the visualization.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
         If you hover, or click, on any node or link of the graph the overview on
-        the sidebar is replaced by the list of attributes of the selected
-        element. To return to the overview, you need to deslect the clicked
+        the sidebar is replaced by the information associated with the selected
+        element. To return to the overview, you need to deselect the clicked
         entity. You can do that by clicking on the background or on the selected
         entity once.
       </h5>
       <h5>
-        As a first task, try to find the node that represents the function
-        GraphApp::updateNodeName. (hint: the label of such a node should be
-        'AnalyzedCode/graphProductLine/GraphApp.h:GraphApp::updateNodeName')
+        As a first task, find the node that represents the function
+        updateNodeName. What is the id of such a node?
       </h5>
       <br />
-      <img src="./assets/images/codeSnippet.png" width={700} />
+      {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
     </div>
   </Slide>,
-  <Slide key="s4">
+  <Slide key="s3">
     <div className="col-sm-3">
-      <h3>Graphical software data</h3>
+      <h3>Graphical program data</h3>
       <p className="lead">
-        After running the query, a new visualization frame should be created.
-        The frame shows at the center the nodes and links representing the
-        results for the query. The sidebar on the right provides an overview of
-        the node labels and relationships types present in the visualization.
+        The new frame shows the returned by the executed query. The sidebar on
+        the right provides an overview of the node labels and relationships
+        types present in the visualization.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        Now find the link representing the function call highlighted in the
-        code. (hint: the label of the end node should be
-        'AnalyzedCode/graphProductLine/Node.h:Node::setName')
+        If you hover, or click, on any node or link of the graph the overview on
+        the sidebar is replaced by the information associated with the selected
+        element. To return to the overview, you need to deselect the clicked
+        entity. You can do that by clicking on the background or on the selected
+        entity once.
+      </h5>
+      <h5>
+        As a first task, find the node that represents the function
+        updateNodeName. What is the id of such a node?
       </h5>
       <br />
-      <img src="./assets/images/codeSnippetHighlighted.png" width={700} />
+      <h5>
+        The correct answer is <b>46</b>.
+      </h5>
     </div>
   </Slide>,
-  <Slide key="s5">
+  <Slide key="s4">
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -170,7 +173,7 @@ const slides = [
       />
       <h5>
         To experiment with the customization options, perform the following
-        tasks:{' '}
+        tasks on the query results:{' '}
       </h5>
       <ol>
         <li>Set the color of cVariables to be red</li>
@@ -183,7 +186,7 @@ const slides = [
       <h5>You can move to the next slide when you are done.</h5>
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s5">
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -192,29 +195,30 @@ const slides = [
       </p>
       <br />
     </div>
+    {/* TODO: replace gif */}
     <div className="col-sm-9">
-      <img src="./assets/images/coloredGraph.png" height="400" />
+      <img src="./assets/images/colouredGraph.png" height="400" />
     </div>
   </Slide>,
-  <Slide key="s7">
+  <Slide key="s6">
     <div className="col-sm-3">
-      <h3>Configurable software graph</h3>
+      <h3>Configurable program graph</h3>
       <p className="lead">
-        Software systems are developed as a set of functionalities. Each unit of
-        functionality, or feature, satisfies a requirement or represents a
-        design decision. The set of features provide options to the developers
-        to configure the system to individual users by turning some features on
-        and others off. Hence configurable software systems may include all the
-        available features or a subset of them.
+        Software configuration is a fundamental aspect of software development.
+        It is the ability to create software variants for different contexts of
+        use. Engineers can create a configurable program that encompasses
+        multiple, different variants that share a set of common features. At the
+        level of the code, variability occurs by enabling or disabling portions
+        of the code that implements certain software features.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        The links in the graphs that you are going to interact are annotated
+        The links in the graphs that you are going to interpret are annotated
         with their respective presence conditions. The conditions are boolean
-        expressions that show the feature configuration in which the action
-        represented by the link may occur. For example, consider the following
+        expressions that show the required configuration for the action
+        represented by the link to occur. For example, consider the following
         code snippet:
       </h5>
       <figure>
@@ -222,7 +226,7 @@ const slides = [
           {`void GraphApp::connectedComponents() {
     if ((kBFS || kDFS) && kUndirected) {
         clearVisited();
-        int compNum = 0;
+        int compNum = 3;
         ...
     }
 }`}
@@ -231,20 +235,19 @@ const slides = [
       <h5>
         Note that the boolean variables used in the if-condition represent flags
         that indicate whether a feature is enabled or not. Hence, for the
-        instructions to be executed, the feature kUndirected must be enabled,
-        meaning it must have value 'true', along with either kBFS or kDFS. A
+        execution of instructions inside the condition block to occur, the
+        feature kUndirected must be enabled, as well as, one of kBFS or kDFS. A
         graph representing the function call, the variable declaration, variable
         write, and their presence conditions looks like the following:
       </h5>
       <img src="./assets/images/presenceCondition.png" />
       <h5>
-        The presence conditions are composed by AND ('/\'), OR ('\/'), and NOT
-        ('!') operations.
+        The presence conditions in the graph are composed by AND ('/\'), OR
+        ('\/'), and NOT ('!') operations.
       </h5>
-      {/* TODO: Add table showing the symbols meaning */}
     </div>
   </Slide>,
-  <Slide key="s8">
+  <Slide key="s7">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <br />
@@ -252,51 +255,55 @@ const slides = [
     <div className="col-sm-9">
       <h5>
         The tasks comprising this study will ask you to determine the presence
-        of links in specific feature configurations. As an example, consider the
-        graph returned by the following query:
+        of code entities interactions, or links, in specific program variants.
+        As an example, consider the graph returned by the following query:
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "GraphApp::BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++"RETURN *'
+          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++" AND type(b) <> "varInfFunc" RETURN *'
         }
       </pre>
       <h5>
-        Which of the following feature configurations present more of graph
-        links:
-        <ol>
-          <li>Variant 1: kWeighted /\ !kUndirected</li>
-          <li>Variant 2: !kWeighted /\ kUndirected</li>
-        </ol>
+        Which of the following program variants include more writing
+        relationships between the function BFS and its contained variables:
+        <ul>
+          <li>V1: kWeighted /\ !kUndirected</li>
+          <li>V2: !kWeighted /\ kUndirected</li>
+        </ul>
       </h5>
       Note that a feature is not considered disabled unless it is specified in
-      the configuration.
+      the configuration with the operator '!'.
     </div>
   </Slide>,
-  <Slide key="s9">
+  <Slide key="s8">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <p className="lead"></p>
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer for the task is Variant 1 with four links, while
-        Variant 2 includes three links. If your answer was incorrect, take your
-        time to go back to the graph to understand where you made a mistake.
+        The correct answer is V1 since BFS writes to the variables 'endNodeID'
+        and 'edge' when the feature kWeighted is set. While in V2 the same
+        function only writes to variable 'neighborID' when kWeighted is unset.
+        Take your time to go back to the graph to understand the correct answer,
+        if necessary.
       </h5>
     </div>
   </Slide>,
-  <Slide key="s10">
+  <Slide key="s9">
     <div className="col-sm-3">
       <h3>End of tutorial</h3>
       <p className="lead">
-        Now that you are familiar with the interface, you are ready to start the
-        study.
+        Now that you are familiar with the interface, we can to start the study.
       </p>
     </div>
     <div className="col-sm-9">
-      {/* TODO: add instructions to initiate the study */}
-      {/* TODO: Add gif showing how to see attributes */}
+      Click on the following query and hit the play button beside the top bar to
+      initialize new frame with the tasks for our user study.
     </div>
+    <pre className="pre-scrollable code runnable remove-play-icon">
+      {':play study'}
+    </pre>
   </Slide>
 ]
 
