@@ -348,7 +348,7 @@ export class GrassEditorComponent extends Component<
         cursor: 'default'
       }
       pickers = [
-        this.colorPicker(styleForRelType.selector, styleForRelType, false),
+        // this.colorPicker(styleForRelType.selector, styleForRelType, false),
         this.widthPicker(styleForRelType.selector, styleForRelType),
         this.captionPicker(
           styleForRelType.selector,
