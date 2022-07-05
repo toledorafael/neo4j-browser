@@ -27,6 +27,7 @@ import ManualLink from 'browser-components/ManualLink'
 import Slide from '../../modules/Carousel/Slide'
 // import customizationGif from './assets/images/customizeVisual.gif'
 
+// localStorage.setItem('startTutorial', '' + Date.now())
 const title = 'Tutorial'
 const category = 'graphExamples'
 const slides = [
@@ -35,7 +36,7 @@ const slides = [
       <h3>Tutorial</h3>
       <p className="lead">
         In this tutorial, you will learn how to use <em>Neo4j Browser</em> to
-        visualize analysis results of configurable program.
+        visualize analysis results of configurable programs.
       </p>
     </div>
     <div className="col-sm-9">
@@ -282,11 +283,11 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer is V1 since BFS writes to the variables 'endNodeID'
-        and 'edge' when the feature kWeighted is set. While in V2 the same
-        function only writes to variable 'neighborID' when kWeighted is unset.
-        Take your time to go back to the graph to understand the correct answer,
-        if necessary.
+        The correct answer is <b>V1</b> since BFS writes to the variables
+        'endNodeID' and 'edge' when the feature kWeighted is set. While in V2
+        the same function only writes to variable 'neighborID' when kWeighted is
+        unset. Take your time to go back to the graph to understand the correct
+        answer, if necessary.
       </h5>
     </div>
   </Slide>,
