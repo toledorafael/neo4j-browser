@@ -84,13 +84,13 @@ const createItems = (
   onItemClick: any,
   RenderType: any,
   editorCommandTemplate: any,
-  showStar = true,
+  showStar = false,
   count?: number,
   styleGetter: any = () => ({})
 ) => {
   const items = [...originalList]
   if (showStar) {
-    let str = '*'
+    let str = '^'
     if (count) {
       str = `${str}(${numberToUSLocale(count)})`
     }
@@ -132,7 +132,8 @@ const LabelItems = ({
 }: LabelItemsProps) => {
   let labelItems: any = <p>There are no labels in database</p>
   if (labels.length) {
-    const editorCommandTemplate = (text: any, i: any) => { // CYPHER QUERY DEFINED FOR EACH BUTTON
+    const editorCommandTemplate = (text: any, i: any) => {
+      // CYPHER QUERY DEFINED FOR EACH BUTTON
       if (i === 0) {
         return 'MATCH (n) RETURN n LIMIT 25'
       }
@@ -143,7 +144,7 @@ const LabelItems = ({
       onItemClick,
       { component: StyledLabel },
       editorCommandTemplate,
-      true,
+      false,
       count,
       createNodeStyleGetter(graphStyleData)
     )
