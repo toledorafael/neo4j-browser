@@ -36,7 +36,7 @@ export function createGraph(nodes: any, relationships: any) {
   return graph
 }
 
-export function createInteractionsBundling () {
+export function createInteractionsBundling() {
   // let hierachy = new hierarchy()
   // hierarchy.addNodes()
   // hierarchy.addLinks()
@@ -44,7 +44,7 @@ export function createInteractionsBundling () {
   // return hierarchy
 }
 
-export function mapNodes (nodes: any) {
+export function mapNodes(nodes: any) {
   return nodes.map(
     (node: any) =>
       new Node(
@@ -89,14 +89,14 @@ export function getGraphStats(graph: any): GraphStats {
   const relTypeStats: any = {}
   graph.nodes().forEach((node: any) => {
     node.labels.forEach((label: any) => {
-      if (labelStats['*']) {
-        labelStats['*'].count = labelStats['*'].count + 1
-      } else {
-        labelStats['*'] = {
-          count: 1,
-          properties: []
-        }
-      }
+      // if (labelStats['*']) {
+      //   labelStats['*'].count = labelStats['*'].count + 1
+      // } else {
+      //   labelStats['*'] = {
+      //     count: 1,
+      //     properties: []
+      //   }
+      // }
       if (labelStats[label]) {
         labelStats[label].count = labelStats[label].count + 1
         labelStats[label].properties = {
