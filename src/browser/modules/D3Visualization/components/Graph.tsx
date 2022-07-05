@@ -189,8 +189,11 @@ export class Graph extends Component<any, State> {
     scaleFactor: 1,
     featureExpression: 'Enter feature expression...',
     newConditionType: '',
-    showLoadingOverlay: false
+    showLoadingOverlay: false,
+    showFilters: false
   }
+
+  // let showFilters = false
 
   graphInit(el: any) {
     this.svgElement = el
@@ -415,7 +418,7 @@ export class Graph extends Component<any, State> {
   }
 
   inputFeatureExpression() {
-    if (this.props.fullscreen) {
+    if (this.props.fullscreen && this.state.showFilters) {
       // TODO: Add condition to only show PC form if the user is interested in learn about that
       if (
         // this.checkPropertyList(
@@ -443,7 +446,7 @@ export class Graph extends Component<any, State> {
   }
 
   inputToggleStripes() {
-    if (this.props.fullscreen) {
+    if (this.props.fullscreen && this.state.showFilters) {
       return (
         <StyledLayoutPicker>
           <StyleRelationshipLayoutButtonGroup>
@@ -509,102 +512,106 @@ export class Graph extends Component<any, State> {
   }
 
   legend() {
-    return (
-      <StyledGraphLegend>
-        <button
-          onClick={this.props.setLightTheme}
-          style={{ marginRight: '8px' }}
-        >
-          Theme 1
-        </button>
-        <button onClick={this.props.setDarkTheme}>Theme 2</button>
-        {/* <button onClick={this.props.setLightCustomTheme}>Light 2</button>
-        <button onClick={this.props.setDarkCustomTheme}>Dark 2</button> */}
-        <table>
-          <tr>
-            <th colSpan={2}>Edge Types</th>
-          </tr>
-          {this.props.stats.relTypes &&
-            Object.keys(this.props.stats.relTypes).map(relType => {
-              const style = this.props.graphStyle.forRelationship({
-                type: relType
-              })
-              return relType === '*' ? null : (
-                <tr>
-                  <td>
-                    <svg width="180" height="15" viewBox="0 -6 144 12">
-                      <line
-                        x1="0"
-                        x2="144"
-                        y1="0"
-                        y2="0"
-                        stroke="#888"
-                        strokeWidth="5"
-                        strokeDasharray={
-                          (this.state.currentLayout.globalPattern &&
-                            getPatternDashes(style.get('pattern'), 5)) ||
-                          ''
-                        }
-                      />
-                      {this.state.currentLayout.globalShape && (
-                        <path
-                          d={getShapeDef(
-                            style.get('shape'),
-                            { x: 0, y: 0 },
-                            11
-                          )}
-                          stroke="black"
-                          strokeWidth="1"
-                          fill="#ffffff77"
+    if (this.props.fullscreen && this.state.showFilters) {
+      return (
+        <StyledGraphLegend>
+          <button
+            onClick={this.props.setLightTheme}
+            style={{ marginRight: '8px' }}
+          >
+            Theme 1
+          </button>
+          <button onClick={this.props.setDarkTheme}>Theme 2</button>
+          {/* <button onClick={this.props.setLightCustomTheme}>Light 2</button>
+          <button onClick={this.props.setDarkCustomTheme}>Dark 2</button> */}
+          <table>
+            <tr>
+              <th colSpan={2}>Edge Types</th>
+            </tr>
+            {this.props.stats.relTypes &&
+              Object.keys(this.props.stats.relTypes).map(relType => {
+                const style = this.props.graphStyle.forRelationship({
+                  type: relType
+                })
+                return relType === '*' ? null : (
+                  <tr>
+                    <td>
+                      <svg width="180" height="15" viewBox="0 -6 144 12">
+                        <line
+                          x1="0"
+                          x2="144"
+                          y1="0"
+                          y2="0"
+                          stroke="#888"
+                          strokeWidth="5"
+                          strokeDasharray={
+                            (this.state.currentLayout.globalPattern &&
+                              getPatternDashes(style.get('pattern'), 5)) ||
+                            ''
+                          }
                         />
-                      )}
-                    </svg>
-                  </td>
-                  <td>
-                    <div className="legend-label" title={relType}>
-                      {relType}
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-          <tr>
-            <th colSpan={2}>Feature Expressions</th>
-          </tr>
-          {this.props.conditionTypes &&
-            this.props.conditionTypes.map((condType: any) => {
-              const style = this.props.graphStyle.forCondition(condType)
-              if (style.get('color') === 'var(--graph-color0)') return null
-              return (
-                <tr key={condType}>
-                  <td>
-                    <svg width="180" height="15" viewBox="0 -6 144 12">
-                      <line
-                        x1="0"
-                        x2="144"
-                        y1="0"
-                        y2="0"
-                        stroke={style.get('color')}
-                        strokeWidth="5"
-                        strokeDasharray={
-                          this.state.currentLayout.localPattern
-                            ? getPatternDashes(style.get('pattern'), 5)
-                            : ''
-                        }
-                      />
-                    </svg>
-                  </td>
-                  <td>
-                    <div className="legend-label" title={condType}>
-                      {condType}
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-        </table>
-      </StyledGraphLegend>
-    )
+                        {this.state.currentLayout.globalShape && (
+                          <path
+                            d={getShapeDef(
+                              style.get('shape'),
+                              { x: 0, y: 0 },
+                              11
+                            )}
+                            stroke="black"
+                            strokeWidth="1"
+                            fill="#ffffff77"
+                          />
+                        )}
+                      </svg>
+                    </td>
+                    <td>
+                      <div className="legend-label" title={relType}>
+                        {relType}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            <tr>
+              <th colSpan={2}>Feature Expressions</th>
+            </tr>
+            {this.props.conditionTypes &&
+              this.props.conditionTypes.map((condType: any) => {
+                const style = this.props.graphStyle.forCondition(condType)
+                if (style.get('color') === 'var(--graph-color0)') return null
+                return (
+                  <tr key={condType}>
+                    <td>
+                      <svg width="180" height="15" viewBox="0 -6 144 12">
+                        <line
+                          x1="0"
+                          x2="144"
+                          y1="0"
+                          y2="0"
+                          stroke={style.get('color')}
+                          strokeWidth="5"
+                          strokeDasharray={
+                            this.state.currentLayout.localPattern
+                              ? getPatternDashes(style.get('pattern'), 5)
+                              : ''
+                          }
+                        />
+                      </svg>
+                    </td>
+                    <td>
+                      <div className="legend-label" title={condType}>
+                        {condType}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+          </table>
+        </StyledGraphLegend>
+      )
+    } else {
+      return null
+    }
   }
 
   render() {
