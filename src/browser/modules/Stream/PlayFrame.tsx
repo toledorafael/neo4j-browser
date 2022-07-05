@@ -275,6 +275,11 @@ function generateContent(
   // Check if content exists locally
   if (isPlayChapter(guideName)) {
     const { content, title, subtitle, slides = null } = chapters[guideName]
+    if (guideName === 'start') {
+      localStorage.setItem('start-tutorial', String(Date.now()))
+    } else {
+      localStorage.setItem('start-' + guideName, String(Date.now()))
+    }
 
     const isPlayStart = stackFrame.cmd.trim() === ':play start'
     const updatedContent =
