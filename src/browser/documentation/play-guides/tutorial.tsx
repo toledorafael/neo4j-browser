@@ -33,10 +33,13 @@ const category = 'graphExamples'
 const slides = [
   <Slide key="s1">
     <div className="col-sm-3">
-      <h3>Tutorial</h3>
+      <h3>
+        How to present software analysis results that are conditioned on the
+        software's configuration
+      </h3>
       <p className="lead">
-        In this tutorial, you will learn how to use <em>Neo4j Browser</em> to
-        visualize analysis results of configurable programs.
+        In this presentation, you will learn how to use <em>Neo4j Browser</em>{' '}
+        to visualize analysis results of configurable software.
       </p>
     </div>
     <div className="col-sm-9">
@@ -45,266 +48,243 @@ const slides = [
         database, and the list of visualization frames, in which you can
         visualize and inspect the results of the query. A visualization frame
         can be maximized to fullscreen and closed whenever you want by clicking
-        the icons at the top.
+        the icons at the top. When a visualization framed is maximized to
+        fullscreen, the top left corner of the visualization is populated with
+        the form used to create visualization filters.
       </p>
-      <p>This guide will show you how to:</p>
+      {/* <p>This guide will show you how to:</p>
       <ol className="big">
         <li>Run a query about configurable program data</li>
         <li>Customize the visualization of the results</li>
         <li>Add filters representing different program variants</li>
       </ol>
-      <p></p>
+      <p></p> */}
       <p>
         Note that you are not expected to learn the query language all required
-        queries will be provided to you during the study. Click on the arrows on
-        the sides or bottom of this visualization frame to navigate through the
-        tutorial.
+        queries will be provided. Click on the arrows on the sides or bottom of
+        this visualization frame to navigate through the tutorial.
       </p>
     </div>
   </Slide>,
   <Slide key="s2">
     <div className="col-sm-3">
-      <h3>Graphical program data</h3>
+      <h3>
+        Results format - Behaviour Alteration analysis (path between components)
+      </h3>
       <p className="lead">
-        {' '}
-        A program comprises entities (e.g., classes, variables, functions) and
-        the relationships between them (e.g., function calls, variable reads,
-        class containment.) A graph representing such a program includes nodes
-        representing as the entities and links indicating the relationships
-        established in the code.{' '}
+        You can click on the following query and hit the play button beside the
+        top bar to create a new visualization frame with the graphical
+        representation of analysis results with relationships of the same type.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <h5>
-        Consider a function that updates the name attribute of a Node object:
-      </h5>
-      <figure>
-        <pre className="code">
-          {`void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
-   for (int i=0; i < nodes.size(); i++) {
-       if (nodes[i]->getName() == nodeName) {
-           nodes[i]->setName(newName);
-       }
-   }
-}`}
-        </pre>
-      </figure>
-      <h5>
-        Now click on the following query and hit the play button beside the top
-        bar to create a new visualization frame with the graphical
-        representation of this program.
-      </h5>
+      <h5></h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateNodeName" RETURN *'
+          'MATCH p=(srcComp:component)-[r:alterBehavior]->(dstComp:component) RETURN DISTINCT srcComp, r, dstComp'
         }
       </pre>
+      The resulting visualization frame and its correspondent tabular
+      representation should look like the following image:
+      <br />
+      <img
+        width="1000"
+        src="./assets/images/tabularGraphicalSameType.png"
+        alt="Customization options"
+      />
     </div>
   </Slide>,
   <Slide key="s3">
     <div className="col-sm-3">
-      <h3>Graphical program data</h3>
+      <h3>
+        Results format - Behaviour Alteration analysis (with internal calls)
+      </h3>
       <p className="lead">
-        The new frame shows the returned by the executed query. The sidebar on
-        the right provides an overview of the node labels and relationships
-        types present in the visualization.
+        You can click on the following query and hit the play button beside the
+        top bar to create a new visualization frame with the graphical
+        representation of analysis results with relationships of different
+        types.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <h5>
-        If you hover, or click, on any node or link of the graph the overview on
-        the sidebar is replaced by the information associated with the selected
-        element. To return to the overview, you need to deselect the clicked
-        entity. You can do that by clicking on the background or on the selected
-        entity once.
-      </h5>
-      <h5>
-        As a first task, find the node that represents the function
-        updateNodeName. What is the id of such a node?
-      </h5>
+      <h5></h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH p=(srcComp:component)-[behaviourAlterationEdge]->(dstComp:component) MATCH q=(srcComp)-[firstCall]->(intermediateComp)-[secondCall]->(dstComp) WHERE srcComp.name = "C11" AND dstComp.name = "C12" AND (intermediateComp.name = "C10" OR intermediateComp.name = "C7") RETURN Distinct srcComp, behaviourAlterationEdge, firstCall, intermediateComp, secondCall, dstComp'
+        }
+      </pre>
+      The resulting visualization frame and its correspondent tabular
+      representation should look like the following image:
       <br />
-      {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
-    </div>
-  </Slide>,
-  <Slide key="s3">
-    <div className="col-sm-3">
-      <h3>Graphical program data</h3>
-      <p className="lead">
-        The new frame shows the returned by the executed query. The sidebar on
-        the right provides an overview of the node labels and relationships
-        types present in the visualization.
-      </p>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        If you hover, or click, on any node or link of the graph the overview on
-        the sidebar is replaced by the information associated with the selected
-        element. To return to the overview, you need to deselect the clicked
-        entity. You can do that by clicking on the background or on the selected
-        entity once.
-      </h5>
-      <h5>
-        As a first task, find the node that represents the function
-        updateNodeName. What is the id of such a node?
-      </h5>
-      <br />
-      <h5>
-        The correct answer is <b>46</b>.
-      </h5>
+      <img
+        width="1000"
+        src="./assets/images/tabularGraphicalInternalLinksSmall.png"
+        alt="Customization options"
+      />
     </div>
   </Slide>,
   <Slide key="s4">
     <div className="col-sm-3">
-      <h3>Customizing visualization</h3>
+      <h3>
+        Results format - Behaviour Alteration analysis (with internal calls)
+      </h3>
       <p className="lead">
-        The sidebar provides customization options to change visual attributes
-        of the nodes and links. The customization menu appears whenever you
-        click on a node label or relationship type listed in the overview. The
-        star sign (*) represent visual attributes applied to all nodes or links.
+        You can click on the following query and hit the play button beside the
+        top bar to create a new visualization frame with the graphical
+        representation of a larger example of analysis results with
+        relationships of different types.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
+      <h5></h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH p=(srcComp:component)-[r]->(dstComp:component) RETURN DISTINCT type(r), srcComp, dstComp, r'
+        }
+      </pre>
+      The resulting visualization frame and the its correspondent tabular
+      representation should look like the following image:
+      <br />
       <img
-        src="./assets/images/customizeVisual.gif"
+        width="1000"
+        src="./assets/images/tabularGraphicalInternalLinks.png"
         alt="Customization options"
       />
-      <h5>
-        To experiment with the customization options, perform the following
-        tasks on the query results:{' '}
-      </h5>
-      <ol>
-        <li>Set the color of cVariables to be red</li>
-        <li>Set the color of cFunctions to be dark blue</li>
-        <li>
-          Set the width of all the line width to be the fourth thickiest
-          available option
-        </li>
-      </ol>
-      <h5>You can move to the next slide when you are done.</h5>
     </div>
   </Slide>,
   <Slide key="s5">
     <div className="col-sm-3">
-      <h3>Customizing visualization</h3>
+      <h3>Results filtered by a single variant (small example)</h3>
       <p className="lead">
-        If you set the visual attributes correctly, your graph should look like
-        the following:
+        You can click on the following query and hit the play button beside the
+        top bar to create a new visualization frame with the graphical
+        representation of analysis results with relationships of different
+        types.
       </p>
       <br />
     </div>
-    {/* TODO: replace gif */}
     <div className="col-sm-9">
-      <img src="./assets/images/colouredGraph.png" height="400" />
+      <h5></h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH p=(srcComp:component)-[behaviourAlterationEdge]->(dstComp:component) MATCH q=(srcComp)-[firstCall]->(intermediateComp)-[secondCall]->(dstComp) WHERE srcComp.name = "C11" AND dstComp.name = "C12" AND (intermediateComp.name = "C10" OR intermediateComp.name = "C7") RETURN Distinct srcComp, behaviourAlterationEdge, firstCall, intermediateComp, secondCall, dstComp'
+        }
+      </pre>
+      In order to add coloured filters, you should maximize the visualization
+      and create a filter with the configuration expression{' '}
+      <b>"aid /\ art /\ !raw /\ buy"</b>. Feel free to click on the filter label
+      in the sidebar to assign it a different colour. Make sure to remove the
+      filter before running another query, unless you prefer to keep all created
+      filters in the new visualization frame. The correspondent tabular
+      representation should look like the following image:
+      <br />
+      <img
+        width="600"
+        src="./assets/images/tableSingleVariant.png"
+        alt="Customization options"
+      />
     </div>
   </Slide>,
   <Slide key="s6">
     <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
+      <h3>Results filtered by two variants (small example)</h3>
       <p className="lead">
-        Software configuration is a fundamental aspect of software development.
-        It is the ability to create software variants for different contexts of
-        use. Engineers can create a configurable program that encompasses
-        multiple, different variants that share a set of common features. At the
-        level of the code, variability occurs by enabling or disabling portions
-        of the code that implements certain software features.
+        For this example, you can use the visualization created in the previous
+        page or you can click on the following query and hit the play button
+        beside the top bar to create a new visualization frame.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <h5>
-        The links in the graphs that you are going to interpret are annotated
-        with their respective presence conditions. The conditions are boolean
-        expressions that show the required configuration for the action
-        represented by the link to occur. For example, consider the following
-        code snippet:
-      </h5>
-      <figure>
-        <pre className="code">
-          {`void GraphApp::connectedComponents() {
-    if ((kBFS || kDFS) && kUndirected) {
-        clearVisited();
-        int compNum = 3;
-        ...
-    }
-}`}
-        </pre>
-      </figure>
-      <h5>
-        Note that the boolean variables used in the if-condition represent flags
-        that indicate whether a feature is enabled or not. Hence, for the
-        execution of instructions inside the condition block to occur, the
-        feature kUndirected must be enabled, as well as, one of kBFS or kDFS. A
-        graph representing the function call, the variable declaration, variable
-        write, and their presence conditions looks like the following:
-      </h5>
-      <img src="./assets/images/presenceCondition.png" />
-      <h5>
-        The presence conditions in the graph are composed by AND ('/\'), OR
-        ('\/'), and NOT ('!') operations.
-      </h5>
+      <h5></h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH p=(srcComp:component)-[behaviourAlterationEdge]->(dstComp:component) MATCH q=(srcComp)-[firstCall]->(intermediateComp)-[secondCall]->(dstComp) WHERE srcComp.name = "C11" AND dstComp.name = "C12" AND (intermediateComp.name = "C10" OR intermediateComp.name = "C7") RETURN Distinct srcComp, behaviourAlterationEdge, firstCall, intermediateComp, secondCall, dstComp'
+        }
+      </pre>
+      In order to add coloured filters, you should maximize the visualization
+      and create a filter with the configuration expression{' '}
+      <b>"aid /\ art /\ !raw /\ buy"</b> and another one with{' '}
+      <b>"aid /\ art /\ raw /\ buy"</b>. Feel free to click on the filters'
+      label in the sidebar to assign it a different colour. Make sure to remove
+      the filter before running another query, unless you prefer to keep all
+      created filters in the new visualization frame. The correspondent tabular
+      representation should look like the following image:
+      <br />
+      <img
+        width="600"
+        src="./assets/images/tableTwoVariants.png"
+        alt="Customization options"
+      />
     </div>
   </Slide>,
   <Slide key="s7">
     <div className="col-sm-3">
-      <h3>Demo task</h3>
+      <h3>Results filtered by a group of variants</h3>
+      <p className="lead">
+        You can click on the following query and hit the play button beside the
+        top bar to create a new visualization frame with the graphical
+        representation of analysis results with relationships of different
+        types.
+      </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <h5>
-        The tasks comprising this study will ask you to determine the presence
-        of code entities interactions, or links, in specific program variants.
-        As an example, consider the graph returned by the following query:
-      </h5>
+      <h5></h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++" AND type(b) <> "varInfFunc" RETURN *'
+          'MATCH p=(srcComp:component)-[r]->(dstComp:component) RETURN DISTINCT type(r), srcComp, dstComp, r'
         }
       </pre>
-      <h5>
-        Which of the following program variants include more writing
-        relationships between the function BFS and its contained variables:
-        <ul>
-          <li>V1: kWeighted /\ !kUndirected</li>
-          <li>V2: !kWeighted /\ kUndirected</li>
-        </ul>
-      </h5>
-      Note that a feature is not considered disabled unless it is specified in
-      the configuration with the operator '!'.
+      In order to add coloured filters, you should maximize the visualization
+      and create a filter with the configuration expression "!raw/\ art". Feel
+      free to click on the filter label in the sidebar to assign it a different
+      colour. Make sure to remove the filters before running another query,
+      unless you prefer to keep all created filters in the new visualization
+      frame. The correspondent tabular representation should look like the
+      following image:
+      <br />
+      <img
+        width="600"
+        src="./assets/images/tableMultipleVariants.png"
+        alt="Customization options"
+      />
     </div>
   </Slide>,
   <Slide key="s8">
     <div className="col-sm-3">
-      <h3>Demo task</h3>
-      <p className="lead"></p>
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        The correct answer is <b>V1</b> since BFS writes to the variables
-        'endNodeID' and 'edge' when the feature kWeighted is set. While in V2
-        the same function only writes to variable 'neighborID' when kWeighted is
-        unset. Take your time to go back to the graph to understand the correct
-        answer, if necessary.
-      </h5>
-    </div>
-  </Slide>,
-  <Slide key="s9">
-    <div className="col-sm-3">
-      <h3>End of tutorial</h3>
+      <h3>Compare groups of variants</h3>
       <p className="lead">
-        Now that you are familiar with the interface, we can to start the study.
+        For this example, you can use the visualization created in the previous
+        page or you can click on the following query and hit the play button
+        beside the top bar to create a new visualization frame.
       </p>
+      <br />
     </div>
     <div className="col-sm-9">
-      Click on the following query and hit the play button beside the top bar to
-      initialize new frame with the tasks for our user study.
+      <h5></h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH p=(srcComp:component)-[r]->(dstComp:component) RETURN DISTINCT type(r), srcComp, dstComp, r'
+        }
+      </pre>
+      In order to add coloured filters, you should maximize the visualization
+      and create a filter with the configuration expression <b>"!raw/\ art"</b>{' '}
+      and another filter with <b>"aid"</b>. Feel free to click on the filter
+      label in the sidebar to assign it a different colour. Make sure to remove
+      the filters before running another query, unless you prefer to keep all
+      created filters in the new visualization frame. The correspondent tabular
+      representation should look like the following image:
+      <br />
+      <img
+        width="600"
+        src="./assets/images/tableMultipleGroupVariants.png"
+        alt="Customization options"
+      />
     </div>
-    <pre className="pre-scrollable code runnable remove-play-icon">
-      {':play study'}
-    </pre>
   </Slide>
 ]
 

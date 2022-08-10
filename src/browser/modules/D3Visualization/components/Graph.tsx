@@ -190,7 +190,7 @@ export class Graph extends Component<any, State> {
     featureExpression: 'Enter feature expression...',
     newConditionType: '',
     showLoadingOverlay: false,
-    showFilters: false
+    showFilters: true
   }
 
   // let showFilters = false
@@ -432,7 +432,7 @@ export class Graph extends Component<any, State> {
           // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}></StyleInputForm>
           <StyleInputDiv>
             <StyleTextArea
-              placeholder="Feature expression"
+              placeholder="Configuration expression"
               onChange={this.updateFeatureExpressionState.bind(this)}
             />
             <StyleSubmitButton onClick={this.handleSubmit.bind(this)}>
@@ -641,8 +641,8 @@ export class Graph extends Component<any, State> {
         {this.zoomButtons()}
         {/* {this.inputToggle()} */}
         {this.inputFeatureExpression()}
-        {this.inputToggleStripes()}
-        {this.legend()}
+        {/* {this.inputToggleStripes()} */}
+        {/* {this.legend()} */}
       </StyledSvgWrapper>
       // </div>
     )
