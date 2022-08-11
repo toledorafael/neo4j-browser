@@ -44,13 +44,14 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <p>
-        This interface comprises the top bar, where you can run queries over the
-        database, and the list of visualization frames, in which you can
-        visualize and inspect the results of the query. A visualization frame
-        can be maximized to fullscreen and closed whenever you want by clicking
-        the icons at the top. When a visualization framed is maximized to
-        fullscreen, the top left corner of the visualization is populated with
-        the form used to create visualization filters.
+        This interface comprises (1) the top bar (with the "neo4j$" prompt),
+        where you can run queries over the database, and (2) the list of
+        visualization frames, in which you can visualize and inspect the results
+        of the query. A visualization frame can be maximized to fullscreen and
+        closed whenever you want by clicking the icons at the top. When a
+        visualization frame is maximized to fullscreen, the top left corner of
+        the visualization is populated with a form used to create{' '}
+        <i>visualization filters</i> that reduce the query results.
       </p>
       {/* <p>This guide will show you how to:</p>
       <ol className="big">
@@ -60,9 +61,11 @@ const slides = [
       </ol>
       <p></p> */}
       <p>
-        Note that you are not expected to learn the query language all required
-        queries will be provided. Click on the arrows on the sides or bottom of
-        this visualization frame to navigate through the tutorial.
+        Note that you are not expected to learn the query language. All required
+        queries will be provided - they match the queries used in the
+        presentation. Click on the "next" or "back" arrow on the side of the
+        visualization frame or at bottom of the frame to navigate through the
+        tutorial.
       </p>
     </div>
   </Slide>,
@@ -72,9 +75,9 @@ const slides = [
         Results format - Behaviour Alteration analysis (path between components)
       </h3>
       <p className="lead">
-        You can click on the following query and hit the play button beside the
-        top bar to create a new visualization frame with the graphical
-        representation of analysis results with relationships of the same type.
+        Click on the following query and hit the play button to create a{' '}
+        <b>graphical representation</b> of analysis results with relationships
+        of the same type.
       </p>
       <br />
     </div>
@@ -101,10 +104,9 @@ const slides = [
         Results format - Behaviour Alteration analysis (with internal calls)
       </h3>
       <p className="lead">
-        You can click on the following query and hit the play button beside the
-        top bar to create a new visualization frame with the graphical
-        representation of analysis results with relationships of different
-        types.
+        Click on the following query and hit the play button to create a{' '}
+        <b>graphical representation</b> of analysis results with relationships
+        of different types.
       </p>
       <br />
     </div>
@@ -131,10 +133,11 @@ const slides = [
         Results format - Behaviour Alteration analysis (with internal calls)
       </h3>
       <p className="lead">
-        You can click on the following query and hit the play button beside the
-        top bar to create a new visualization frame with the graphical
-        representation of a larger example of analysis results with
-        relationships of different types.
+        Click on the following query and hit the play button to create a{' '}
+        <b>graphical representation</b> of a larger example of analysis results
+        with relationships of different types. Feel free to move the nodes
+        around with your cursor to make it easir to view the full graph and its
+        labels.
       </p>
       <br />
     </div>
@@ -159,10 +162,11 @@ const slides = [
     <div className="col-sm-3">
       <h3>Results filtered by a single variant (small example)</h3>
       <p className="lead">
-        You can click on the following query and hit the play button beside the
-        top bar to create a new visualization frame with the graphical
-        representation of analysis results with relationships of different
-        types.
+        Click on the following query and hit the play button to create a{' '}
+        <b>graphical representation</b> of analysis results with relationships
+        of different types. Maximize the visualization and create a filter with
+        the configuration expression <b>"aid /\ art /\ !raw /\ buy"</b>. Click
+        on the filter label in the sidebar to assign it a different colour.
       </p>
       <br />
     </div>
@@ -173,13 +177,8 @@ const slides = [
           'MATCH p=(srcComp:component)-[behaviourAlterationEdge]->(dstComp:component) MATCH q=(srcComp)-[firstCall]->(intermediateComp)-[secondCall]->(dstComp) WHERE srcComp.name = "C11" AND dstComp.name = "C12" AND (intermediateComp.name = "C10" OR intermediateComp.name = "C7") RETURN Distinct srcComp, behaviourAlterationEdge, firstCall, intermediateComp, secondCall, dstComp'
         }
       </pre>
-      In order to add coloured filters, you should maximize the visualization
-      and create a filter with the configuration expression{' '}
-      <b>"aid /\ art /\ !raw /\ buy"</b>. Feel free to click on the filter label
-      in the sidebar to assign it a different colour. Make sure to remove the
-      filter before running another query, unless you prefer to keep all created
-      filters in the new visualization frame. The correspondent tabular
-      representation should look like the following image:
+      The correspondent tabular representation should look like the following
+      image:
       <br />
       <img
         width="600"
@@ -193,8 +192,11 @@ const slides = [
       <h3>Results filtered by two variants (small example)</h3>
       <p className="lead">
         For this example, you can use the visualization created in the previous
-        page or you can click on the following query and hit the play button
-        beside the top bar to create a new visualization frame.
+        page and simply add a second filter. Add a second filter{' '}
+        <b>"aid /\ art /\ raw /\ buy"</b>, and click on the filter's label in
+        the sidebar to assign it a different colour. Make sure to remove all
+        filters before running another query, unless you prefer to apply these
+        same filters to the next query.
       </p>
       <br />
     </div>
@@ -205,14 +207,8 @@ const slides = [
           'MATCH p=(srcComp:component)-[behaviourAlterationEdge]->(dstComp:component) MATCH q=(srcComp)-[firstCall]->(intermediateComp)-[secondCall]->(dstComp) WHERE srcComp.name = "C11" AND dstComp.name = "C12" AND (intermediateComp.name = "C10" OR intermediateComp.name = "C7") RETURN Distinct srcComp, behaviourAlterationEdge, firstCall, intermediateComp, secondCall, dstComp'
         }
       </pre>
-      In order to add coloured filters, you should maximize the visualization
-      and create a filter with the configuration expression{' '}
-      <b>"aid /\ art /\ !raw /\ buy"</b> and another one with{' '}
-      <b>"aid /\ art /\ raw /\ buy"</b>. Feel free to click on the filters'
-      label in the sidebar to assign it a different colour. Make sure to remove
-      the filter before running another query, unless you prefer to keep all
-      created filters in the new visualization frame. The correspondent tabular
-      representation should look like the following image:
+      The correspondent tabular representation should look like the following
+      image:
       <br />
       <img
         width="600"
@@ -225,10 +221,10 @@ const slides = [
     <div className="col-sm-3">
       <h3>Results filtered by a group of variants</h3>
       <p className="lead">
-        You can click on the following query and hit the play button beside the
-        top bar to create a new visualization frame with the graphical
-        representation of analysis results with relationships of different
-        types.
+        For this example, you can use the visualization created on the previous
+        page and simply change the filters. Remove all existing filters and add
+        the filter <b>“!raw /\ art”</b>. Click on the filter's label in the
+        sidebar to assign it a different colour.
       </p>
       <br />
     </div>
@@ -239,13 +235,8 @@ const slides = [
           'MATCH p=(srcComp:component)-[r]->(dstComp:component) RETURN DISTINCT type(r), srcComp, dstComp, r'
         }
       </pre>
-      In order to add coloured filters, you should maximize the visualization
-      and create a filter with the configuration expression "!raw/\ art". Feel
-      free to click on the filter label in the sidebar to assign it a different
-      colour. Make sure to remove the filters before running another query,
-      unless you prefer to keep all created filters in the new visualization
-      frame. The correspondent tabular representation should look like the
-      following image:
+      The correspondent tabular representation should look like the following
+      image:
       <br />
       <img
         width="600"
@@ -258,9 +249,10 @@ const slides = [
     <div className="col-sm-3">
       <h3>Compare groups of variants</h3>
       <p className="lead">
-        For this example, you can use the visualization created in the previous
-        page or you can click on the following query and hit the play button
-        beside the top bar to create a new visualization frame.
+        For this example, you can use the visualization created on the previous
+        page and simply add a second filter. Add a second filter <b>"aid"</b>,
+        and click on the filter's label in the sidebar to assign it a different
+        colour.
       </p>
       <br />
     </div>
@@ -271,13 +263,8 @@ const slides = [
           'MATCH p=(srcComp:component)-[r]->(dstComp:component) RETURN DISTINCT type(r), srcComp, dstComp, r'
         }
       </pre>
-      In order to add coloured filters, you should maximize the visualization
-      and create a filter with the configuration expression <b>"!raw/\ art"</b>{' '}
-      and another filter with <b>"aid"</b>. Feel free to click on the filter
-      label in the sidebar to assign it a different colour. Make sure to remove
-      the filters before running another query, unless you prefer to keep all
-      created filters in the new visualization frame. The correspondent tabular
-      representation should look like the following image:
+      The correspondent tabular representation should look like the following
+      image:
       <br />
       <img
         width="600"
