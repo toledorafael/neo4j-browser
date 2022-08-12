@@ -75,7 +75,7 @@ const slides = [
         Results format - Behaviour Alteration analysis (path between components)
       </h3>
       <p className="lead">
-        Click on the following query and hit the play button to create a{' '}
+        Click on the query to the right and hit the play button to create a{' '}
         <b>graphical representation</b> of analysis results with relationships
         of the same type.
       </p>
@@ -104,7 +104,7 @@ const slides = [
         Results format - Behaviour Alteration analysis (with internal calls)
       </h3>
       <p className="lead">
-        Click on the following query and hit the play button to create a{' '}
+        Click on the query to the right and hit the play button to create a{' '}
         <b>graphical representation</b> of analysis results with relationships
         of different types.
       </p>
@@ -133,10 +133,10 @@ const slides = [
         Results format - Behaviour Alteration analysis (with internal calls)
       </h3>
       <p className="lead">
-        Click on the following query and hit the play button to create a{' '}
+        Click on the query to the right and hit the play button to create a{' '}
         <b>graphical representation</b> of a larger example of analysis results
         with relationships of different types. Feel free to move the nodes
-        around with your cursor to make it easir to view the full graph and its
+        around with your cursor to make it easier to view the full graph and its
         labels.
       </p>
       <br />
@@ -162,11 +162,12 @@ const slides = [
     <div className="col-sm-3">
       <h3>Results filtered by a single variant (small example)</h3>
       <p className="lead">
-        Click on the following query and hit the play button to create a{' '}
+        Click on the query to the right and hit the play button to create a
         <b>graphical representation</b> of analysis results with relationships
         of different types. Maximize the visualization and create a filter with
         the configuration expression <b>"aid /\ art /\ !raw /\ buy"</b>. Click
-        on the filter label in the sidebar to assign it a different colour.
+        on the filter label in the sidebar to assign it a different colour. When
+        you are done, minimize the visualization to return to the demo.
       </p>
       <br />
     </div>
@@ -192,11 +193,12 @@ const slides = [
       <h3>Results filtered by two variants (small example)</h3>
       <p className="lead">
         For this example, you can use the visualization created in the previous
-        page and simply add a second filter. Add a second filter{' '}
-        <b>"aid /\ art /\ raw /\ buy"</b>, and click on the filter's label in
-        the sidebar to assign it a different colour. Make sure to remove all
-        filters before running another query, unless you prefer to apply these
-        same filters to the next query.
+        page and simply add a second filter. Maximize the visualization and add
+        a second filter <b>"aid /\ art /\ raw /\ buy"</b>, and click on the
+        filter's label in the sidebar to assign it a different colour. Make sure
+        to remove all filters before running another query, unless you prefer to
+        apply these same filters to the next query. When you are done, minimize
+        the visualization to return to the demo.
       </p>
       <br />
     </div>
@@ -222,9 +224,10 @@ const slides = [
       <h3>Results filtered by a group of variants</h3>
       <p className="lead">
         For this example, you can use the visualization created on the previous
-        page and simply change the filters. Remove all existing filters and add
-        the filter <b>“!raw /\ art”</b>. Click on the filter's label in the
-        sidebar to assign it a different colour.
+        page and simply change the filters. Maximize the visualization, remove
+        all existing filters and add the filter <b>“!raw /\ art”</b>. Click on
+        the filter's label in the sidebar to assign it a different colour. When
+        you are done, minimize the visualization to return to the demo.
       </p>
       <br />
     </div>
@@ -250,9 +253,10 @@ const slides = [
       <h3>Compare groups of variants</h3>
       <p className="lead">
         For this example, you can use the visualization created on the previous
-        page and simply add a second filter. Add a second filter <b>"aid"</b>,
-        and click on the filter's label in the sidebar to assign it a different
-        colour.
+        page and simply add a second filter. Maximize the visualization, add a
+        second filter <b>"aid"</b>, and click on the filter's label in the
+        sidebar to assign it a different colour. When you are done, minimize the
+        visualization to return to the demo.
       </p>
       <br />
     </div>
@@ -271,6 +275,31 @@ const slides = [
         src="./assets/images/tableMultipleGroupVariants.png"
         alt="Customization options"
       />
+    </div>
+  </Slide>,
+  <Slide key="s9">
+    <div className="col-sm-3">
+      <h3>Seeking feedback on results representation</h3>
+      <p className="lead"></p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      We are seeking feedback on the results representation, so we want to ask
+      you:
+      <ul>
+        <li>
+          Which format is easier to <b>read, understand, search, explore</b>?
+        </li>
+        <li>
+          Which format is better to represent <b>variable results</b> depending
+          on configuration variants?
+        </li>
+      </ul>
+      <br />
+      To answer those questions, click <a href="https://bit.ly/3vOxRS9">
+        here
+      </a>{' '}
+      to access our survey and give your impressions. Thank you!
     </div>
   </Slide>
 ]
