@@ -7,7 +7,7 @@ type State = any
 export default function NameForm(props: any): JSX.Element {
   const [value, setValue] = useState('')
   const [disableButton, setDisableButton] = useState(() => {
-    return localStorage.getItem(props.id) !== ''
+    return localStorage.getItem(props.id) !== null
   })
 
   const handleChange = (event: any) => {
