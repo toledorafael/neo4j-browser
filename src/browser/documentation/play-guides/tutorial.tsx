@@ -51,7 +51,7 @@ const slides = [
       <ol className="big">
         <li>Run a query about configurable program data</li>
         <li>Customize the visualization of the results</li>
-        <li>Add filters representing different program variants</li>
+        {/* <li>Add filters representing different program variants</li> */}
       </ol>
       <p></p>
       <p>
@@ -70,14 +70,15 @@ const slides = [
         A program comprises entities (e.g., classes, variables, functions) and
         the relationships between them (e.g., function calls, variable reads,
         class containment.) A graph representing such a program includes nodes
-        representing as the entities and links indicating the relationships
+        representing the entities and links indicating the relationships
         established in the code.{' '}
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        Consider a function that updates the name attribute of a Node object:
+        Consider a function that updates the name attribute of a Node object
+        contained Graph Application:
       </h5>
       <figure>
         <pre className="code">
@@ -106,8 +107,8 @@ const slides = [
     <div className="col-sm-3">
       <h3>Graphical program data</h3>
       <p className="lead">
-        The new frame shows the returned by the executed query. The sidebar on
-        the right provides an overview of the node labels and relationships
+        The new frame shows the data returned by the executed query. The sidebar
+        on the right provides an overview of the node labels and relationships
         types present in the visualization.
       </p>
       <br />
@@ -163,7 +164,7 @@ const slides = [
         The sidebar provides customization options to change visual attributes
         of the nodes and links. The customization menu appears whenever you
         click on a node label or relationship type listed in the overview. The
-        star sign (*) represent visual attributes applied to all nodes or links.
+        star sign (*) represent visual attributes applied to all links.
       </p>
       <br />
     </div>
@@ -180,8 +181,8 @@ const slides = [
         <li>Set the color of cVariables to be red</li>
         <li>Set the color of cFunctions to be dark blue</li>
         <li>
-          Set the width of all the line width to be the fourth thickiest
-          available option
+          Set the width of all the links to be the fourth thickiest option
+          available
         </li>
       </ol>
       <h5>You can move to the next slide when you are done.</h5>
@@ -196,7 +197,6 @@ const slides = [
       </p>
       <br />
     </div>
-    {/* TODO: replace gif */}
     <div className="col-sm-9">
       <img src="./assets/images/colouredGraph.png" height="400" />
     </div>
@@ -256,12 +256,13 @@ const slides = [
     <div className="col-sm-9">
       <h5>
         The tasks comprising this study will ask you to determine the presence
-        of code entities interactions, or links, in specific program variants.
-        As an example, consider the graph returned by the following query:
+        of code entities interactions, represented by the links, in specific
+        program variants. As an example, consider the graph returned by the
+        following query:
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++" AND type(b) <> "varInfFunc" RETURN *'
+          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++" AND type(b) <> "varInfFunc" AND type(b) <> "read" RETURN *'
         }
       </pre>
       <h5>
@@ -284,10 +285,10 @@ const slides = [
     <div className="col-sm-9">
       <h5>
         The correct answer is <b>V1</b> since BFS writes to the variables
-        'endNodeID' and 'edge' when the feature kWeighted is set. While in V2
-        the same function only writes to variable 'neighborID' when kWeighted is
-        unset. Take your time to go back to the graph to understand the correct
-        answer, if necessary.
+        'endNodeID' and 'edge' when the feature kWeighted is set. While in V2,
+        BFS only writes to variable 'neighborID' when kWeighted is unset. Take
+        your time to go back to the graph to understand the correct answer, if
+        necessary.
       </h5>
     </div>
   </Slide>,
@@ -299,8 +300,10 @@ const slides = [
       </p>
     </div>
     <div className="col-sm-9">
-      Click on the following query and hit the play button beside the top bar to
-      initialize new frame with the tasks for our user study.
+      When you are ready, close the visualization frames with results of
+      previous queries, click on the following query and hit the play button
+      beside the top bar to initialize new frame with the tasks for our user
+      study.
     </div>
     <pre className="pre-scrollable code runnable remove-play-icon">
       {':play study'}

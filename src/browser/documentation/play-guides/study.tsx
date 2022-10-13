@@ -61,9 +61,9 @@ const slides = [
       <div>
         <h5>
           Considering a variant with original configuration equal to kUndirected
-          /\ !kDirected /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the
-          nodes that <b>stop</b> interacting with function BFS if the feature
-          kWeighted is enabled.
+          /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the nodes that{' '}
+          <b>stop</b> interacting with function BFS if the feature kWeighted is
+          enabled.
         </h5>
         <NameForm id="answer1a" />
         {/*         
@@ -89,9 +89,9 @@ const slides = [
       <div>
         <h5>
           Considering a variant with original configuration equal to kUndirected
-          /\ !kDirected /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the
-          nodes that <b>start</b> interacting with function BFS if the feature
-          kWeighted is enabled.
+          /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the nodes that{' '}
+          <b>start</b> interacting with function BFS if the feature kWeighted is
+          enabled.
         </h5>
         <NameForm id="answer1b" />
       </div>
@@ -113,9 +113,9 @@ const slides = [
       <div>
         <h5>
           Considering a variant with original configuration equal to kUndirected
-          /\ !kDirected /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the
-          nodes that interact with function BFS <b>regardless</b> of the feature
-          kWeighted being enabled or disabled.
+          /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the nodes that
+          interact with function BFS <b>regardless</b> of the feature kWeighted
+          being enabled or disabled.
         </h5>
         <NameForm id="answer1c" />
       </div>
@@ -143,18 +143,12 @@ const slides = [
           algorithms with undirected graphs:
         </h5>
         <ol>
-          <li>
-            kUndirected /\ !kDirected /\ kCycle /\ !kConnectedComps /\ !kPrim
-          </li>
-          <li>
-            kUndirected /\ !kDirected /\ !kCycle /\ kConnectedComps /\ !kPrim
-          </li>
-          <li>
-            kUndirected /\ !kDirected /\ !kCycle /\ !kConnectedComps /\ kPrim
-          </li>
+          <li>kUndirected /\ kCycle /\ !kConnectedComps /\ !kPrim</li>
+          <li>kUndirected /\ !kCycle /\ kConnectedComps /\ !kPrim</li>
+          <li>kUndirected /\ !kCycle /\ !kConnectedComps /\ kPrim</li>
         </ol>
         <h5>
-          Which variants may execute one or more of the dataflow paths shown in
+          Which variants may execute at least one of the dataflow paths shown in
           the graphs?
         </h5>
         <NameForm id="answer2a" />
