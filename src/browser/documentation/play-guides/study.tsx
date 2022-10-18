@@ -47,7 +47,27 @@ const category = 'graphExamples'
 const slides = [
   <Slide key="s1">
     <div className="col-sm-3">
-      <h3>Task 1</h3>
+      <h3>Stage 1</h3>
+      <p className="lead">
+        At this stage, you will interact with the interface to perform six
+        tasks.
+      </p>
+    </div>
+    <div className="col-sm-9">
+      <div>
+        <h5>
+          We will provide you two queries. The first query should be used for
+          the first three tasks, while the second query should be used for the
+          rest of the tasks. Both queries will remain accessible the entire
+          time.
+        </h5>
+        <h5>You can move to the next page whenever you are ready to start.</h5>
+      </div>
+    </div>
+  </Slide>,
+  <Slide key="s2">
+    <div className="col-sm-3">
+      <h3>Task 1.1</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
@@ -60,10 +80,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering a variant with original configuration equal to kUndirected
-          /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the nodes that{' '}
-          <b>stop</b> interacting with function BFS if the feature kWeighted is
-          enabled.
+          Which <b>functions</b> from the returned graph may be <b>called</b> by
+          the function BFS in a program variant with the configuration
+          kUndirected /\ !kWeighted /\ !kDFS /\ kBFS?
         </h5>
         <NameForm id="answer1a" />
         {/*         
@@ -73,9 +92,9 @@ const slides = [
       </div>
     </div>
   </Slide>,
-  <Slide key="s2">
+  <Slide key="s3">
     <div className="col-sm-3">
-      <h3>Task 1</h3>
+      <h3>Task 1.2</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
@@ -88,18 +107,17 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering a variant with original configuration equal to kUndirected
-          /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the nodes that{' '}
-          <b>start</b> interacting with function BFS if the feature kWeighted is
-          enabled.
+          Which <b>variables</b> from the returned graph may be <b>written</b>{' '}
+          by the function BFS in the same program variant kUndirected /\
+          !kWeighted /\ !kDFS /\ kBFS?
         </h5>
         <NameForm id="answer1b" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s3">
+  <Slide key="s4">
     <div className="col-sm-3">
-      <h3>Task 1</h3>
+      <h3>Task 1.3</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
@@ -112,118 +130,110 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering a variant with original configuration equal to kUndirected
-          /\ !kWeighted /\ !kDFS /\ kBFS, list the labels of the nodes that
-          interact with function BFS <b>regardless</b> of the feature kWeighted
-          being enabled or disabled.
+          Considering the same program variant kUndirected /\ !kWeighted /\
+          !kDFS /\ kBFS, which <b>variables</b> from the returned graph may be{' '}
+          <b>written</b> by the function BFS if we <b>enable</b> the feature
+          kWeighted in the original configuration?
         </h5>
         <NameForm id="answer1c" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s4">
+  <Slide key="s5">
     <div className="col-sm-3">
-      <h3>Task 2</h3>
+      <h3>Task 2.1</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(n)-[r:call]->(m)-[t:write|read]-(u) WHERE t.condition <> "true" and n.label = "handleCommands" and (m.label = "MSTPrim" or m.label = "connectedComponents" or m.label = "isCyclic") RETURN p'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
           }
         </pre>
-        The paths in the returning graph represent data flows in the code. Each
-        data flow path starts at the node 'handleCommands' comprising a call
-        link and a following read or write link.
       </p>
     </div>
     <div className="col-sm-9">
       <div>
         <h5>
-          Consider that the following variants specify the use of different
-          algorithms with undirected graphs:
+          Which <b>functions</b> may be directly called by the function{' '}
+          <b>handleCommands</b>
+          in the following program variant V1:
         </h5>
         <ol>
-          <li>kUndirected /\ kCycle /\ !kConnectedComps /\ !kPrim</li>
-          <li>kUndirected /\ !kCycle /\ kConnectedComps /\ !kPrim</li>
-          <li>kUndirected /\ !kCycle /\ !kConnectedComps /\ kPrim</li>
+          <li>
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            kConnectedComps /\ !kPrim
+          </li>
         </ol>
-        <h5>
-          Which variants may execute at least one of the dataflow paths shown in
-          the graphs?
-        </h5>
         <NameForm id="answer2a" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s5">
+  <Slide key="s6">
     <div className="col-sm-3">
-      <h3>Task 2</h3>
+      <h3>Task 2.2</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(n)-[r:call]->(m)-[t:write|read]-(u) WHERE t.condition <> "true" and n.label = "handleCommands" and (m.label = "MSTPrim" or m.label = "connectedComponents" or m.label = "isCyclic") RETURN p'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
           }
         </pre>
-        The paths in the returning graph represent data flows in the code. Each
-        data flow path starts at the node 'handleCommands' comprising a call
-        link and a following read or write link.
       </p>
     </div>
     <div className="col-sm-9">
       <div>
         <h5>
-          Consider that the following variants specify the use of different
-          algorithms with unweighted graphs:
+          Which <b>functions</b> may be directly called by the function{' '}
+          <b>handleCommands</b>
+          in the program variant V2 but <b>not</b> in V1:
         </h5>
         <ol>
-          <li>!kWeighted /\ kCycle /\ !kConnectedComps /\ !kPrim</li>
-          <li>!kWeighted /\ !kCycle /\ kConnectedComps /\ !kPrim</li>
-          <li>!kWeighted /\ !kCycle /\ !kConnectedComps /\ kPrim</li>
+          <li>
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            kConnectedComps /\ !kPrim
+          </li>
+          <li>
+            V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
+            kConnectedComps /\ kPrim
+          </li>
         </ol>
-        <h5>
-          Which variants may execute one or more of the dataflow paths shown in
-          the graphs?
-        </h5>
         <NameForm id="answer2b" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s7">
     <div className="col-sm-3">
-      <h3>Task 2</h3>
+      <h3>Task 2.3</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(n)-[r:call]->(m)-[t:write|read]-(u) WHERE t.condition <> "true" and n.label = "handleCommands" and (m.label = "MSTPrim" or m.label = "connectedComponents" or m.label = "isCyclic") RETURN p'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
           }
         </pre>
-        The paths in the returning graph represent data flows in the code. Each
-        data flow path starts at the node 'handleCommands' comprising a call
-        link and a following read or write link.
       </p>
     </div>
     <div className="col-sm-9">
       <div>
         <h5>
-          Consider that the following variants specify the use of the DFS search
-          algorithm with different graph algorithms:
+          There are two possible call paths between the functions handleCommand
+          and DFS. Which program variant may execute both call paths?
         </h5>
         <ol>
-          <li>kDFS /\ !kBFS /\ kCycle /\ !kConnectedComps /\ !kPrim</li>
-          <li>kDFS /\ !kBFS /\ !kCycle /\ kConnectedComps /\ !kPrim</li>
-          <li>kDFS /\ !kBFS /\ !kCycle /\ !kConnectedComps /\ kPrim </li>
+          <li>
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            kConnectedComps /\ !kPrim
+          </li>
+          <li>
+            V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
+            kConnectedComps /\ kPrim
+          </li>
         </ol>
-        <h5>
-          Which variants may execute one or more of the dataflow paths shown in
-          the graphs?
-        </h5>
         <NameForm id="answer2c" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s8">
     <div className="col-sm-3">
       <h3>End of Stage 1</h3>
       <p className="lead">You have finished the first stage of the study.</p>
