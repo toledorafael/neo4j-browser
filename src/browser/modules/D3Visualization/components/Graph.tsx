@@ -193,8 +193,6 @@ export class Graph extends Component<any, State> {
     showFilters: false
   }
 
-  // let showFilters = false
-
   graphInit(el: any) {
     this.svgElement = el
     if (this.svgElement && !this.svgElement.__graphStyle) {
