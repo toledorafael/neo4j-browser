@@ -115,11 +115,20 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        If you hover, or click, on any node or link of the graph the overview on
-        the sidebar is replaced by the information associated with the selected
-        element. To return to the overview, you need to deselect the clicked
-        entity. You can do that by clicking on the background or on the selected
-        entity once.
+        You can reposition the nodes by dragging them around. If you hover, or
+        click, on any node or link of the graph the overview on the sidebar is
+        replaced by the information associated with the selected element. To
+        return to the overview, you need to deselect the clicked entity. You can
+        do that by clicking on the background or on the selected entity once.
+      </h5>
+      <h5>
+        If you want, you can pan and zoom the visualization in the frame. You
+        can pan around the graph view by clicking and dragging the background.
+        You can zoom in and out by clicking on the + and - buttons on the bottom
+        right corner. You can also expand the visualization frame into
+        fullscreen by clicking on the{' '}
+        <img src="./assets/images/expand.svg" width={10} />
+        &nbsp;button on the top right corner.
       </h5>
       <h5>
         As a first task, find the node that represents the function
@@ -262,19 +271,17 @@ const slides = [
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]-(c) WHERE type(b) <> "call" AND a.label CONTAINS "BFS" AND b.condition <> "true" AND NOT c.label CONTAINS "7.5.0" AND NOT c.label CONTAINS "c++" AND type(b) <> "varInfFunc" AND type(b) <> "read" RETURN *'
+          'MATCH (a:cFunction)-[b]->(c) WHERE a.label = "DFS" AND a<>c aND b.condition <> "true" AND type(b) = "call" RETURN *'
         }
       </pre>
       <h5>
-        Which of the following program variants include more writing
-        relationships between the function BFS and its contained variables:
+        Which of the program variants listed below include more function calls
+        between DFS and other functions?
         <ul>
-          <li>V1: kWeighted /\ !kUndirected</li>
+          <li>V1: kWeighted /\ kUndirected</li>
           <li>V2: !kWeighted /\ kUndirected</li>
         </ul>
       </h5>
-      Note that a feature is not considered disabled unless it is specified in
-      the configuration with the operator '!'.
     </div>
   </Slide>,
   <Slide key="s8">
@@ -284,11 +291,10 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer is <b>V1</b> since BFS writes to the variables
-        'endNodeID' and 'edge' when the feature kWeighted is set. While in V2,
-        BFS only writes to variable 'neighborID' when kWeighted is unset. Take
-        your time to go back to the graph to understand the correct answer, if
-        necessary.
+        The correct answer is <b>V1</b>. In that variant, DFS may call the
+        function getEndNodeID and getStartNodeID. While in V2, DFS may only call
+        the function getNeighbors. Take your time to go back to the graph to
+        understand the correct answer, if necessary.
       </h5>
     </div>
   </Slide>,
