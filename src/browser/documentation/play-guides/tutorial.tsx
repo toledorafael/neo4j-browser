@@ -51,7 +51,7 @@ const slides = [
       <ol className="big">
         <li>Run a query about configurable program data</li>
         <li>Customize the visualization of the results</li>
-        {/* <li>Add filters representing different program variants</li> */}
+        <li>Add filters representing different program variants</li>
       </ol>
       <p></p>
       <p>
@@ -138,7 +138,7 @@ const slides = [
       {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
     </div>
   </Slide>,
-  <Slide key="s3">
+  <Slide key="s4">
     <div className="col-sm-3">
       <h3>Graphical program data</h3>
       <p className="lead">
@@ -166,7 +166,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s4">
+  <Slide key="s5">
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -197,7 +197,7 @@ const slides = [
       <h5>You can move to the next slide when you are done.</h5>
     </div>
   </Slide>,
-  <Slide key="s5">
+  <Slide key="s6">
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -210,7 +210,7 @@ const slides = [
       <img src="./assets/images/colouredGraph.png" height="400" />
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s7">
     <div className="col-sm-3">
       <h3>Configurable program graph</h3>
       <p className="lead">
@@ -244,10 +244,10 @@ const slides = [
       </figure>
       <h5>
         Note that the boolean variables used in the if-condition represent flags
-        that indicate whether a feature is enabled or not. Hence, for the
-        execution of instructions inside the condition block to occur, the
-        feature kUndirected must be enabled, as well as, one of kBFS or kDFS. A
-        graph representing the function call, the variable declaration, variable
+        that indicate whether a feature is enabled or not. Hence, the feature
+        kUndirected must be enabled, as well as, one of kBFS or kDFS for the
+        execution of instructions inside the condition block to execute. A graph
+        representing the function call, the variable declaration, variable
         write, and their presence conditions looks like the following:
       </h5>
       <img src="./assets/images/presenceCondition.png" />
@@ -257,7 +257,119 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s7">
+  <Slide key="s8">
+    <div className="col-sm-3">
+      <h3>Configurable program graph</h3>
+      <p className="lead">
+        The visualization frame allows you to customize links that may execute
+        in specific program variants. To access such customization options, you
+        must create a filter describing the feature configuration of the variant
+        of interest.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        The form to create a new filter appears on the top left corner of the
+        visualization frame when it is in fullscreen mode.
+      </h5>
+      <img src="./assets/images/createFilter.gif" />
+      <h5>
+        As an example, let's apply a filter on the small graph. Run the
+        following query to retrieve the graph:
+      </h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"connectedComponents"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
+        }
+      </pre>
+      <h5>
+        Once the results of the query are displayed, maximize the visualization
+        frame, type <i>"kDFS /\ !kBFS /\ kUndirected"</i>, and click on the
+        button below the textbox to create a filter representing a program
+        variant with that feature configuration. Note that the links that may
+        execute in the program variant of interest are highlighted in a
+        different colour.
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s9">
+    <div className="col-sm-3">
+      <h3>Configurable program graph</h3>
+      <p className="lead">
+        The visualization frame allows you to customize links that may execute
+        in specific program variants. To access such customization options, you
+        must create a filter describing the feature configuration of the variant
+        of interest.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        There are four options for the visual enconding of the filters. To
+        explore the options, let's create a second filter. Please type{' '}
+        <i>"!kDFS /\ kBFS /\ kUndirected"</i> to create a filter with a
+        different configuration.
+      </h5>
+      <h5>
+        The options of visual enconding are the following:
+        <ol>
+          <li>
+            Colour segments: the colour of the satisfying filters are
+            distributed across the link
+          </li>
+          <li>
+            Colour stripes: the colour of the satisfying filters are distributed
+            along the link
+          </li>
+          <li>
+            Individual links: there is an instance of the link for each
+            satisfying filter
+          </li>
+          <li>
+            Colour and shape segments: the colour and shape of the satisfying
+            filters are distributes across the link
+          </li>
+        </ol>
+      </h5>
+      <h5>
+        Feel free to experiment and get familiar with the visual enconding
+        options.
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s10">
+    <div className="col-sm-3">
+      <h3>Configurable program graph</h3>
+      <p className="lead">
+        The visualization frame allows you to customize links that may execute
+        in specific program variants. To access such customization options, you
+        must create a filter describing the feature configuration of the variant
+        of interest.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        Note the legend at the bottom left corner and the sidebar on the right
+        include the list of active filters. The legend includes buttons for the
+        two link-colour themes: dark and light. Clicking on a filter label on
+        the sidebar opens up the customization menu for that particular filter.
+      </h5>
+      <img src="./assets/images/customizeFilter.gif" />
+      <h5>
+        The menu includes a set of available colours to customize the visual
+        enconding of the filters. When using the colour and shape segments, the
+        menu also includes options of shapes for the highlighted links.
+      </h5>
+      <h5>
+        At the top of the customization menu you can find the button to remove
+        the selected filter. Please make sure to delete all the filters you have
+        created before moving to the next slide.
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s11">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <br />
@@ -284,7 +396,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s8">
+  <Slide key="s12">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <p className="lead"></p>
@@ -298,7 +410,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s9">
+  <Slide key="s13">
     <div className="col-sm-3">
       <h3>End of tutorial</h3>
       <p className="lead">

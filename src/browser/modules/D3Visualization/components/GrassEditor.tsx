@@ -378,8 +378,8 @@ export class GrassEditorComponent extends Component<
         color: styleForRelType.get('text-color-internal')
       }
       pickers = [
-        this.colorPicker(styleForRelType.selector, styleForRelType, true),
-        this.widthPicker(styleForRelType.selector, styleForRelType)
+        this.colorPicker(styleForRelType.selector, styleForRelType, true)
+        // this.widthPicker(styleForRelType.selector, styleForRelType)
         // this.captionPicker(
         //  styleForRelType.selector,
         //  styleForRelType,
