@@ -19,6 +19,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react'
+import { log } from '../Logging/Log'
 import { withBus } from 'react-suber'
 import { fetchGuideFromAllowlistAction } from 'shared/modules/commands/commandsDuck'
 
@@ -280,10 +281,7 @@ function generateContent(
     } else {
       const startPoint = localStorage.getItem('start-tutorial')
       if (startPoint) {
-        localStorage.setItem(
-          'history',
-          String(Date.now() - +startPoint) + ', start-' + guideName
-        )
+        log('start-' + guideName)
       }
     }
 
