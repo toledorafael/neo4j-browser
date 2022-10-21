@@ -19,6 +19,7 @@
  */
 
 import React, { Component } from 'react'
+import { log } from '../../Logging/Log'
 import deepmerge from 'deepmerge'
 import { connect, ConnectedComponent } from 'react-redux'
 import { debounce } from 'lodash'
@@ -157,6 +158,7 @@ export class ExplorerLocal extends Component<
         this.setState({
           hiddenNodeLabels: [...this.state.hiddenNodeLabels, label]
         })
+        log('hide ' + label)
       }
     } else {
       const index = this.state.hiddenNodeLabels.indexOf(label)
@@ -167,6 +169,7 @@ export class ExplorerLocal extends Component<
             ...this.state.hiddenNodeLabels.slice(index + 1)
           ]
         })
+        log('show ' + label)
       }
     }
   }
@@ -180,6 +183,7 @@ export class ExplorerLocal extends Component<
             relType
           ]
         })
+        log('hide ' + relType)
       }
     } else {
       const index = this.state.hiddenRelationshipTypes.indexOf(relType)
@@ -191,6 +195,7 @@ export class ExplorerLocal extends Component<
           ]
         })
       }
+      log('show ' + relType)
     }
   }
 
