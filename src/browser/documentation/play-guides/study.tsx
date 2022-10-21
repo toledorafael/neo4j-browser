@@ -130,8 +130,8 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering the same program variant kUndirected /\ !kWeighted /\
-          !kDFS /\ kBFS, which <b>variables</b> from the returned graph may be{' '}
+          Considering the same program variant (kUndirected /\ !kWeighted /\
+          !kDFS /\ kBFS), which <b>variables</b> from the returned graph may be{' '}
           <b>written</b> by the function BFS if we <b>enable</b> the feature
           kWeighted in the original configuration?
         </h5>
@@ -155,15 +155,14 @@ const slides = [
       <div>
         <h5>
           Which <b>functions</b> may be directly called by the function{' '}
-          <b>handleCommands</b>
-          in the following program variant V1:
+          <b>handleCommands</b> in the following program variant V1:
         </h5>
-        <ol>
+        <ul>
           <li>
             V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2a" />
       </div>
     </div>
@@ -184,10 +183,9 @@ const slides = [
       <div>
         <h5>
           Which <b>functions</b> may be directly called by the function{' '}
-          <b>handleCommands</b>
-          in the program variant V2 but <b>not</b> in V1:
+          <b>handleCommands </b> in the program variant V2 but <b>not</b> in V1:
         </h5>
-        <ol>
+        <ul>
           <li>
             V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
             kConnectedComps /\ !kPrim
@@ -196,7 +194,7 @@ const slides = [
             V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2b" />
       </div>
     </div>
@@ -219,7 +217,7 @@ const slides = [
           There are two possible call paths between the functions handleCommand
           and DFS. Which program variant may execute both call paths?
         </h5>
-        <ol>
+        <ul>
           <li>
             V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
             kConnectedComps /\ !kPrim
@@ -228,7 +226,7 @@ const slides = [
             V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2c" />
       </div>
     </div>

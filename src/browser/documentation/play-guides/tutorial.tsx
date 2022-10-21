@@ -182,6 +182,26 @@ const slides = [
         src="./assets/images/customizeVisual.gif"
         alt="Customization options"
       />
+      <h5>The customization menu includes the following options: </h5>
+      <ol>
+        <li>Toggle the visibility of nodes and links</li>
+        <li>Change the colours and diameter of nodes</li>
+        <li>Change the width of links</li>
+      </ol>
+    </div>
+  </Slide>,
+  <Slide key="s5">
+    <div className="col-sm-3">
+      <h3>Customizing visualization</h3>
+      <p className="lead">
+        The sidebar provides customization options to change visual attributes
+        of the nodes and links. The customization menu appears whenever you
+        click on a node label or relationship type listed in the overview. The
+        star sign (*) represent visual attributes applied to all links.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
       <h5>
         To experiment with the customization options, perform the following
         tasks on the query results:{' '}
@@ -244,7 +264,8 @@ const slides = [
       </figure>
       <h5>
         Note that the boolean variables used in the if-condition represent flags
-        that indicate whether a feature is enabled or not. Hence, the feature
+        that indicate whether a feature is enabled or not. In this codebase, the
+        feature variables have the prefix 'k' in their names. Hence, the feature
         kUndirected must be enabled, as well as, one of kBFS or kDFS for the
         execution of instructions inside the condition block to execute. A graph
         representing the function call, the variable declaration, variable
@@ -306,13 +327,13 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        There are four options for the visual enconding of the filters. To
-        explore the options, let's create a second filter. Please type{' '}
+        There are four options for the layout of the filters. To explore the
+        options, let's create a second filter. Please type{' '}
         <i>"!kDFS /\ kBFS /\ kUndirected"</i> to create a filter with a
         different configuration.
       </h5>
       <h5>
-        The options of visual enconding are the following:
+        The options of layout are the following:
         <ol>
           <li>
             Colour segments: the colour of the satisfying filters are
@@ -332,10 +353,7 @@ const slides = [
           </li>
         </ol>
       </h5>
-      <h5>
-        Feel free to experiment and get familiar with the visual enconding
-        options.
-      </h5>
+      <h5>Feel free to experiment and get familiar with the layout options.</h5>
     </div>
   </Slide>,
   <Slide key="s10">
