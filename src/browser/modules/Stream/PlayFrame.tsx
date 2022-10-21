@@ -278,7 +278,13 @@ function generateContent(
     if (guideName === 'start') {
       localStorage.setItem('start-tutorial', String(Date.now()))
     } else {
-      localStorage.setItem('start-' + guideName, String(Date.now()))
+      const startPoint = localStorage.getItem('start-tutorial')
+      if (startPoint) {
+        localStorage.setItem(
+          'history',
+          String(Date.now() - +startPoint) + ', start-' + guideName
+        )
+      }
     }
 
     const isPlayStart = stackFrame.cmd.trim() === ':play start'

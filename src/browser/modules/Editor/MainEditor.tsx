@@ -197,25 +197,7 @@ export function MainEditor({
   }
 
   function downloadLog() {
-    //TODO: update the fields of interest for the log file
-    const headers = [
-      'participantID',
-      'start-tutorial',
-      'start-study',
-      'answer1a-submitTime',
-      'answer1a',
-      'answer1b-submitTime',
-      'answer1b',
-      'answer1c-submitTime',
-      'answer1c',
-      'answer2a-submitTime',
-      'answer2a',
-      'answer2b-submitTime',
-      'answer2b',
-      'answer2c-submitTime',
-      'answer2c',
-      'filter'
-    ]
+    const headers = ['participantID', 'start-tutorial', 'history']
     const filterJSON = JSON.stringify(localStorage, headers, ' ')
 
     const blob = new Blob([filterJSON], {
