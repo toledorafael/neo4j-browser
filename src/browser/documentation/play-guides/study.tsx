@@ -147,8 +147,8 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Before starting the next task, remember to remove the current filters
-          and close the visualization frame with the results for the first task.
+          Before starting the next task, fell free close the visualization frame
+          with the results for the first task.
         </h5>
       </div>
     </div>
