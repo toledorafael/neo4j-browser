@@ -55,7 +55,7 @@ const slides = [
       </ol>
       <p></p>
       <p>
-        Note that you are not expected to learn the query language all required
+        Note that you are not expected to learn the query language. All required
         queries will be provided to you during the study. Click on the arrows on
         the sides or bottom of this visualization frame to navigate through the
         tutorial.
@@ -69,7 +69,7 @@ const slides = [
         {' '}
         A program comprises entities (e.g., classes, variables, functions) and
         the relationships between them (e.g., function calls, variable reads,
-        class containment.) A graph representing such a program includes nodes
+        class containment). A graph representing such a program includes nodes
         representing the entities and links indicating the relationships
         established in the code.{' '}
       </p>
@@ -124,10 +124,9 @@ const slides = [
       <h5>
         If you want, you can pan and zoom the visualization in the frame. You
         can pan around the graph view by clicking and dragging the background.
-        You can zoom in and out by clicking on the + and - buttons on the bottom
-        right corner. You can also expand the visualization frame into
-        fullscreen by clicking on the{' '}
-        <img src="./assets/images/expand.svg" width={10} />
+        You can zoom in and out by clicking on the buttons on the bottom right
+        corner. You can also expand the visualization frame into fullscreen by
+        clicking on the <img src="./assets/images/expand.svg" width={10} />
         &nbsp;button on the top right corner.
       </h5>
       <h5>
@@ -142,25 +141,13 @@ const slides = [
     <div className="col-sm-3">
       <h3>Graphical program data</h3>
       <p className="lead">
-        The new frame shows the returned by the executed query. The sidebar on
-        the right provides an overview of the node labels and relationships
+        The new frame shows the data returned by the executed query. The sidebar
+        on the right provides an overview of the node labels and relationships
         types present in the visualization.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <h5>
-        If you hover, or click, on any node or link of the graph the overview on
-        the sidebar is replaced by the information associated with the selected
-        element. To return to the overview, you need to deselect the clicked
-        entity. You can do that by clicking on the background or on the selected
-        entity once.
-      </h5>
-      <h5>
-        As a first task, find the node that represents the function
-        updateNodeName. What is the id of such a node?
-      </h5>
-      <br />
       <h5>
         The correct answer is <b>46</b>.
       </h5>
@@ -184,7 +171,7 @@ const slides = [
       />
       <h5>The customization menu includes the following options: </h5>
       <ol>
-        <li>Toggle the visibility of nodes and links</li>
+        <li>Turn on/off the visibility of nodes and links</li>
         <li>Change the colours and diameter of nodes</li>
         <li>Change the width of links</li>
       </ol>
@@ -237,9 +224,9 @@ const slides = [
         Software configuration is a fundamental aspect of software development.
         It is the ability to create software variants for different contexts of
         use. Engineers can create a configurable program that encompasses
-        multiple, different variants that share a set of common features. At the
-        level of the code, variability occurs by enabling or disabling portions
-        of the code that implements certain software features.
+        multiple variants that share a set of common features. At the level of
+        the code, variability occurs by enabling or disabling portions of the
+        code that implements certain software features.
       </p>
       <br />
     </div>
@@ -268,16 +255,18 @@ const slides = [
         feature variables have the prefix 'k' in their names. Hence, the feature
         kUndirected must be enabled, as well as, one of kBFS or kDFS for the
         execution of instructions inside the condition block to execute. A graph
-        representing the function call, the variable declaration, variable
-        write, and their presence conditions looks like the following:
+        representing the function call, the variable declaration, the variable
+        write, and their respective presence conditions looks like the
+        following:
       </h5>
       <img src="./assets/images/presenceCondition.png" />
       <h5>
-        The presence conditions in the graph are composed by AND ('/\'), OR
-        ('\/'), and NOT ('!') operations.
+        The presence conditions in the graph are comprise AND ('/\'), OR ('\/'),
+        and NOT ('!') operations.
       </h5>
     </div>
   </Slide>,
+  // Filter introduction
   <Slide key="s8">
     <div className="col-sm-3">
       <h3>Configurable program graph</h3>
@@ -309,8 +298,8 @@ const slides = [
         frame, type <i>"kDFS /\ !kBFS /\ kUndirected"</i>, and click on the
         button below the textbox to create a filter representing a program
         variant with that feature configuration. Note that the links that may
-        execute in the program variant of interest are highlighted in a
-        different colour.
+        execute in the program variant represented by the filter are
+        highlighted.
       </h5>
     </div>
   </Slide>,
@@ -326,14 +315,8 @@ const slides = [
       <br />
     </div>
     <div className="col-sm-9">
+      <h5>There are four options for the layout of the filters:</h5>
       <h5>
-        There are four options for the layout of the filters. To explore the
-        options, let's create a second filter. Please type{' '}
-        <i>"!kDFS /\ kBFS /\ kUndirected"</i> to create a filter with a
-        different configuration.
-      </h5>
-      <h5>
-        The options of layout are the following:
         <ol>
           <li>
             Colour segments: the colour of the satisfying filters are
@@ -353,7 +336,12 @@ const slides = [
           </li>
         </ol>
       </h5>
-      <h5>Feel free to experiment and get familiar with the layout options.</h5>
+      <h5>
+        To explore the layout options, you can create a second filter. Please
+        type <i>"!kDFS /\ kBFS /\ kUndirected"</i> to create a filter with a
+        different configuration. Feel free to experiment and get familiar with
+        the layout options.
+      </h5>
     </div>
   </Slide>,
   <Slide key="s10">
@@ -371,22 +359,24 @@ const slides = [
       <h5>
         Note the legend at the bottom left corner and the sidebar on the right
         include the list of active filters. The legend includes buttons for the
-        two link-colour themes: dark and light. Clicking on a filter label on
-        the sidebar opens up the customization menu for that particular filter.
+        two link-colour themes: dark and light.
+      </h5>
+      <h5>
+        Clicking on a filter label on the sidebar opens up the customization
+        menu for that particular filter.
       </h5>
       <img src="./assets/images/customizeFilter.gif" />
       <h5>
         The menu includes a set of available colours to customize the visual
         enconding of the filters. When using the colour and shape segments, the
-        menu also includes options of shapes for the highlighted links.
-      </h5>
-      <h5>
-        At the top of the customization menu you can find the button to remove
-        the selected filter. Please make sure to delete all the filters you have
-        created before moving to the next slide.
+        menu also includes options of shapes for the highlighted links. The
+        customization menu also includes the button to remove the selected
+        filter. Please make sure to delete all the filters you have created
+        before moving to the next slide.
       </h5>
     </div>
   </Slide>,
+  // End of filter's introduction
   <Slide key="s11">
     <div className="col-sm-3">
       <h3>Demo task</h3>
@@ -436,10 +426,10 @@ const slides = [
       </p>
     </div>
     <div className="col-sm-9">
-      When you are ready, close the visualization frames with results of
-      previous queries, click on the following query and hit the play button
-      beside the top bar to initialize new frame with the tasks for our user
-      study.
+      When you are ready, remove the filters that you have created, close the
+      visualization frames with results of previous queries, click on the
+      following query and hit the play button beside the top bar to initialize a
+      new frame with the tasks for our user study.
     </div>
     <pre className="pre-scrollable code runnable remove-play-icon">
       {':play study'}
