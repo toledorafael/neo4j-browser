@@ -191,7 +191,7 @@ export class Graph extends Component<any, State> {
     featureExpression: 'Enter feature expression...',
     newConditionType: '',
     showLoadingOverlay: false,
-    showFilters: true
+    showFilters: false
   }
 
   graphInit(el: any) {
