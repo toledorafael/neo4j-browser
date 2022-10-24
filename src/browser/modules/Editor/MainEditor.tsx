@@ -19,6 +19,7 @@
  */
 
 import React, { useState, Dispatch, useEffect, useRef } from 'react'
+import { log } from '../Logging/Log'
 import { Action } from 'redux'
 import SVGInline from 'react-svg-inline'
 import { connect } from 'react-redux'
@@ -242,6 +243,7 @@ export function MainEditor({
 
   function createRunCommandFunction(source: string) {
     return () => {
+      log('run query: ' + editorRef.current?.getValue())
       executeCommand(editorRef.current?.getValue() || '', source)
       editorRef.current?.setValue('')
       setCurrentlyEditing(null)
