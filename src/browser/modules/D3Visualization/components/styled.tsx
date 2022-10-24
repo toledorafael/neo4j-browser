@@ -335,7 +335,7 @@ export const StyleToggleGroupMarksButton = styled.button`
 export const StyleSubmitButton = styled.button`
   position: absolute;
   top: 60px;
-  right: 100px;
+  right: 60px;
   list-style-type: none;
   font-size: 1.5em;
   border: none;

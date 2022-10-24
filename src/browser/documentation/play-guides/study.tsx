@@ -80,8 +80,8 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>functions</b> from the returned graph may be <b>called</b> by
-          the function BFS in a program variant with the configuration
+          Which <b>function(s)</b> from the returned graph may be <b>called</b>{' '}
+          by the function BFS in a program variant with the configuration
           kUndirected /\ !kWeighted /\ !kDFS /\ kBFS?
         </h5>
         <NameForm id="answer1a" />
@@ -107,7 +107,7 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>variables</b> from the returned graph may be <b>written</b>{' '}
+          Which <b>variable(s)</b> from the returned graph may be <b>written</b>{' '}
           by the function BFS in the same program variant kUndirected /\
           !kWeighted /\ !kDFS /\ kBFS?
         </h5>
@@ -130,9 +130,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering the same program variant kUndirected /\ !kWeighted /\
-          !kDFS /\ kBFS, which <b>variables</b> from the returned graph may be{' '}
-          <b>written</b> by the function BFS if we <b>enable</b> the feature
+          Considering the same program variant (kUndirected /\ !kWeighted /\
+          !kDFS /\ kBFS), which <b>variable(s)</b> from the returned graph may
+          be <b>written</b> by the function BFS if we <b>enable</b> the feature
           kWeighted in the original configuration?
         </h5>
         <NameForm id="answer1c" />
@@ -140,6 +140,20 @@ const slides = [
     </div>
   </Slide>,
   <Slide key="s5">
+    <div className="col-sm-3">
+      <h3>Task 2</h3>
+      <p className="lead"></p>
+    </div>
+    <div className="col-sm-9">
+      <div>
+        <h5>
+          Before starting the next task, remember to remove the current filters
+          and close the visualization frame with the results for the first task.
+        </h5>
+      </div>
+    </div>
+  </Slide>,
+  <Slide key="s6">
     <div className="col-sm-3">
       <h3>Task 2.1</h3>
       <p className="lead">
@@ -154,21 +168,20 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>functions</b> may be directly called by the function{' '}
-          <b>handleCommands</b>
-          in the following program variant V1:
+          Which <b>function(s)</b> may be directly called by the function{' '}
+          <b>handleCommands</b> in the following program variant V1:
         </h5>
-        <ol>
+        <ul>
           <li>
             V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2a" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s7">
     <div className="col-sm-3">
       <h3>Task 2.2</h3>
       <p className="lead">
@@ -183,11 +196,10 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>functions</b> may be directly called by the function{' '}
-          <b>handleCommands</b>
-          in the program variant V2 but <b>not</b> in V1:
+          Which <b>function(s)</b> may be directly called by the function{' '}
+          <b>handleCommands </b> in the program variant V2 but <b>not</b> in V1:
         </h5>
-        <ol>
+        <ul>
           <li>
             V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
             kConnectedComps /\ !kPrim
@@ -196,12 +208,12 @@ const slides = [
             V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2b" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s7">
+  <Slide key="s8">
     <div className="col-sm-3">
       <h3>Task 2.3</h3>
       <p className="lead">
@@ -216,10 +228,11 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          There are two possible call paths between the functions handleCommand
-          and DFS. Which program variant may execute both call paths?
+          There are <b>two</b> possible call paths between the functions
+          handleCommand and DFS. Which program variant may execute both call
+          paths?
         </h5>
-        <ol>
+        <ul>
           <li>
             V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
             kConnectedComps /\ !kPrim
@@ -228,12 +241,12 @@ const slides = [
             V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2c" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s8">
+  <Slide key="s9">
     <div className="col-sm-3">
       <h3>End of Stage 1</h3>
       <p className="lead">You have finished the first stage of the study.</p>

@@ -19,6 +19,7 @@
  */
 
 import React, { Component } from 'react'
+import { log } from '../../Logging/Log'
 import { connect, ConnectedComponent } from 'react-redux'
 import neoGraphStyle from '../graphStyle'
 import {
@@ -91,6 +92,12 @@ export class GrassEditorComponent extends Component<
     // Instead of calling the function in line  358
     // It drops my newly added rule for conditions and stops at the end of line 63
     this.props.update(this.graphStyle.toSheet())
+
+    if (selector.classes[0]) {
+      log('customize ' + selector.classes[0] + ', ' + JSON.stringify(styleProp))
+    } else {
+      log('customize ' + selector.tag + ', ' + JSON.stringify(styleProp))
+    }
   }
 
   circleSelector(
@@ -319,12 +326,12 @@ export class GrassEditorComponent extends Component<
       }
       pickers = [
         this.colorPicker(styleForLabel.selector, styleForLabel, false),
-        this.sizePicker(styleForLabel.selector, styleForLabel),
-        this.captionPicker(
-          styleForLabel.selector,
-          styleForLabel,
-          this.props.selectedLabel.propertyKeys
-        )
+        this.sizePicker(styleForLabel.selector, styleForLabel)
+        // this.captionPicker(
+        //   styleForLabel.selector,
+        //   styleForLabel,
+        //   this.props.selectedLabel.propertyKeys
+        // )
       ]
       title = (
         <StyledLabelToken style={inlineStyle}>
@@ -349,13 +356,13 @@ export class GrassEditorComponent extends Component<
       }
       pickers = [
         // this.colorPicker(styleForRelType.selector, styleForRelType, false),
-        this.widthPicker(styleForRelType.selector, styleForRelType),
-        this.captionPicker(
-          styleForRelType.selector,
-          styleForRelType,
-          this.props.selectedRelType.propertyKeys,
-          true
-        )
+        this.widthPicker(styleForRelType.selector, styleForRelType)
+        // this.captionPicker(
+        //   styleForRelType.selector,
+        //   styleForRelType,
+        //   this.props.selectedRelType.propertyKeys,
+        //   true
+        // )
       ]
       title = (
         <StyledTokenRelationshipType style={inlineStyle}>
@@ -378,8 +385,8 @@ export class GrassEditorComponent extends Component<
         color: styleForRelType.get('text-color-internal')
       }
       pickers = [
-        this.colorPicker(styleForRelType.selector, styleForRelType, true),
-        this.widthPicker(styleForRelType.selector, styleForRelType)
+        this.colorPicker(styleForRelType.selector, styleForRelType, true)
+        // this.widthPicker(styleForRelType.selector, styleForRelType)
         // this.captionPicker(
         //  styleForRelType.selector,
         //  styleForRelType,
@@ -406,6 +413,9 @@ export class GrassEditorComponent extends Component<
             }
             this.graphStyle.destroySelector(styleForRelType.selector)
             this.props.update(this.graphStyle.toSheet())
+            if (this.props.selectedCondition) {
+              log('remove filter ' + this.props.selectedCondition.condition)
+            }
           }}
         >
           Remove filter
