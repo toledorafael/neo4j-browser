@@ -160,7 +160,7 @@ const slides = [
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNgbr" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getSrcID" AND t.label <> "getTargetID" AND t.label <> "getNgbrs" RETURN *'
           }
         </pre>
       </p>
@@ -188,7 +188,7 @@ const slides = [
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNgbr" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getSrcID" AND t.label <> "getTargetID" AND t.label <> "getNgbrs" RETURN *'
           }
         </pre>
       </p>
@@ -220,7 +220,7 @@ const slides = [
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNgbr" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getSrcID" AND t.label <> "getTargetID" AND t.label <> "getNgbrs" RETURN *'
           }
         </pre>
       </p>

@@ -98,7 +98,7 @@ const slides = [
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateNodeName" RETURN *'
+          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateName" RETURN *'
         }
       </pre>
     </div>
@@ -290,7 +290,7 @@ const slides = [
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"connectedComponents"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
+          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
         }
       </pre>
       <h5>
