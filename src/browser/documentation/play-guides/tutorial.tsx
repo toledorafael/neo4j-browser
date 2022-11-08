@@ -130,8 +130,8 @@ const slides = [
         &nbsp;button on the top right corner.
       </h5>
       <h5>
-        As a first task, find the node that represents the function
-        updateNodeName. What is the id of such a node?
+        As a first task, find the node that represents the function updateName.
+        What is the id of such a node?
       </h5>
       <br />
       {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
