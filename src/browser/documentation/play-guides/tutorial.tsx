@@ -81,7 +81,7 @@ const slides = [
       </h5>
       <figure>
         <pre className="code">
-          {`void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
+          {`void GraphApp::updateName(std::string nodeName, std::string newName) {
    for (int i=0; i < nodes.size(); i++) {
        if (nodes[i]->getName() == nodeName) {
            nodes[i]->setName(newName);
@@ -97,7 +97,7 @@ const slides = [
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateNodeName" RETURN *'
+          'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateName" RETURN *'
         }
       </pre>
     </div>
@@ -129,8 +129,8 @@ const slides = [
         &nbsp;button on the top right corner.
       </h5>
       <h5>
-        As a first task, find the node that represents the function
-        updateNodeName. What is the id of such a node?
+        As a first task, find the node that represents the function updateName.
+        What is the id of such a node?
       </h5>
       <br />
       {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
