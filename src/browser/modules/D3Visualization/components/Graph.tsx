@@ -494,9 +494,9 @@ export class Graph extends Component<any, State> {
             onClick={this.props.setLightTheme}
             style={{ marginRight: '8px' }}
           >
-            Light Theme
+            Dark Theme
           </button>
-          <button onClick={this.props.setDarkTheme}>Dark Theme</button>
+          <button onClick={this.props.setDarkTheme}>Light Theme</button>
           {/* <button onClick={this.props.setLightCustomTheme}>Light 2</button>
           <button onClick={this.props.setDarkCustomTheme}>Dark 2</button> */}
           <table>
