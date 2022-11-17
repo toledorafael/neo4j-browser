@@ -85,8 +85,8 @@ const slides = [
       <div>
         <h5>
           Which <b>function(s)</b> from the returned graph may be <b>called</b>{' '}
-          by the function <b>BFS</b> in a program variant with the configuration
-          kUndirected /\ !kWeighted /\ !kDFS /\ kBFS?
+          by the function <i>BFS</i> in a program variant with the configuration
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>?
         </h5>
         <NameForm id="answer1a" />
         {/*         
@@ -112,8 +112,8 @@ const slides = [
       <div>
         <h5>
           Which <b>variable(s)</b> from the returned graph may be <b>written</b>{' '}
-          by the function <b>BFS</b> in the same program variant kUndirected /\
-          !kWeighted /\ !kDFS /\ kBFS?
+          by the function <i>BFS</i> in the same program variant{' '}
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>?
         </h5>
         <NameForm id="answer1b" />
       </div>
@@ -134,10 +134,11 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering the same program variant (kUndirected /\ !kWeighted /\
-          !kDFS /\ kBFS), which <b>variable(s)</b> from the returned graph may
-          be <b>written</b> by the function <b>BFS</b> if we <b>enable</b> the
-          feature kWeighted in the original configuration?
+          Considering the same program variant (
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>), which{' '}
+          <b>variable(s)</b> from the returned graph may be <b>written</b> by
+          the function <i>BFS</i> if we <b>enable</b> the feature{' '}
+          <b>kWeighted</b> in the original configuration?
         </h5>
         <NameForm id="answer1c" />
       </div>
@@ -173,7 +174,7 @@ const slides = [
       <div>
         <h5>
           Which <b>function(s)</b> may be directly called by the function{' '}
-          <b>execComnd</b> in the following program variant V1:
+          <i>execComnd</i> in the following program variant V1:
         </h5>
         <ul>
           <li>
@@ -201,7 +202,7 @@ const slides = [
       <div>
         <h5>
           Which <b>function(s)</b> may be directly called by the function{' '}
-          <b>execComnd</b> in the program variant V2 but <b>not</b> in V1:
+          <i>execComnd</i> in the program variant V2 but <b>not</b> in V1:
         </h5>
         <ul>
           <li>
@@ -233,7 +234,7 @@ const slides = [
       <div>
         <h5>
           There are <b>two</b> possible call paths between the functions
-          <b>execComnd</b> and <b>DFS</b>. Which program variant may execute
+          <i>execComnd</i> and <i>DFS</i>. Which program variant may execute
           both call paths?
         </h5>
         <ul>

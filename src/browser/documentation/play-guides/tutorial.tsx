@@ -340,9 +340,9 @@ const slides = [
       </h5>
       <h5>
         To explore the layout options, you can create a second filter. Please
-        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> to create a filter with a
-        different configuration. Feel free to experiment and get familiar with
-        the style options.
+        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> on the textbox on the left to
+        create a filter with a different configuration. Feel free to experiment
+        and get familiar with the style options.
       </h5>
     </div>
   </Slide>,
@@ -414,10 +414,11 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer is <b>V1</b>. In that variant, DFS may call the
-        function getEndNodeID and getStartNodeID. Whereas in V2, DFS may only
-        call the function getNeighbors. Take your time to go back to the graph
-        to understand the correct answer, if necessary.
+        The correct answer is <b>V1</b>. In that variant, <i>DFS</i> may call
+        the function <i>getEndNodeID</i> and <i>getStartNodeID</i>. Whereas in
+        V2, <i>DFS</i> may only call the function <i>getNeighbors</i>. Take your
+        time to go back to the graph to understand the correct answer, if
+        necessary.
       </h5>
     </div>
   </Slide>,
