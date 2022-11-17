@@ -340,9 +340,9 @@ const slides = [
       </h5>
       <h5>
         To explore the layout options, you can create a second filter. Please
-        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> on the textbox on the left to
-        create a filter with a different configuration. Feel free to experiment
-        and get familiar with the style options.
+        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> to create a filter with a
+        different configuration. Feel free to experiment and get familiar with
+        the style options.
       </h5>
     </div>
   </Slide>,
