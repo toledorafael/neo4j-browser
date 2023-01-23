@@ -628,7 +628,7 @@ export const StyledGraphLegend = styled.div`
   td {
     padding: 4px 8px;
     .legend-label {
-      width: 150px;
+      width: 400px;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
