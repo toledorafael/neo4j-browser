@@ -83,7 +83,7 @@ const slides = [
       </h5>
       <figure>
         <pre className="code">
-          {`void GraphApp::updateNodeName(std::string nodeName, std::string newName) {
+          {`void GraphApp::updateName(std::string nodeName, std::string newName) {
    for (int i=0; i < nodes.size(); i++) {
        if (nodes[i]->getName() == nodeName) {
            nodes[i]->setName(newName);
@@ -237,7 +237,7 @@ const slides = [
         variables represent whether the corresponding features are enabled or
         not. In this codebase, feature variables have the prefix 'k' in their
         names. For example, in the following code snippet, the feature
-        kUndirected must be enabled, as well as, one of <b>kBFS</b> or{' '}
+        <i>kUndirected</i> must be enabled, as well as, one of <b>kBFS</b> or{' '}
         <b>kDFS</b> for the instructions inside the condition block to execute.
       </h5>
       <figure>
