@@ -41,11 +41,12 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <p>
-        This interface comprises the top bar, where you can run queries over the
-        database, and the list of visualization frames, in which you can
-        visualize and inspect the results of the query. A visualization frame
-        can be maximized to fullscreen and closed whenever you want by clicking
-        the icons at the top.
+        This interface comprises the top bar (the neo4j$ prompt above), where
+        you can run queries over the database, and the list of visualization
+        frames (not yet shown - these will be visible after you pose a query),
+        in which you can visualize and inspect the results of the query. A
+        visualization frame can be maximized to fullscreen and closed whenever
+        you want by clicking the icons at the top.
       </p>
       <p>This guide will show you how to:</p>
       <ol className="big">
@@ -76,8 +77,8 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        Consider a function that updates the name attribute of a Node object
-        contained Graph Application:
+        Consider a function that updates the <i>name</i> attribute of a{' '}
+        <i>Node</i> object contained in the Graph Application program:
       </h5>
       <figure>
         <pre className="code">
@@ -114,16 +115,16 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        You can reposition the nodes by dragging them around. If you hover, or
-        click, on any node or link of the graph the overview on the sidebar is
+        You can reposition the nodes by dragging them around. If you hover or
+        click on any node or link of the graph, the overview on the sidebar is
         replaced by the information associated with the selected element. To
         return to the overview, you need to deselect the clicked entity. You can
-        do that by clicking on the background or on the selected entity once.
+        do that by clicking on the background or the selected entity once.
       </h5>
       <h5>
-        If you want, you can pan and zoom the visualization in the frame. You
-        can pan around the graph view by clicking and dragging the background.
-        You can zoom in and out by clicking on the buttons on the bottom right
+        You can pan and zoom the visualization in the frame if you want. You can
+        pan around the graph view by clicking and dragging the background. You
+        can zoom in and out by clicking on the buttons in the bottom right
         corner. You can also expand the visualization frame into fullscreen by
         clicking on the <img src="./assets/images/expand.svg" width={10} />
         &nbsp;button on the top right corner.
@@ -159,7 +160,7 @@ const slides = [
         The sidebar provides customization options to change visual attributes
         of the nodes and links. The customization menu appears whenever you
         click on a node label or relationship type listed in the overview. The
-        star sign (*) represent visual attributes applied to all links.
+        star sign (*) represents visual attributes applied to all links.
       </p>
       <br />
     </div>
@@ -180,10 +181,11 @@ const slides = [
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
-        The sidebar provides customization options to change visual attributes
-        of the nodes and links. The customization menu appears whenever you
-        click on a node label or relationship type listed in the overview. The
-        star sign (*) represent visual attributes applied to all links.
+        The sidebar provides customization options to change the visual
+        attributes of the nodes and links. The customization menu appears
+        whenever you click on a node label or relationship type listed in the
+        overview. The star sign (*) represents visual attributes applied to all
+        links.
       </p>
       <br />
     </div>
@@ -193,11 +195,10 @@ const slides = [
         tasks on the query results:{' '}
       </h5>
       <ol>
-        <li>Set the color of cVariables to be red</li>
-        <li>Set the color of cFunctions to be dark blue</li>
+        <li>Set the colour of cVariables to red</li>
+        <li>Set the colour of cFunctions to dark blue</li>
         <li>
-          Set the width of all the links to be the fourth thickiest option
-          available
+          Set the width of all the links to the fourth thickest option available
         </li>
       </ol>
       <h5>You can move to the next slide when you are done.</h5>
@@ -223,19 +224,20 @@ const slides = [
         Software configuration is a fundamental aspect of software development.
         It is the ability to create software variants for different contexts of
         use. Engineers can create a configurable program that encompasses
-        multiple variants that share a set of common features. At the level of
-        the code, variability occurs by enabling or disabling portions of the
-        code that implements certain software features.
+        multiple program variants that share common code. Variability occurs by
+        enabling or disabling portions of the code that implements optional
+        software features.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        The links in the graphs that you are going to interpret are annotated
-        with their respective presence conditions. The conditions are boolean
-        expressions that show the required configuration for the action
-        represented by the link to occur. For example, consider the following
-        code snippet:
+        In the example programs used in the study, boolean flags called feature
+        variables represent whether the corresponding features are enabled or
+        not. In this codebase, feature variables have the prefix 'k' in their
+        names. For example, in the following code snippet, the feature
+        <i>kUndirected</i> must be enabled, as well as, one of <b>kBFS</b> or{' '}
+        <b>kDFS</b> for the instructions inside the condition block to execute.
       </h5>
       <figure>
         <pre className="code">
@@ -249,144 +251,145 @@ const slides = [
         </pre>
       </figure>
       <h5>
-        Note that the boolean variables used in the if-condition represent flags
-        that indicate whether a feature is enabled or not. In this codebase, the
-        feature variables have the prefix 'k' in their names. Hence, the feature
-        kUndirected must be enabled, as well as, one of kBFS or kDFS for the
-        execution of instructions inside the condition block to execute. A graph
-        representing the function call, the variable declaration, the variable
-        write, and their respective presence conditions looks like the
-        following:
+        In the corresponding graph of program data, the links associated with
+        these instructions (i.e., the call to function <i>clearVisited()</i> and
+        the declaration and assignment to variable <i>compNum</i>) are
+        conditional on whether features <b>kUndirected</b>, <b>kBFS</b>, and{' '}
+        <b>kDFS</b> are enabled or disabled. Links that are conditional are
+        annotated with presence conditions, which are boolean expressions over
+        the feature variables.
       </h5>
       <img src="./assets/images/presenceCondition.png" />
       <h5>
-        The presence conditions in the graph are comprise AND ('/\'), OR ('\/'),
-        and NOT ('!') operations.
+        The operations in presence conditions are AND ('/\'), OR ('\/'), and NOT
+        ('!').
       </h5>
     </div>
   </Slide>,
   // Filter introduction
-  // <Slide key="s9">
-  //   <div className="col-sm-3">
-  //     <h3>Configurable program graph</h3>
-  //     <p className="lead">
-  //       The visualization frame allows you to customize links that may execute
-  //       in specific program variants. To access such customization options, you
-  //       must create a filter describing the feature configuration of the variant
-  //       of interest.
-  //     </p>
-  //     <br />
-  //   </div>
-  //   <div className="col-sm-9">
-  //     <h5>
-  //       The form to create a new filter appears on the top left corner of the
-  //       visualization frame when it is in fullscreen mode.
-  //     </h5>
-  //     <img src="./assets/images/createFilter.gif" />
-  //     <h5>
-  //       As an example, let's apply a filter on the small graph. Run the
-  //       following query to retrieve the graph:
-  //     </h5>
-  //     <pre className="pre-scrollable code runnable remove-play-icon">
-  //       {
-  //         'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"connectedComponents"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
-  //       }
-  //     </pre>
-  //     <h5>
-  //       Once the results of the query are displayed, maximize the visualization
-  //       frame, type <i>"kDFS /\ !kBFS /\ kUndirected"</i>, and click on the
-  //       button below the textbox to create a filter representing a program
-  //       variant with that feature configuration. Note that the links that may
-  //       execute in the program variant represented by the filter are
-  //       highlighted.
-  //     </h5>
-  //   </div>
-  // </Slide>,
-  // <Slide key="s10">
-  //   <div className="col-sm-3">
-  //     <h3>Configurable program graph</h3>
-  //     <p className="lead">
-  //       The visualization frame allows you to customize links that may execute
-  //       in specific program variants. To access such customization options, you
-  //       must create a filter describing the feature configuration of the variant
-  //       of interest.
-  //     </p>
-  //     <br />
-  //   </div>
-  //   <div className="col-sm-9">
-  //     <h5>There are four options for the layout of the filters:</h5>
-  //     <h5>
-  //       <ol>
-  //         <li>
-  //           Colour segments: the colour of the satisfying filters are
-  //           distributed across the link
-  //         </li>
-  //         <li>
-  //           Colour stripes: the colour of the satisfying filters are distributed
-  //           along the link
-  //         </li>
-  //         <li>
-  //           Individual links: there is an instance of the link for each
-  //           satisfying filter
-  //         </li>
-  //         <li>
-  //           Colour and shape segments: the colour and shape of the satisfying
-  //           filters are distributes across the link
-  //         </li>
-  //       </ol>
-  //     </h5>
-  //     <h5>
-  //       To explore the layout options, you can create a second filter. Please
-  //       type <i>"!kDFS /\ kBFS /\ kUndirected"</i> to create a filter with a
-  //       different configuration. Feel free to experiment and get familiar with
-  //       the layout options.
-  //     </h5>
-  //   </div>
-  // </Slide>,
-  // <Slide key="s11">
-  //   <div className="col-sm-3">
-  //     <h3>Configurable program graph</h3>
-  //     <p className="lead">
-  //       The visualization frame allows you to customize links that may execute
-  //       in specific program variants. To access such customization options, you
-  //       must create a filter describing the feature configuration of the variant
-  //       of interest.
-  //     </p>
-  //     <br />
-  //   </div>
-  //   <div className="col-sm-9">
-  //     <h5>
-  //       Note the legend at the bottom left corner and the sidebar on the right
-  //       include the list of active filters. The legend includes buttons for the
-  //       two link-colour themes: dark and light.
-  //     </h5>
-  //     <h5>
-  //       Clicking on a filter label on the sidebar opens up the customization
-  //       menu for that particular filter.
-  //     </h5>
-  //     <img src="./assets/images/customizeFilter.gif" />
-  //     <h5>
-  //       The menu includes a set of available colours to customize the visual
-  //       enconding of the filters. When using the colour and shape segments, the
-  //       menu also includes options of shapes for the highlighted links. The
-  //       customization menu also includes the button to remove the selected
-  //       filter. Please make sure to delete all the filters you have created
-  //       before moving to the next slide.
-  //     </h5>
-  //   </div>
-  // </Slide>,
-  // End of filter's introduction
+  <Slide key="s8">
+    <div className="col-sm-3">
+      <h3>Configurable program graph</h3>
+      <p className="lead">
+        The visualization frame allows you to customize and highlight the links
+        that are associated with specific program variants. To access such
+        customization options, you must create a filter describing the feature
+        configuration of the variant of interest.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        The form to create a new filter appears in the top left corner of the
+        visualization frame when it is in fullscreen mode.
+      </h5>
+      <img src="./assets/images/createFilter.gif" />
+      <h5>
+        As an example, let's apply a filter on the small graph. Run the
+        following query to retrieve the graph:
+      </h5>
+      <pre className="pre-scrollable code runnable remove-play-icon">
+        {
+          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
+        }
+      </pre>
+      <h5>
+        Once the results of the query are displayed, maximize the visualization
+        frame, type <b>"kDFS /\ !kBFS /\ kUndirected"</b> in the textbox, and
+        click on the button below the textbox to create a filter for program
+        variants that satisfy the provided filter condition. The links whose
+        presence conditions satisfy the filter condition are highlighted.
+      </h5>
+    </div>
+  </Slide>,
   <Slide key="s9">
+    <div className="col-sm-3">
+      <h3>Configurable program graph</h3>
+      <p className="lead">
+        The visualization frame allows you to customize and highlight the links
+        that are associated with specific program variants. To access such
+        customization options, you must create a filter describing the feature
+        configuration of the variant of interest.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        There are four options for the style of highlighting filtered links:
+      </h5>
+      <h5>
+        <ol>
+          <li>
+            Colour segments: links that satisfy multiple filters have multiple
+            coloured segments
+          </li>
+          <li>
+            Colour stripes: links that satisfy multiple filters have coloured
+            stripes that span the length of the link
+          </li>
+          <li>
+            Individual links: there is a coloured instance of the link for each
+            satisfying filter
+          </li>
+          <li>
+            Colour and shape segments: links that satisfy multiple filters have
+            segments of different colour and shape
+          </li>
+        </ol>
+      </h5>
+      <h5>
+        To explore the layout options, you can create a second filter. Please
+        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> to create a filter with a
+        different configuration. Feel free to experiment and get familiar with
+        the style options.
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s10">
+    <div className="col-sm-3">
+      <h3>Configurable program graph</h3>
+      <p className="lead">
+        The visualization frame allows you to customize and highlight the links
+        that are associated with specific program variants. To access such
+        customization options, you must create a filter describing the feature
+        configuration of the variant of interest.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        Note the legend at the bottom left corner and the sidebar on the right
+        include the list of active filters. The legend includes buttons for the
+        two link-colour themes: dark and light.
+      </h5>
+      <h5>
+        Clicking on a filter label on the sidebar opens up the customization
+        menu for that particular filter.
+      </h5>
+      <img src="./assets/images/customizeFilter.gif" />
+      <h5>
+        The menu includes a set of available colours to customize the visual
+        encoding of the filters. When using the colour and shape segments, the
+        menu also includes options of shapes for the highlighted links. The
+        customization menu also includes the button to remove the selected
+        filter. Please make sure to delete all the filters you have created
+        before moving to the next slide.
+      </h5>
+    </div>
+  </Slide>,
+  // End of filter's introduction
+  <Slide key="s11">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        The tasks comprising this study will ask you to determine the presence
-        of code entities interactions, represented by the links, in specific
-        program variants. As an example, consider the graph returned by the
-        following query:
+        The tasks comprising this study will ask you to understand how entities
+        and relationships vary in different program variants, by examining the
+        corresponding graph of program data that includes conditional
+        relationships labelled with presence conditions. As an example, consider
+        the graph returned by the following query:
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
@@ -410,10 +413,11 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer is <b>V1</b>. In that variant, DFS may call the
-        function getEndNodeID and getStartNodeID. While in V2, DFS may only call
-        the function getNeighbors. Take your time to go back to the graph to
-        understand the correct answer, if necessary.
+        The correct answer is <b>V1</b>. In that variant, <i>DFS</i> may call
+        the function <i>getEndNodeID</i> and <i>getStartNodeID</i>. Whereas in
+        V2, <i>DFS</i> may only call the function <i>getNeighbors</i>. Take your
+        time to go back to the graph to understand the correct answer, if
+        necessary.
       </h5>
     </div>
   </Slide>,
@@ -421,14 +425,15 @@ const slides = [
     <div className="col-sm-3">
       <h3>End of tutorial</h3>
       <p className="lead">
-        Now that you are familiar with the interface, we can to start the study.
+        Now that you are familiar with the interface, we can start the study.
       </p>
     </div>
     <div className="col-sm-9">
-      When you are ready, close the visualization frames with results of
-      previous queries, click on the following query and hit the play button
-      beside the top bar to initialize a new frame with the tasks for our user
-      study.
+      When you are ready, remove the filters that you have created, close the
+      visualization frames with results of previous queries (clicking on the 'X'
+      at the right top corner of each frame), click on the following query and
+      hit the play button beside the top bar to initialize a new frame with the
+      tasks for our user study.
     </div>
     <pre className="pre-scrollable code runnable remove-play-icon">
       {':play study'}

@@ -56,10 +56,14 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          We will provide you two queries. The first query should be used for
-          the first three tasks, while the second query should be used for the
-          rest of the tasks. Both queries will remain accessible the entire
-          time.
+          We will provide you with two queries. The first query should be used
+          for the first three tasks, whereas the second query should be used for
+          the rest of the tasks. Both queries will remain accessible the
+          throughout the entire time. Throughout the study, feel free to create
+          filters that help you complete the tasks. You can maximize the
+          visualization frame, create your filters, and then minimize the frame
+          to return to the task textbox - the highlighting will remain after the
+          frame is minimized.
         </h5>
         <h5>You can move to the next page whenever you are ready to start.</h5>
       </div>
@@ -81,8 +85,8 @@ const slides = [
       <div>
         <h5>
           Which <b>function(s)</b> from the returned graph may be <b>called</b>{' '}
-          by the function BFS in a program variant with the configuration
-          kUndirected /\ !kWeighted /\ !kDFS /\ kBFS?
+          by the function <i>BFS</i> in a program variant with the configuration{' '}
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>?
         </h5>
         <NameForm id="answer1a" />
         {/*         
@@ -108,8 +112,8 @@ const slides = [
       <div>
         <h5>
           Which <b>variable(s)</b> from the returned graph may be <b>written</b>{' '}
-          by the function BFS in the same program variant kUndirected /\
-          !kWeighted /\ !kDFS /\ kBFS?
+          by the function <i>BFS</i> in the same program variant{' '}
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>?
         </h5>
         <NameForm id="answer1b" />
       </div>
@@ -130,10 +134,10 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering the same program variant (kUndirected /\ !kWeighted /\
+          Considering the same program variant ( kUndirected /\ !kWeighted /\
           !kDFS /\ kBFS), which <b>variable(s)</b> from the returned graph may
-          be <b>written</b> by the function BFS if we <b>enable</b> the feature
-          kWeighted in the original configuration?
+          be <b>written</b> by the function <i>BFS</i> if we <b>enable</b> the
+          feature <b>kWeighted</b> in the original configuration?
         </h5>
         <NameForm id="answer1c" />
       </div>
@@ -169,7 +173,7 @@ const slides = [
       <div>
         <h5>
           Which <b>function(s)</b> may be directly called by the function{' '}
-          <b>handleCommands</b> in the following program variant V1:
+          <i>execComnd</i> in the following program variant V1:
         </h5>
         <ul>
           <li>
@@ -197,7 +201,7 @@ const slides = [
       <div>
         <h5>
           Which <b>function(s)</b> may be directly called by the function{' '}
-          <b>handleCommands </b> in the program variant V2 but <b>not</b> in V1:
+          <i>execComnd</i> in the program variant V2 but <b>not</b> in V1:
         </h5>
         <ul>
           <li>
@@ -228,9 +232,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          There are <b>two</b> possible call paths between the functions
-          handleCommand and DFS. Which program variant may execute both call
-          paths?
+          There are <b>two</b> possible call paths between the functions{' '}
+          <i>execComnd</i> and <i>DFS</i>. Which program variant may execute
+          both call paths?
         </h5>
         <ul>
           <li>
@@ -254,8 +258,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Let the researcher know that you finished the tasks for this stage.
-          They should provide you the link for the next steps of the study.
+          Let the researcher know that you have finished the tasks for this
+          stage. They should provide you with the link for the next steps of the
+          study.
         </h5>
       </div>
     </div>

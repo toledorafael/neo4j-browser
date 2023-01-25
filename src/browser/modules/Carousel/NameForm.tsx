@@ -7,6 +7,8 @@ type State = any
 
 export default function NameForm(props: any): JSX.Element {
   const [value, setValue] = useState('')
+  const [output, setOutput] = useState('')
+  const [hideOutput, setHideOutput] = useState(true)
 
   const handleChange = (event: any) => {
     setValue(event.target.value)
@@ -15,16 +17,25 @@ export default function NameForm(props: any): JSX.Element {
   const handleSubmit = (event: any) => {
     log(props.id + 'Submit, ' + value)
     setValue('')
+    setOutput(value)
+    setHideOutput(false)
     event.preventDefault()
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        <textarea rows={5} cols={50} value={value} onChange={handleChange} />
-      </label>
-      <br />
-      <input type="submit" value="Submit" />
-    </form>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          <textarea rows={5} cols={50} value={value} onChange={handleChange} />
+        </label>
+        <br />
+        <input type="submit" value="Submit" />
+      </form>
+      <div hidden={hideOutput}>
+        <p></p>
+        You submitted:<br></br>
+        <textarea rows={5} cols={50} value={output} readOnly={true} />
+      </div>
+    </div>
   )
 }

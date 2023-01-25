@@ -99,7 +99,9 @@ export class ConnectionForm extends Component<any, ConnectionFormState> {
       passwordChangeNeeded: props.passwordChangeNeeded || false,
       forcePasswordChange: props.forcePasswordChange || false,
       successCallback: props.onSuccess || (() => {}),
-      used: props.isConnected
+      used: props.isConnected,
+      password: '0stYahwzlsJY3mSsJqxryOBixz1stUddecbKbiy0N2I',
+      username: 'neo4j'
     }
   }
 
