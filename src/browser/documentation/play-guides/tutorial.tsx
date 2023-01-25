@@ -267,118 +267,118 @@ const slides = [
     </div>
   </Slide>,
   // Filter introduction
-  <Slide key="s8">
-    <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
-      <p className="lead">
-        The visualization frame allows you to customize and highlight the links
-        that are associated with specific program variants. To access such
-        customization options, you must create a filter describing the feature
-        configuration of the variant of interest.
-      </p>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        The form to create a new filter appears in the top left corner of the
-        visualization frame when it is in fullscreen mode.
-      </h5>
-      <img src="./assets/images/createFilter.gif" />
-      <h5>
-        As an example, let's apply a filter on the small graph. Run the
-        following query to retrieve the graph:
-      </h5>
-      <pre className="pre-scrollable code runnable remove-play-icon">
-        {
-          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
-        }
-      </pre>
-      <h5>
-        Once the results of the query are displayed, maximize the visualization
-        frame, type <b>"kDFS /\ !kBFS /\ kUndirected"</b> in the textbox, and
-        click on the button below the textbox to create a filter for program
-        variants that satisfy the provided filter condition. The links whose
-        presence conditions satisfy the filter condition are highlighted.
-      </h5>
-    </div>
-  </Slide>,
-  <Slide key="s9">
-    <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
-      <p className="lead">
-        The visualization frame allows you to customize and highlight the links
-        that are associated with specific program variants. To access such
-        customization options, you must create a filter describing the feature
-        configuration of the variant of interest.
-      </p>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        There are four options for the style of highlighting filtered links:
-      </h5>
-      <h5>
-        <ol>
-          <li>
-            Colour segments: links that satisfy multiple filters have multiple
-            coloured segments
-          </li>
-          <li>
-            Colour stripes: links that satisfy multiple filters have coloured
-            stripes that span the length of the link
-          </li>
-          <li>
-            Individual links: there is a coloured instance of the link for each
-            satisfying filter
-          </li>
-          <li>
-            Colour and shape segments: links that satisfy multiple filters have
-            segments of different colour and shape
-          </li>
-        </ol>
-      </h5>
-      <h5>
-        To explore the layout options, you can create a second filter. Please
-        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> to create a filter with a
-        different configuration. Feel free to experiment and get familiar with
-        the style options.
-      </h5>
-    </div>
-  </Slide>,
-  <Slide key="s10">
-    <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
-      <p className="lead">
-        The visualization frame allows you to customize and highlight the links
-        that are associated with specific program variants. To access such
-        customization options, you must create a filter describing the feature
-        configuration of the variant of interest.
-      </p>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        Note the legend at the bottom left corner and the sidebar on the right
-        include the list of active filters. The legend includes buttons for the
-        two link-colour themes: dark and light.
-      </h5>
-      <h5>
-        Clicking on a filter label on the sidebar opens up the customization
-        menu for that particular filter.
-      </h5>
-      <img src="./assets/images/customizeFilter.gif" />
-      <h5>
-        The menu includes a set of available colours to customize the visual
-        encoding of the filters. When using the colour and shape segments, the
-        menu also includes options of shapes for the highlighted links. The
-        customization menu also includes the button to remove the selected
-        filter. Please make sure to delete all the filters you have created
-        before moving to the next slide.
-      </h5>
-    </div>
-  </Slide>,
+  // <Slide key="s8">
+  //   <div className="col-sm-3">
+  //     <h3>Configurable program graph</h3>
+  //     <p className="lead">
+  //       The visualization frame allows you to customize and highlight the links
+  //       that are associated with specific program variants. To access such
+  //       customization options, you must create a filter describing the feature
+  //       configuration of the variant of interest.
+  //     </p>
+  //     <br />
+  //   </div>
+  //   <div className="col-sm-9">
+  //     <h5>
+  //       The form to create a new filter appears in the top left corner of the
+  //       visualization frame when it is in fullscreen mode.
+  //     </h5>
+  //     <img src="./assets/images/createFilter.gif" />
+  //     <h5>
+  //       As an example, let's apply a filter on the small graph. Run the
+  //       following query to retrieve the graph:
+  //     </h5>
+  //     <pre className="pre-scrollable code runnable remove-play-icon">
+  //       {
+  //         'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
+  //       }
+  //     </pre>
+  //     <h5>
+  //       Once the results of the query are displayed, maximize the visualization
+  //       frame, type <b>"kDFS /\ !kBFS /\ kUndirected"</b> in the textbox, and
+  //       click on the button below the textbox to create a filter for program
+  //       variants that satisfy the provided filter condition. The links whose
+  //       presence conditions satisfy the filter condition are highlighted.
+  //     </h5>
+  //   </div>
+  // </Slide>,
+  // <Slide key="s9">
+  //   <div className="col-sm-3">
+  //     <h3>Configurable program graph</h3>
+  //     <p className="lead">
+  //       The visualization frame allows you to customize and highlight the links
+  //       that are associated with specific program variants. To access such
+  //       customization options, you must create a filter describing the feature
+  //       configuration of the variant of interest.
+  //     </p>
+  //     <br />
+  //   </div>
+  //   <div className="col-sm-9">
+  //     <h5>
+  //       There are four options for the style of highlighting filtered links:
+  //     </h5>
+  //     <h5>
+  //       <ol>
+  //         <li>
+  //           Colour segments: links that satisfy multiple filters have multiple
+  //           coloured segments
+  //         </li>
+  //         <li>
+  //           Colour stripes: links that satisfy multiple filters have coloured
+  //           stripes that span the length of the link
+  //         </li>
+  //         <li>
+  //           Individual links: there is a coloured instance of the link for each
+  //           satisfying filter
+  //         </li>
+  //         <li>
+  //           Colour and shape segments: links that satisfy multiple filters have
+  //           segments of different colour and shape
+  //         </li>
+  //       </ol>
+  //     </h5>
+  //     <h5>
+  //       To explore the layout options, you can create a second filter. Please
+  //       type <b>"!kDFS /\ kBFS /\ kUndirected"</b> to create a filter with a
+  //       different configuration. Feel free to experiment and get familiar with
+  //       the style options.
+  //     </h5>
+  //   </div>
+  // </Slide>,
+  // <Slide key="s10">
+  //   <div className="col-sm-3">
+  //     <h3>Configurable program graph</h3>
+  //     <p className="lead">
+  //       The visualization frame allows you to customize and highlight the links
+  //       that are associated with specific program variants. To access such
+  //       customization options, you must create a filter describing the feature
+  //       configuration of the variant of interest.
+  //     </p>
+  //     <br />
+  //   </div>
+  //   <div className="col-sm-9">
+  //     <h5>
+  //       Note the legend at the bottom left corner and the sidebar on the right
+  //       include the list of active filters. The legend includes buttons for the
+  //       two link-colour themes: dark and light.
+  //     </h5>
+  //     <h5>
+  //       Clicking on a filter label on the sidebar opens up the customization
+  //       menu for that particular filter.
+  //     </h5>
+  //     <img src="./assets/images/customizeFilter.gif" />
+  //     <h5>
+  //       The menu includes a set of available colours to customize the visual
+  //       encoding of the filters. When using the colour and shape segments, the
+  //       menu also includes options of shapes for the highlighted links. The
+  //       customization menu also includes the button to remove the selected
+  //       filter. Please make sure to delete all the filters you have created
+  //       before moving to the next slide.
+  //     </h5>
+  //   </div>
+  // </Slide>,
   // End of filter's introduction
-  <Slide key="s11">
+  <Slide key="s9">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <br />
@@ -429,11 +429,10 @@ const slides = [
       </p>
     </div>
     <div className="col-sm-9">
-      When you are ready, remove the filters that you have created, close the
-      visualization frames with results of previous queries (clicking on the 'X'
-      at the right top corner of each frame), click on the following query and
-      hit the play button beside the top bar to initialize a new frame with the
-      tasks for our user study.
+      When you are ready close the visualization frames with results of previous
+      queries (clicking on the 'X' at the right top corner of each frame), click
+      on the following query and hit the play button beside the top bar to
+      initialize a new frame with the tasks for our user study.
     </div>
     <pre className="pre-scrollable code runnable remove-play-icon">
       {':play study'}
