@@ -178,7 +178,7 @@ const slides = [
       </ol>
     </div>
   </Slide>,
-  <Slide key="s5">
+  <Slide key="s6">
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -205,7 +205,7 @@ const slides = [
       <h5>You can move to the next slide when you are done.</h5>
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s7">
     <div className="col-sm-3">
       <h3>Customizing visualization</h3>
       <p className="lead">
@@ -218,7 +218,7 @@ const slides = [
       <img src="./assets/images/colouredGraph.png" height="400" />
     </div>
   </Slide>,
-  <Slide key="s7">
+  <Slide key="s8">
     <div className="col-sm-3">
       <h3>Configurable program graph</h3>
       <p className="lead">
@@ -268,7 +268,7 @@ const slides = [
     </div>
   </Slide>,
   // Filter introduction
-  <Slide key="s8">
+  <Slide key="s9">
     <div className="col-sm-3">
       <h3>Configurable program graph</h3>
       <p className="lead">
@@ -303,7 +303,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s9">
+  <Slide key="s10">
     <div className="col-sm-3">
       <h3>Configurable program graph</h3>
       <p className="lead">
@@ -346,7 +346,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s10">
+  <Slide key="s11">
     <div className="col-sm-3">
       <h3>Configurable program graph</h3>
       <p className="lead">
@@ -379,7 +379,7 @@ const slides = [
     </div>
   </Slide>,
   // End of filter's introduction
-  <Slide key="s11">
+  <Slide key="s12">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <br />
@@ -407,7 +407,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s12">
+  <Slide key="s13">
     <div className="col-sm-3">
       <h3>Demo task</h3>
       <p className="lead"></p>
@@ -422,7 +422,7 @@ const slides = [
       </h5>
     </div>
   </Slide>,
-  <Slide key="s13">
+  <Slide key="s14">
     <div className="col-sm-3">
       <h3>End of tutorial</h3>
       <p className="lead">
