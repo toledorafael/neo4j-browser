@@ -429,10 +429,10 @@ const slides = [
       </p>
     </div>
     <div className="col-sm-9">
-      When you are ready close the visualization frames with results of previous
-      queries (clicking on the 'X' at the right top corner of each frame), click
-      on the following query and hit the play button beside the top bar to
-      initialize a new frame with the tasks for our user study.
+      When you are ready, close the visualization frames with results of
+      previous queries (clicking on the 'X' at the right top corner of each
+      frame), click on the following query and hit the play button beside the
+      top bar to initialize a new frame with the tasks for our user study.
     </div>
     <pre className="pre-scrollable code runnable remove-play-icon">
       {':play study'}
