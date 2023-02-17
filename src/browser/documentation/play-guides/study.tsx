@@ -59,11 +59,8 @@ const slides = [
           We will provide you with two queries. The first query should be used
           for the first three tasks, whereas the second query should be used for
           the rest of the tasks. Both queries will remain accessible the
-          throughout the entire time. Throughout the study, feel free to create
-          filters that help you complete the tasks. You can maximize the
-          visualization frame, create your filters, and then minimize the frame
-          to return to the task textbox - the highlighting will remain after the
-          frame is minimized.
+          throughout the entire time. Throughout the study, feel free to
+          customize the visualization to help you complete the tasks.
         </h5>
         <h5>You can move to the next page whenever you are ready to start.</h5>
       </div>
