@@ -321,20 +321,20 @@ const slides = [
       <h5>
         <ol>
           <li>
-            Colour segments: links that satisfy multiple filters have multiple
-            coloured segments
+            <b>Colour segments:</b> links that satisfy multiple filters have
+            multiple coloured segments
           </li>
           <li>
-            Colour stripes: links that satisfy multiple filters have coloured
-            stripes that span the length of the link
+            <b>Colour stripes:</b> links that satisfy multiple filters have
+            coloured stripes that span the length of the link
           </li>
           <li>
-            Individual links: there is a coloured instance of the link for each
-            satisfying filter
+            <b>Individual links:</b> there is a coloured instance of the link
+            for each satisfying filter
           </li>
           <li>
-            Colour and shape segments: links that satisfy multiple filters have
-            segments of different colour and shape
+            <b>Colour and shape segments:</b> links that satisfy multiple
+            filters have segments of different colour and shape
           </li>
         </ol>
       </h5>
@@ -394,15 +394,16 @@ const slides = [
       </h5>
       <pre className="pre-scrollable code runnable remove-play-icon">
         {
-          'MATCH (a:cFunction)-[b]->(c) WHERE a.label = "DFS" AND a<>c aND b.condition <> "true" AND type(b) = "call" RETURN *'
+          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) MATCH (p:cFunction{label:"execComnd"})-[u]->(g) RETURN *'
         }
       </pre>
       <h5>
-        Which of the program variants listed below include more function calls
-        between DFS and other functions?
+        In which of the program variants the execution of function{' '}
+        <i>conComps</i> does not trigger any function calls?
         <ul>
-          <li>V1: kWeighted /\ kUndirected</li>
-          <li>V2: !kWeighted /\ kUndirected</li>
+          <li>V1: kConnectedComps /\ kDFS /\ !kBFS /\ kUndirected</li>
+          <li>V2: kConnectedComps /\ !kDFS /\ kBFS /\ kUndirected</li>
+          <li>V3: kConnectedComps /\ !kDFS /\ kBFS /\ !kUndirected</li>
         </ul>
       </h5>
     </div>
@@ -414,11 +415,11 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer is <b>V1</b>. In that variant, <i>DFS</i> may call
-        the function <i>getEndNodeID</i> and <i>getStartNodeID</i>. Whereas in
-        V2, <i>DFS</i> may only call the function <i>getNeighbors</i>. Take your
-        time to go back to the graph to understand the correct answer, if
-        necessary.
+        The correct answer is <b>V3</b>. In that variant, <i>conComps</i> is
+        called by
+        <i>execComnd</i> but it does not call <i>DFS</i> or <i>BFS</i>. Whereas
+        in V1 and V2, either <i>DFS</i> or <i>BFS</i> are called. Take your time
+        to go back to the graph to understand the correct answer, if necessary.
       </h5>
     </div>
   </Slide>,
