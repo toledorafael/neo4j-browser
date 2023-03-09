@@ -133,6 +133,8 @@ const slides = [
         As a first task, find the node that represents the function updateName.
         What is the id of such a node?
       </h5>
+
+      <h5>When you are ready, move to the next page to check your answer.</h5>
       <br />
       {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
     </div>
@@ -414,10 +416,9 @@ const slides = [
     <div className="col-sm-9">
       <h5>
         The correct answer is <b>V1</b>. In that variant, <i>DFS</i> may call
-        the function <i>getEndNodeID</i> and <i>getStartNodeID</i>. Whereas in
-        V2, <i>DFS</i> may only call the function <i>getNeighbors</i>. Take your
-        time to go back to the graph to understand the correct answer, if
-        necessary.
+        the function <i>getTargetID</i> and <i>getSrcID</i>. Whereas in V2,{' '}
+        <i>DFS</i> may only call the function <i>getNgbrs</i>. Take your time to
+        go back to the graph to understand the correct answer, if necessary.
       </h5>
     </div>
   </Slide>,
