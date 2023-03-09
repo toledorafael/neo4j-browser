@@ -174,7 +174,7 @@ const slides = [
         </h5>
         <ul>
           <li>
-            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !kBFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
         </ul>
@@ -202,11 +202,11 @@ const slides = [
         </h5>
         <ul>
           <li>
-            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !kBFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
           <li>
-            V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
+            V2: kWeighted /\ kUndirected /\ !kDFS /\ kBFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
         </ul>
@@ -235,11 +235,11 @@ const slides = [
         </h5>
         <ul>
           <li>
-            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !kBFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
           <li>
-            V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
+            V2: kWeighted /\ kUndirected /\ !kDFS /\ kBFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
         </ul>
