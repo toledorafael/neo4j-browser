@@ -219,20 +219,20 @@ export function MainEditor({
   }
 
   const buttons = [
-    {
-      onClick: toggleFullscreen,
-      title: `${
-        isFullscreen ? 'Close fullscreen ' : 'Fullscreen'
-      } (${printShortcut(FULLSCREEN_SHORTCUT)})`,
-      icon: isFullscreen ? <ContractIcon /> : <ExpandIcon />,
-      testId: 'fullscreen'
-    },
-    {
-      onClick: discardEditor,
-      title: 'Close',
-      icon: <CloseIcon />,
-      testId: 'discard'
-    },
+    // {
+    //   onClick: toggleFullscreen,
+    //   title: `${
+    //     isFullscreen ? 'Close fullscreen ' : 'Fullscreen'
+    //   } (${printShortcut(FULLSCREEN_SHORTCUT)})`,
+    //   icon: isFullscreen ? <ContractIcon /> : <ExpandIcon />,
+    //   testId: 'fullscreen'
+    // },
+    // {
+    //   onClick: discardEditor,
+    //   title: 'Close',
+    //   icon: <CloseIcon />,
+    //   testId: 'discard'
+    // },
     {
       onClick: downloadLog,
       title: 'Download',
