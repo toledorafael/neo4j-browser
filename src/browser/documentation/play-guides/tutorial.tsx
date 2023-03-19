@@ -134,6 +134,8 @@ const slides = [
         As a first task, find the node that represents the function updateName.
         What is the id of such a node?
       </h5>
+
+      <h5>When you are ready, move to the next page to check your answer.</h5>
       <br />
       {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
     </div>
