@@ -56,10 +56,14 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          We will provide you two queries. The first query should be used for
-          the first three tasks, while the second query should be used for the
-          rest of the tasks. Both queries will remain accessible the entire
-          time.
+          We will provide you with two queries. The first query should be used
+          for the first three tasks, whereas the second query should be used for
+          the rest of the tasks. Both queries will remain accessible the
+          throughout the entire time. Throughout the study, feel free to create
+          filters that help you complete the tasks. You can maximize the
+          visualization frame, create your filters, and then minimize the frame
+          to return to the task textbox - the highlighting will remain after the
+          frame is minimized.
         </h5>
         <h5>You can move to the next page whenever you are ready to start.</h5>
       </div>
@@ -80,9 +84,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>functions</b> from the returned graph may be <b>called</b> by
-          the function BFS in a program variant with the configuration
-          kUndirected /\ !kWeighted /\ !kDFS /\ kBFS?
+          Which <b>function(s)</b> from the returned graph may be <b>called</b>{' '}
+          by the function <i>BFS</i> in a program variant with the configuration{' '}
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>?
         </h5>
         <NameForm id="answer1a" />
         {/*         
@@ -107,9 +111,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>variables</b> from the returned graph may be <b>written</b>{' '}
-          by the function BFS in the same program variant kUndirected /\
-          !kWeighted /\ !kDFS /\ kBFS?
+          Which <b>variable(s)</b> from the returned graph may be <b>written</b>{' '}
+          by the function <i>BFS</i> in the same program variant{' '}
+          <b>kUndirected /\ !kWeighted /\ !kDFS /\ kBFS</b>?
         </h5>
         <NameForm id="answer1b" />
       </div>
@@ -130,10 +134,10 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Considering the same program variant kUndirected /\ !kWeighted /\
-          !kDFS /\ kBFS, which <b>variables</b> from the returned graph may be{' '}
-          <b>written</b> by the function BFS if we <b>enable</b> the feature
-          kWeighted in the original configuration?
+          Considering the same program variant ( kUndirected /\ !kWeighted /\
+          !kDFS /\ kBFS), which <b>variable(s)</b> from the returned graph may
+          be <b>written</b> by the function <i>BFS</i> if we <b>enable</b> the
+          feature <b>kWeighted</b> in the original configuration?
         </h5>
         <NameForm id="answer1c" />
       </div>
@@ -141,12 +145,26 @@ const slides = [
   </Slide>,
   <Slide key="s5">
     <div className="col-sm-3">
+      <h3>Task 2</h3>
+      <p className="lead"></p>
+    </div>
+    <div className="col-sm-9">
+      <div>
+        <h5>
+          Before starting the next task, remember to remove the current filters
+          and close the visualization frame with the results for the first task.
+        </h5>
+      </div>
+    </div>
+  </Slide>,
+  <Slide key="s6">
+    <div className="col-sm-3">
       <h3>Task 2.1</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNgbr" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getSrcID" AND t.label <> "getTargetID" AND t.label <> "getNgbrs" RETURN *'
           }
         </pre>
       </p>
@@ -154,28 +172,27 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>functions</b> may be directly called by the function{' '}
-          <b>handleCommands</b>
-          in the following program variant V1:
+          Which <b>function(s)</b> may be directly called by the function{' '}
+          <i>execComnd</i> in the following program variant V1:
         </h5>
-        <ol>
+        <ul>
           <li>
-            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !kBFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2a" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s6">
+  <Slide key="s7">
     <div className="col-sm-3">
       <h3>Task 2.2</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNgbr" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getSrcID" AND t.label <> "getTargetID" AND t.label <> "getNgbrs" RETURN *'
           }
         </pre>
       </p>
@@ -183,32 +200,31 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Which <b>functions</b> may be directly called by the function{' '}
-          <b>handleCommands</b>
-          in the program variant V2 but <b>not</b> in V1:
+          Which <b>function(s)</b> may be directly called by the function{' '}
+          <i>execComnd</i> in the program variant V2 but <b>not</b> in V1:
         </h5>
-        <ol>
+        <ul>
           <li>
-            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !kBFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
           <li>
-            V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
+            V2: kWeighted /\ kUndirected /\ !kDFS /\ kBFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2b" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s7">
+  <Slide key="s8">
     <div className="col-sm-3">
       <h3>Task 2.3</h3>
       <p className="lead">
         For this task, you will have to run the following query:
         <pre className="pre-scrollable code runnable remove-play-icon">
           {
-            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNeighbor" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getStartNodeID" AND t.label <> "getEndNodeID" AND t.label <> "getNeighbors" RETURN *'
+            'MATCH p=(f:cFunction)-[r:call]->(t:cFunction) WHERE f<>t AND r.condition <> "true" AND t.label <> "getID" AND t.label <> "addEdge" AND t.label <> "addNgbr" AND t.label <> "getID" AND t.label <> "clearVisited" AND t.label <> "getSrcID" AND t.label <> "getTargetID" AND t.label <> "getNgbrs" RETURN *'
           }
         </pre>
       </p>
@@ -216,24 +232,25 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          There are two possible call paths between the functions handleCommand
-          and DFS. Which program variant may execute both call paths?
+          There are <b>two</b> possible call paths between the functions{' '}
+          <i>execComnd</i> and <i>DFS</i>. Which program variant may execute
+          both call paths?
         </h5>
-        <ol>
+        <ul>
           <li>
-            V1: kWeighted /\ kUndirected /\ kDFS /\ !BFS /\ kCycle /\
+            V1: kWeighted /\ kUndirected /\ kDFS /\ !kBFS /\ kCycle /\
             kConnectedComps /\ !kPrim
           </li>
           <li>
-            V2: kWeighted /\ kUndirected /\ !kDFS /\ BFS /\ !kCycle /\
+            V2: kWeighted /\ kUndirected /\ !kDFS /\ kBFS /\ !kCycle /\
             kConnectedComps /\ kPrim
           </li>
-        </ol>
+        </ul>
         <NameForm id="answer2c" />
       </div>
     </div>
   </Slide>,
-  <Slide key="s8">
+  <Slide key="s9">
     <div className="col-sm-3">
       <h3>End of Stage 1</h3>
       <p className="lead">You have finished the first stage of the study.</p>
@@ -241,8 +258,9 @@ const slides = [
     <div className="col-sm-9">
       <div>
         <h5>
-          Let the researcher know that you finished the tasks for this stage.
-          They should provide you the link for the next steps of the study.
+          Let the researcher know that you have finished the tasks for this
+          stage. They should provide you with the link for the next steps of the
+          study.
         </h5>
       </div>
     </div>

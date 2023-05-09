@@ -93,13 +93,16 @@ export class ConnectionForm extends Component<any, ConnectionFormState> {
     this.state = {
       requestedUseDb: '',
       ...connection,
-      host: generateBoltUrl(allowedSchemes, connection.host),
+      // host: generateBoltUrl(allowedSchemes, connection.host),
+      host: 'neo4j+s://7700b2ee.databases.neo4j.io:7687',
       authenticationMethod,
       isLoading: false,
       passwordChangeNeeded: props.passwordChangeNeeded || false,
       forcePasswordChange: props.forcePasswordChange || false,
       successCallback: props.onSuccess || (() => {}),
-      used: props.isConnected
+      used: props.isConnected,
+      password: '0stYahwzlsJY3mSsJqxryOBixz1stUddecbKbiy0N2I',
+      username: 'neo4j'
     }
   }
 

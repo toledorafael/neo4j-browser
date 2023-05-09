@@ -1,34 +1,41 @@
 import React, { Component } from 'react'
 import { useState } from 'react'
+import { log } from '../Logging/Log'
 
 // type NameForm = any
 type State = any
 
 export default function NameForm(props: any): JSX.Element {
   const [value, setValue] = useState('')
-  const [disableButton, setDisableButton] = useState(() => {
-    return localStorage.getItem(props.id) !== null
-  })
+  const [output, setOutput] = useState('')
+  const [hideOutput, setHideOutput] = useState(true)
 
   const handleChange = (event: any) => {
     setValue(event.target.value)
   }
 
   const handleSubmit = (event: any) => {
-    localStorage.setItem(props.id, value)
-    localStorage.setItem(props.id + '-submitTime', String(Date.now()))
+    log(props.id + 'Submit, ' + value)
     setValue('')
-    setDisableButton(true)
+    setOutput(value)
+    setHideOutput(false)
     event.preventDefault()
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        <textarea rows={5} cols={50} value={value} onChange={handleChange} />
-      </label>
-      <br />
-      <input type="submit" disabled={disableButton} value="Submit" />
-    </form>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          <textarea rows={5} cols={50} value={value} onChange={handleChange} />
+        </label>
+        <br />
+        <input type="submit" value="Submit" />
+      </form>
+      <div hidden={hideOutput}>
+        <p></p>
+        You submitted:<br></br>
+        <textarea rows={5} cols={50} value={output} readOnly={true} />
+      </div>
+    </div>
   )
 }

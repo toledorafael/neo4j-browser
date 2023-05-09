@@ -479,7 +479,8 @@ const vizFn = function(
 
   const clickHandler = vizClickHandler()
   clickHandler.on('click', onNodeClick)
-  clickHandler.on('dblclick', onNodeDblClick)
+  // Turn off double click of nodes
+  // clickHandler.on('dblclick', onNodeDblClick)
 
   return viz
 }

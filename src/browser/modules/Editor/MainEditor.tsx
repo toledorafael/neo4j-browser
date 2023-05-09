@@ -19,6 +19,7 @@
  */
 
 import React, { useState, Dispatch, useEffect, useRef } from 'react'
+import { log } from '../Logging/Log'
 import { Action } from 'redux'
 import SVGInline from 'react-svg-inline'
 import { connect } from 'react-redux'
@@ -197,25 +198,7 @@ export function MainEditor({
   }
 
   function downloadLog() {
-    //TODO: update the fields of interest for the log file
-    const headers = [
-      'participantID',
-      'start-tutorial',
-      'start-study',
-      'answer1a-submitTime',
-      'answer1a',
-      'answer1b-submitTime',
-      'answer1b',
-      'answer1c-submitTime',
-      'answer1c',
-      'answer2a-submitTime',
-      'answer2a',
-      'answer2b-submitTime',
-      'answer2b',
-      'answer2c-submitTime',
-      'answer2c',
-      'filter'
-    ]
+    const headers = ['participantID', 'start-tutorial', 'history']
     const filterJSON = JSON.stringify(localStorage, headers, ' ')
 
     const blob = new Blob([filterJSON], {
@@ -236,20 +219,20 @@ export function MainEditor({
   }
 
   const buttons = [
-    {
-      onClick: toggleFullscreen,
-      title: `${
-        isFullscreen ? 'Close fullscreen ' : 'Fullscreen'
-      } (${printShortcut(FULLSCREEN_SHORTCUT)})`,
-      icon: isFullscreen ? <ContractIcon /> : <ExpandIcon />,
-      testId: 'fullscreen'
-    },
-    {
-      onClick: discardEditor,
-      title: 'Close',
-      icon: <CloseIcon />,
-      testId: 'discard'
-    },
+    // {
+    //   onClick: toggleFullscreen,
+    //   title: `${
+    //     isFullscreen ? 'Close fullscreen ' : 'Fullscreen'
+    //   } (${printShortcut(FULLSCREEN_SHORTCUT)})`,
+    //   icon: isFullscreen ? <ContractIcon /> : <ExpandIcon />,
+    //   testId: 'fullscreen'
+    // },
+    // {
+    //   onClick: discardEditor,
+    //   title: 'Close',
+    //   icon: <CloseIcon />,
+    //   testId: 'discard'
+    // },
     {
       onClick: downloadLog,
       title: 'Download',
@@ -260,6 +243,7 @@ export function MainEditor({
 
   function createRunCommandFunction(source: string) {
     return () => {
+      log('run query: ' + editorRef.current?.getValue())
       executeCommand(editorRef.current?.getValue() || '', source)
       editorRef.current?.setValue('')
       setCurrentlyEditing(null)

@@ -1,3 +1,5 @@
+import { log } from '../../../browser/modules/Logging/Log'
+
 const lightPalette = {
   colors: [
     '#a5abb6',
@@ -252,8 +254,14 @@ export function paletteReducer(
     return initialState
   }
   if (action.type === 'palette/PRESET') {
-    if (action.name === 'dark') return darkPalette
-    if (action.name === 'light') return lightPalette
+    if (action.name === 'dark') {
+      log('set Dark theme')
+      return darkPalette
+    }
+    if (action.name === 'light') {
+      log('set Light theme')
+      return lightPalette
+    }
     if (action.name === 'lightCustom') return lightCustomPalette
     if (action.name === 'darkCustom') return darkCustomPalette
     return initialState

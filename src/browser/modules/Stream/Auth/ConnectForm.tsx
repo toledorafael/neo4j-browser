@@ -232,7 +232,7 @@ export default function ConnectForm(props: ConnectFormProps): JSX.Element {
               <StyledConnectionTextInput
                 data-testid="username"
                 onChange={props.onUsernameChange}
-                defaultValue={props.username}
+                defaultValue="neo4j"
               />
             </StyledConnectionLabel>
           </StyledConnectionFormEntry>
@@ -245,7 +245,7 @@ export default function ConnectForm(props: ConnectFormProps): JSX.Element {
               <StyledConnectionTextInput
                 data-testid="password"
                 onChange={props.onPasswordChange}
-                defaultValue={props.password}
+                defaultValue="0stYahwzlsJY3mSsJqxryOBixz1stUddecbKbiy0N2I"
                 type="password"
               />
             </StyledConnectionLabel>

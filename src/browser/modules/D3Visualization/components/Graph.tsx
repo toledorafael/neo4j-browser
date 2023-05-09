@@ -19,6 +19,7 @@
  */
 
 import React, { Component } from 'react'
+import { log } from '../../Logging/Log'
 import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
@@ -117,7 +118,7 @@ interface FeatureItem {
 
 const featureItems: FeatureItem[] = [
   {
-    display: 'Segments',
+    display: 'Colour segments',
     items: [
       {
         id: 'segments-text',
@@ -134,7 +135,7 @@ const featureItems: FeatureItem[] = [
     ]
   },
   {
-    display: 'Stripes',
+    display: 'Colour stripes',
     items: [
       {
         id: 'stripes-text',
@@ -147,7 +148,7 @@ const featureItems: FeatureItem[] = [
     ]
   },
   {
-    display: 'Separate Links',
+    display: 'Individual links',
     items: [
       {
         id: 'separate-text',
@@ -160,7 +161,7 @@ const featureItems: FeatureItem[] = [
     ]
   },
   {
-    display: 'Patterns',
+    display: 'Colour+Shape',
     items: [
       {
         id: 'segments-local-pattern-text',
@@ -190,7 +191,7 @@ export class Graph extends Component<any, State> {
     featureExpression: 'Enter feature expression...',
     newConditionType: '',
     showLoadingOverlay: false,
-    showFilters: false
+    showFilters: true
   }
 
   graphInit(el: any) {
@@ -354,33 +355,8 @@ export class Graph extends Component<any, State> {
   handleSubmit() {
     if (this.state.newConditionType) {
       this.props.addFilterAction(this.state.newConditionType)
-      const timestamp = Math.floor((Date.now() - this.state.start) / 1000)
       // Logging filter creation
-      let filterLog = localStorage.getItem('filter')
-      if (filterLog) {
-        const newFilterLog =
-          ', ' +
-          timestamp +
-          ': ' +
-          JSON.stringify(this.state.newConditionType) +
-          '}'
-        // console.log(filterLog)
-        // console.log(filterLog.substring(0, filterLog.length - 1))
-        filterLog = filterLog.substring(0, filterLog.length - 1) + newFilterLog
-        // console.log(typeof filterObj)
-        // filterObj[timestamp] = this.state.newConditionType
-        // Object.assign(filterObj, {timestamp : this.state.newConditionType})
-        // console.log(filterObj)
-        localStorage.setItem('filter', filterLog)
-      } else {
-        const newFilterLog =
-          '{' +
-          timestamp +
-          ': ' +
-          JSON.stringify(this.state.newConditionType) +
-          '}'
-        localStorage.setItem('filter', newFilterLog)
-      }
+      log('createNewFilter, ' + this.state.newConditionType)
       this.props.graphStyle.addCondition(this.state.newConditionType)
       this.props.updateStyle(this.props.graphStyle.toSheet())
       const stats = getGraphStats(this.graph)
@@ -434,7 +410,7 @@ export class Graph extends Component<any, State> {
               onChange={this.updateFeatureExpressionState.bind(this)}
             />
             <StyleSubmitButton onClick={this.handleSubmit.bind(this)}>
-              Filter
+              Create filter
             </StyleSubmitButton>
           </StyleInputDiv>
         )
@@ -447,7 +423,7 @@ export class Graph extends Component<any, State> {
     if (this.props.fullscreen && this.state.showFilters) {
       return (
         <StyledLayoutPicker>
-          <StyleRelationshipLayoutButtonGroup>
+          {/* <StyleRelationshipLayoutButtonGroup>
             <StyledRelationshipLayoutHeader>
               Rel Type
             </StyledRelationshipLayoutHeader>
@@ -472,10 +448,10 @@ export class Graph extends Component<any, State> {
                 {layout.display}
               </StyleRelationshipLayoutButton>
             ))}
-          </StyleRelationshipLayoutButtonGroup>
+          </StyleRelationshipLayoutButtonGroup> */}
           <StyleRelationshipLayoutButtonGroup>
             <StyledRelationshipLayoutHeader>
-              Feature Exp
+              Layout
             </StyledRelationshipLayoutHeader>
             {featureItems.map(layout => (
               <StyleRelationshipLayoutButton
@@ -488,6 +464,7 @@ export class Graph extends Component<any, State> {
                 onClick={() => {
                   if (this.state.featureExpressionLayout !== layout) {
                     const newLayout = relationshipLayouts[layout.items[0].id]
+                    log('change to ' + layout.display)
                     this.setState({
                       featureExpressionLayout: layout,
                       currentLayout: newLayout
@@ -517,13 +494,13 @@ export class Graph extends Component<any, State> {
             onClick={this.props.setLightTheme}
             style={{ marginRight: '8px' }}
           >
-            Theme 1
+            Dark Theme
           </button>
-          <button onClick={this.props.setDarkTheme}>Theme 2</button>
+          <button onClick={this.props.setDarkTheme}>Light Theme</button>
           {/* <button onClick={this.props.setLightCustomTheme}>Light 2</button>
           <button onClick={this.props.setDarkCustomTheme}>Dark 2</button> */}
           <table>
-            <tr>
+            {/* <tr>
               <th colSpan={2}>Edge Types</th>
             </tr>
             {this.props.stats.relTypes &&
@@ -569,7 +546,7 @@ export class Graph extends Component<any, State> {
                     </td>
                   </tr>
                 )
-              })}
+              })} */}
             <tr>
               <th colSpan={2}>Feature Expressions</th>
             </tr>

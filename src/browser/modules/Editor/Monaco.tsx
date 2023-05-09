@@ -338,6 +338,8 @@ class Monaco extends React.Component<MonacoProps, MonacoState> {
       scrollBeyondLastColumn: 0,
       scrollBeyondLastLine: false,
       selectionHighlight: false,
+      matchBrackets: 'never',
+      occurrencesHighlight: false,
       value: this.props.value,
       wordWrap: 'on',
       wrappingStrategy: 'advanced'
