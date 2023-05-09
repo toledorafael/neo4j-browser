@@ -193,7 +193,7 @@ export const resultIsError = (request: any) => {
   return !!(request && request.result && request.result.code)
 }
 
-export const initialView = (props: any) => {
+export const initialView = (props: any, state: any = {}) => {
   // Views that should override and always show if they exist
   if (
     props === undefined ||
@@ -204,12 +204,12 @@ export const initialView = (props: any) => {
   }
   // If openView exists, this is not initial render
   if (props.request.status === 'error') return viewTypes.ERRORS
-  // if (state.openView !== undefined && state.openView !== viewTypes.ERRORS) {
-  //   return state.openView
-  // }
+  if (state.openView !== undefined && state.openView !== viewTypes.ERRORS) {
+    return state.openView
+  }
   if (props.frame && props.frame.forceView) return props.frame.forceView
   if (resultHasPlan(props.request)) return viewTypes.PLAN
-  // if (!resultHasRows(props.request)) return viewTypes.TABLE
+  if (!resultHasRows(props.request)) return viewTypes.TABLE
 
   // Non forced views
   // This get set when the user changes view in _any_ frame

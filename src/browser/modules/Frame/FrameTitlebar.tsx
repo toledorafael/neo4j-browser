@@ -42,7 +42,7 @@ import {
   ContractIcon,
   DownIcon,
   ExpandIcon,
-  // PinIcon,
+  PinIcon,
   UpIcon
 } from 'browser-components/icons/Icons'
 import { GlobalState } from 'shared/globalState'
@@ -67,32 +67,32 @@ type FrameTitleBarProps = FrameTitleBarBaseProps & {
 }
 
 function FrameTitlebar({
-  // frame,
+  frame,
   fullscreen,
   fullscreenToggle,
-  // collapse,
-  // collapseToggle,
-  // pinned,
-  // togglePin,
+  collapse,
+  collapseToggle,
+  pinned,
+  togglePin,
   onCloseClick,
-  // togglePinning,
-  trackFullscreenToggle
-}: // trackCollapseToggle
-FrameTitleBarProps) {
+  togglePinning,
+  trackFullscreenToggle,
+  trackCollapseToggle
+}: FrameTitleBarProps) {
   const fullscreenIcon = fullscreen ? (
     <ContractIcon width={10} />
   ) : (
     <ExpandIcon width={10} />
   )
-  // const expandCollapseIcon = collapse ? (
-  //   <DownIcon width={10} />
-  // ) : (
-  //   <UpIcon width={10} />
-  // )
+  const expandCollapseIcon = collapse ? (
+    <DownIcon width={10} />
+  ) : (
+    <UpIcon width={10} />
+  )
 
   return (
     <TitleBarHeader>
-      {/* <FrameControlButton
+      <FrameControlButton
         title="Pin at top"
         onClick={() => {
           togglePin()
@@ -102,8 +102,8 @@ FrameTitleBarProps) {
         pressed={pinned}
       >
         <PinIcon width={10} />
-      </FrameControlButton> */}
-      {/* <FrameControlButton
+      </FrameControlButton>
+      <FrameControlButton
         title={collapse ? 'Expand' : 'Collapse'}
         onClick={() => {
           collapseToggle()
@@ -111,7 +111,7 @@ FrameTitleBarProps) {
         }}
       >
         {expandCollapseIcon}
-      </FrameControlButton> */}
+      </FrameControlButton>
       <FrameControlButton
         title={fullscreen ? 'Close fullscreen' : 'Fullscreen'}
         onClick={() => {

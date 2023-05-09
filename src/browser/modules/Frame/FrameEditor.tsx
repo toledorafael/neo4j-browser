@@ -36,13 +36,13 @@ import {
   Frame,
   TRACK_SAVE_AS_PROJECT_FILE
 } from 'shared/modules/frames/framesDuck'
-// import { EditorButton, FrameButton } from 'browser-components/buttons'
-import { EditorButton } from 'browser-components/buttons'
-// import { SaveFavoriteIcon } from 'browser-components/icons/Icons'
+import { EditorButton, FrameButton } from 'browser-components/buttons'
+// import { EditorButton } from 'browser-components/buttons'
+import { SaveFavoriteIcon } from 'browser-components/icons/Icons'
 import { DottedLineHover } from '../Stream/styled'
 import {
   StyledFrameEditorContainer,
-  // StyledFrameTitlebarButtonSection,
+  StyledFrameTitlebarButtonSection,
   StyledFrameCommand
 } from './styled'
 import Monaco, { MonacoHandles } from '../Editor/Monaco'
@@ -53,7 +53,7 @@ import { MAIN_WRAPPER_DOM_ID } from '../App/App'
 import stopIcon from 'icons/stop-icon.svg'
 import runIcon from 'icons/run-icon.svg'
 import { EditorContainer, Header } from '../Editor/styled'
-// import ExportButton from './ExportButton'
+import ExportButton from './ExportButton'
 import { GlobalState } from 'shared/globalState'
 import { Action, Dispatch } from 'redux'
 import {
@@ -86,19 +86,19 @@ type FrameEditorProps = FrameEditorBaseProps & {
 
 function FrameEditor({
   request,
-  // isRelateAvailable,
+  isRelateAvailable,
   codeFontLigatures,
   enableMultiStatementMode,
-  // newFavorite,
-  // newProjectFile,
+  newFavorite,
+  newProjectFile,
   cancelQuery,
   reRun,
   onTitlebarCmdClick,
   frame,
   fullscreenToggle,
-  // numRecords,
-  // getRecords,
-  // visElement,
+  numRecords,
+  getRecords,
+  visElement,
   bus,
   params
 }: FrameEditorProps) {
@@ -249,7 +249,7 @@ function FrameEditor({
           width={16}
         />
       </Header>
-      {/* <StyledFrameTitlebarButtonSection>
+      <StyledFrameTitlebarButtonSection>
         <FrameButton
           title="Save as Favorite"
           dataTestId="frame-Favorite"
@@ -267,7 +267,7 @@ function FrameEditor({
           isRelateAvailable={isRelateAvailable}
           newProjectFile={newProjectFile}
         />
-      </StyledFrameTitlebarButtonSection> */}
+      </StyledFrameTitlebarButtonSection>
     </StyledFrameEditorContainer>
   )
 }

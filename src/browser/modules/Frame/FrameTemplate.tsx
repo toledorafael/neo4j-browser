@@ -29,7 +29,7 @@ import {
   StyledFrameContents,
   StyledFrameStatusbar,
   StyledFrameMainSection,
-  // StyledFrameAside,
+  StyledFrameAside,
   ContentContainer
 } from './styled'
 
@@ -57,8 +57,8 @@ function FrameTemplate({
   numRecords = 0,
   getRecords,
   visElement,
-  // sidebar,
-  // aside,
+  sidebar,
+  aside,
   statusbar
 }: FrameTemplateProps): JSX.Element {
   const [lastHeight, setLastHeight] = useState(10)
@@ -122,8 +122,8 @@ function FrameTemplate({
         )}
 
         <StyledFrameBody fullscreen={isFullscreen} collapsed={isCollapsed}>
-          {/* {sidebar && sidebar()}
-          {aside && <StyledFrameAside>{aside}</StyledFrameAside>} */}
+          {sidebar && sidebar()}
+          {aside && <StyledFrameAside>{aside}</StyledFrameAside>}
           <StyledFrameMainSection>
             <StyledFrameContents
               fullscreen={isFullscreen}
