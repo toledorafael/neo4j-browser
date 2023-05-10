@@ -23,7 +23,11 @@ const title = 'Neo4j'
 const subtitle = ''
 const content = (
   <>
-    <div className="teasers">
+    <pre className="pre-scrollable code runnable remove-play-icon">
+      {'MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 20'}
+    </pre>
+
+    {/* <div className="teasers">
       <div className="teaser teaser-3">
         <h3>Getting started with Neo4j Browser</h3>
         <p className="lead">Neo4j Browser user interface guide</p>
@@ -76,7 +80,7 @@ const content = (
         </a>
         &nbsp;<span>2002–{new Date().getFullYear()}</span>
       </p>
-    </footer>
+    </footer> */}
   </>
 )
 
