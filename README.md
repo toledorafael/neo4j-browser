@@ -1,6 +1,6 @@
 # Neo4j Browser
 
-Building: Run `yarn build`. Wait for your build to finish. Press `Ctrl-C`. The output is in the `dist` folder.
+<!-- Building: Run `yarn build`. Wait for your build to finish. Press `Ctrl-C`. The output is in the `dist` folder. -->
 
 <!--Neo4j Browser is the general purpose user interface for working with Neo4j. Query, visualize, administrate and monitor the database
 with modern and easy-to-use tools.
@@ -42,14 +42,16 @@ Have an idea for a new feature? You're welcome to leave suggestions and ideas [h
 
 `yarn dev` to have continuous testing on every file change. -->
 
-<!-- #### E2E Suite
+## Development setup
+
+Running Neo4j Browser locally requires Node.js (^14.16.0) and for dependencies we use yarn (`npm install -g yarn`). To install dependencies and then start the development server at `http://localhost:8080`:
 
 ```shell
 yarn install
 yarn start
 ```
 
-Or to run in production mode:
+<!-- Or to run in production mode:
 ```shell
 yarn start-prod
 ```
