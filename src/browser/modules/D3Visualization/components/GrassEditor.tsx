@@ -184,16 +184,15 @@ export class GrassEditorComponent extends Component<
     )
   }
 
-  widthPicker(selector: any, styleForItem: any) {
+  widthPicker(selector: any, styleForItem: any, property: string) {
     const widthSelectors = this.graphStyle
-      .defaultArrayWidths()
+      .defaultArrayWidths(property)
       .map((widthValue: any, i: any) => {
         const onClick = () => {
           this.updateStyle(selector, widthValue)
         }
         const style = { width: this.widths[i] }
-        const active =
-          styleForItem.get('shaft-width') === widthValue['shaft-width']
+        const active = styleForItem.get(property) === widthValue[property]
         return (
           <StyledPickerListItem key={toKeyString('width' + i)}>
             <StyledPickerSelector
@@ -204,10 +203,13 @@ export class GrassEditorComponent extends Component<
           </StyledPickerListItem>
         )
       })
+
     return (
-      <StyledInlineListItem key="width-picker">
+      <StyledInlineListItem key={`${property}-picker`}>
         <StyledInlineList>
-          <StyledInlineListItem>Line width:</StyledInlineListItem>
+          <StyledInlineListItem>
+            {property == 'shaft-width' ? 'Line width:' : 'Arrowhead size:'}
+          </StyledInlineListItem>
           {widthSelectors}
         </StyledInlineList>
       </StyledInlineListItem>
@@ -356,7 +358,16 @@ export class GrassEditorComponent extends Component<
       }
       pickers = [
         // this.colorPicker(styleForRelType.selector, styleForRelType, false),
-        this.widthPicker(styleForRelType.selector, styleForRelType)
+        this.widthPicker(
+          styleForRelType.selector,
+          styleForRelType,
+          'shaft-width'
+        ),
+        this.widthPicker(
+          styleForRelType.selector,
+          styleForRelType,
+          'head-width'
+        )
         // this.captionPicker(
         //   styleForRelType.selector,
         //   styleForRelType,

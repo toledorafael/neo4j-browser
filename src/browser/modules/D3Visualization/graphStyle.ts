@@ -38,6 +38,7 @@ export default function neoGraphStyle() {
     relationship: {
       color: 'var(--graph-color0)',
       'shaft-width': '5px', // Check if the link gets thicker
+      'head-width': '8px',
       'font-size': '14px',
       padding: '3px',
       'text-color-external': '#000000',
@@ -86,7 +87,7 @@ export default function neoGraphStyle() {
       'icon-code': 'k'
     }
   ]
-  const defaultArrayWidths = [
+  const defaultShaftWidths = [
     {
       'shaft-width': '1px'
     },
@@ -112,6 +113,33 @@ export default function neoGraphStyle() {
       'shaft-width': '38px'
     }
   ]
+  const defaultArrowheadWidths = [
+    {
+      'head-width': '3px'
+    },
+    {
+      'head-width': '5px'
+    },
+    {
+      'head-width': '8px'
+    },
+    {
+      'head-width': '10px'
+    },
+    {
+      'head-width': '13px'
+    },
+    {
+      'head-width': '18px'
+    },
+    {
+      'head-width': '23px'
+    }
+  ]
+  const defaultWidthsMapping = {
+    'shaft-width': defaultShaftWidths,
+    'head-width': defaultArrowheadWidths
+  }
   // const defaultColors = [
   //   {
   //     color: '#FFE081',
@@ -847,8 +875,10 @@ export default function neoGraphStyle() {
       return defaultIconCodes
     }
 
-    GraphStyle.prototype.defaultArrayWidths = function() {
-      return defaultArrayWidths
+    GraphStyle.prototype.defaultArrayWidths = function(
+      property: 'shaft-width' | 'head-width'
+    ) {
+      return defaultWidthsMapping[property]
     }
 
     GraphStyle.prototype.defaultColors = function() {
