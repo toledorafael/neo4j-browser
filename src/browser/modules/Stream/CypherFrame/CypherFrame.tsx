@@ -41,7 +41,8 @@ import {
   PlanIcon,
   AlertIcon,
   ErrorIcon,
-  SpinnerIcon
+  SpinnerIcon,
+  TabularIcon
 } from 'browser-components/icons/Icons'
 import { AsciiView, AsciiStatusbar } from './AsciiView'
 import { CodeView, CodeStatusbar } from './CodeView'
@@ -80,6 +81,7 @@ import RelatableView, {
 } from 'browser/modules/Stream/CypherFrame/relatable-view'
 import { requestExceedsVisLimits } from 'browser/modules/Stream/CypherFrame/helpers'
 import { GlobalState } from 'shared/globalState'
+import { TabularStatusBar } from './TabularView'
 
 type CypherFrameBaseProps = {
   frame: Frame
@@ -279,6 +281,17 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
           <CodeIcon />
         </CypherFrameButton>
       )}
+      {!resultIsError(this.props.request) && (
+        <CypherFrameButton
+          data-testid="cypherFrameSidebarTabular"
+          selected={this.state.openView === viewTypes.TABULAR}
+          onClick={() => {
+            this.changeView(viewTypes.TABULAR)
+          }}
+        >
+          <TabularIcon />
+        </CypherFrameButton>
+      )}
     </FrameSidebar>
   )
 
@@ -334,7 +347,11 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
             updated={this.props.request.updated}
             fullscreen={this.state.fullscreen}
             assignVisElement={(svgElement: any, graphElement: any) => {
-              this.visElement = { svgElement, graphElement, type: 'plan' }
+              this.visElement = {
+                svgElement,
+                graphElement,
+                type: 'plan'
+              }
               this.setState({ hasVis: true })
             }}
             setPlanExpand={(planExpand: PlanExpand) =>
@@ -349,7 +366,11 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
             updated={this.props.request.updated}
             frameHeight={this.state.frameHeight}
             assignVisElement={(svgElement: any, graphElement: any) => {
-              this.visElement = { svgElement, graphElement, type: 'graph' }
+              this.visElement = {
+                svgElement,
+                graphElement,
+                type: 'graph'
+              }
               this.setState({ hasVis: true })
             }}
             initialNodeDisplay={this.props.initialNodeDisplay}
@@ -384,6 +405,9 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
         </Display>
         <Display if={this.state.openView === viewTypes.CODE} lazy>
           <CodeStatusbar result={result} />
+        </Display>
+        <Display if={this.state.openView === viewTypes.TABULAR} lazy>
+          <TabularStatusBar />
         </Display>
         <Display if={this.state.openView === viewTypes.ERRORS} lazy>
           <ErrorsStatusbar result={result} />
