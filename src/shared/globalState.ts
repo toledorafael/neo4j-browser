@@ -64,6 +64,7 @@ import {
 } from './modules/experimentalFeatures/experimentalFeaturesDuck'
 import { PaletteState } from './modules/palette/palette'
 import { FilterState } from './modules/filters/filters'
+import { LayoutState } from './modules/layout/layout'
 
 export interface GlobalState {
   [settings]: typeof settingsInitialState
@@ -89,4 +90,5 @@ export interface GlobalState {
   [guides]: GuideState
   palette: PaletteState
   filters: FilterState
+  layout: LayoutState
 }
