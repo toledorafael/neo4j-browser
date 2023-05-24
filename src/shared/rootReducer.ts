@@ -68,6 +68,7 @@ import experimentalFeaturesReducer, {
 } from 'shared/modules/experimentalFeatures/experimentalFeaturesDuck'
 import { paletteReducer } from 'shared/modules/palette/palette'
 import filtersReducer from './modules/filters/filters'
+import layoutReducer from './modules/layout/layout'
 
 export default {
   [connections]: connectionsReducer,
@@ -92,5 +93,6 @@ export default {
   [guides]: guideReducer,
   [experimentalFeatures]: experimentalFeaturesReducer,
   palette: paletteReducer,
-  filters: filtersReducer
+  filters: filtersReducer,
+  layout: layoutReducer
 }
