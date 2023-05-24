@@ -38,7 +38,7 @@ export default function neoGraphStyle() {
     relationship: {
       color: 'var(--graph-color0)',
       'shaft-width': '5px', // Check if the link gets thicker
-      'head-width': '8px',
+      'head-width': '10px',
       'font-size': '14px',
       padding: '3px',
       'text-color-external': '#000000',
