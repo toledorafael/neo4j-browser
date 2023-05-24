@@ -176,7 +176,8 @@ const slides = [
       <ol>
         <li>Turn on/off the visibility of nodes and links</li>
         <li>Change the colours and diameter of nodes</li>
-        <li>Change the width of links</li>
+        <li>Change the thickness of links</li>
+        <li>Change the size of the arrowhead</li>
       </ol>
     </div>
   </Slide>,
@@ -201,7 +202,8 @@ const slides = [
         <li>Set the colour of cVariables to red</li>
         <li>Set the colour of cFunctions to dark blue</li>
         <li>
-          Set the width of all the links to the fourth thickest option available
+          Set the thickness of all the links to the fourth thickest option
+          available
         </li>
       </ol>
       <h5>You can move to the next slide when you are done.</h5>
