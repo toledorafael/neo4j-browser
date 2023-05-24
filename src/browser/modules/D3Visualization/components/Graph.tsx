@@ -28,7 +28,6 @@ import {
   StyledZoomHolder,
   StyledSvgWrapper,
   StyledZoomButton,
-  StyledSliderHolder,
   StyleInputDiv,
   StyleSubmitButton,
   StyleTextArea,
@@ -43,13 +42,12 @@ import graphView from '../lib/visualization/components/graphView'
 
 type State = any
 
-import { getShapeDef } from '../lib/visualization/utils/shapes'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { connect } from 'react-redux'
 import { presetPaletteAction } from 'shared/modules/palette/palette'
 import { addFilterAction } from 'shared/modules/filters/filters'
 import { GlobalState } from 'shared/globalState'
-import { string } from 'prop-types'
+import { updateLayoutAction } from 'shared/modules/layout/layout'
 
 interface RelationshipLayout {
   arrowLayout: 'stripes' | 'segments' | 'separate'
@@ -464,6 +462,7 @@ export class Graph extends Component<any, State> {
                 onClick={() => {
                   if (this.state.featureExpressionLayout !== layout) {
                     const newLayout = relationshipLayouts[layout.items[0].id]
+                    this.props.updateLayoutAction(newLayout.arrowLayout)
                     log('change to ' + layout.display)
                     this.setState({
                       featureExpressionLayout: layout,
@@ -633,6 +632,7 @@ export const GraphComponent = connect(
     setDarkTheme: () => dispatch(presetPaletteAction('dark')),
     setLightCustomTheme: () => dispatch(presetPaletteAction('lightCustom')),
     setDarkCustomTheme: () => dispatch(presetPaletteAction('darkCustom')),
-    addFilterAction: (filter: string) => dispatch(addFilterAction(filter))
+    addFilterAction: (filter: string) => dispatch(addFilterAction(filter)),
+    updateLayoutAction: (layout: string) => dispatch(updateLayoutAction(layout))
   })
 )(Graph)
