@@ -176,6 +176,7 @@ const slides = [
         <li>Turn on/off the visibility of nodes and links</li>
         <li>Change the colours and diameter of nodes</li>
         <li>Change the thickness of links</li>
+        <li>Change the size of the arrowhead</li>
       </ol>
     </div>
   </Slide>,
