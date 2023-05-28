@@ -81,7 +81,7 @@ import RelatableView, {
 } from 'browser/modules/Stream/CypherFrame/relatable-view'
 import { requestExceedsVisLimits } from 'browser/modules/Stream/CypherFrame/helpers'
 import { GlobalState } from 'shared/globalState'
-import { TabularStatusBar } from './TabularView'
+import { TabularStatusBar, TabularView } from './TabularView'
 
 type CypherFrameBaseProps = {
   frame: Frame
@@ -333,6 +333,9 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
         </Display>
         <Display if={this.state.openView === viewTypes.CODE} lazy>
           <CodeView result={result} request={request} query={query} />
+        </Display>
+        <Display if={this.state.openView === viewTypes.TABULAR} lazy>
+          <TabularView result={result} />
         </Display>
         <Display if={this.state.openView === viewTypes.ERRORS} lazy>
           <ErrorsView result={result} updated={this.props.request.updated} />
