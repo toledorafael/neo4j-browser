@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Cell, useTable } from 'react-table'
+import { useTable } from 'react-table'
 
 import '../../../styles/data-table.css'
 
@@ -44,24 +44,28 @@ const Table = ({ columns, data }: TableProps) => {
         placeholder={'Search name'}
       /> */}
       <table className="data-table" {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup, rIndex) => (
-            <tr
-              className="data-row data-header"
-              {...headerGroup.getHeaderGroupProps()}
-              key={rIndex}
-            >
-              {headerGroup.headers.map((column, cIndex) => (
-                <th
-                  className="data-cell"
-                  {...column.getHeaderProps()}
-                  key={cIndex}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
+        <thead className="data-sticky-header">
+          {headerGroups.map((headerGroup, rIndex) => {
+            return rIndex !== 0 ? (
+              <tr
+                className="data-row data-header"
+                {...headerGroup.getHeaderGroupProps()}
+                key={rIndex}
+              >
+                {headerGroup.headers.map((column, cIndex) => (
+                  <th
+                    className="data-cell"
+                    {...column.getHeaderProps()}
+                    key={cIndex}
+                  >
+                    {column.render('Header')}
+                  </th>
+                ))}
+              </tr>
+            ) : (
+              <></>
+            )
+          })}
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row, rIndex) => {

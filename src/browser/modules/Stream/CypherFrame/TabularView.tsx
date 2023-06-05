@@ -1,4 +1,5 @@
 import Table from 'browser/modules/D3Visualization/components/Table'
+import { GraphStats } from 'browser/modules/D3Visualization/mapper'
 import { Record as Neo4jRecord } from 'neo4j-driver'
 import React, { useEffect, useMemo, useState } from 'react'
 import { connect } from 'react-redux'
@@ -21,6 +22,17 @@ const StyledCondition = styled.div`
   width: fit-content;
 `
 
+const StyledDataEntry = styled.div`
+  display: flex;
+  flex-direction: row;
+  line-height: 1.5rem;
+`
+
+const StyledLabel = styled.div`
+  margin-right: 0.25rem;
+  font-weight: bold;
+`
+
 interface TableConfig {
   Header: string
   columns: Record<PropertyKey, any>[]
@@ -28,13 +40,14 @@ interface TableConfig {
 
 type TabularViewProps = {
   result: BrowserRequestResult
+  graphStats: GraphStats | null
 }
 
 type ConditionProps = {
-  value: string
+  value: string[]
 }
 
-// Custom component to render Genres
+/* // Custom component to render Genres
 const Conditions = ({ value }: ConditionProps) => {
   return (
     <>
@@ -45,13 +58,34 @@ const Conditions = ({ value }: ConditionProps) => {
       )}
     </>
   )
+} */
+
+const MultilineData = ({ value }: ConditionProps) => {
+  return (
+    <>
+      {value.map(data => {
+        const dataArray = data.split('\n')
+
+        return dataArray.map((dataEntry, index) => {
+          const dataMapping = dataEntry.split(': ')
+          return (
+            <StyledDataEntry key={index}>
+              <StyledLabel>{dataMapping[0]}: </StyledLabel>
+              {dataMapping[1]}
+            </StyledDataEntry>
+          )
+        })
+      })}
+    </>
+  )
 }
 
 export const TabularViewComponent = ({
-  result
+  result,
+  graphStats
 }: TabularViewProps): JSX.Element => {
   const [columns, setColumns] = useState<TableConfig[]>([])
-  const [data, setData] = useState<Record<PropertyKey, string>[]>([])
+  const [data, setData] = useState<Record<PropertyKey, string[]>[]>([])
 
   const records: Neo4jRecord[] = useMemo(
     () =>
@@ -60,7 +94,7 @@ export const TabularViewComponent = ({
         : [],
     [result]
   )
-  console.log(records)
+  console.log(graphStats)
 
   useEffect(() => {
     setColumns([
@@ -70,42 +104,57 @@ export const TabularViewComponent = ({
           Header: field,
           accessor: field,
           // eslint-disable-next-line react/display-name
-          Cell: (cell: any) => <Conditions value={cell.value} />
+          Cell: (cell: any) => <MultilineData value={cell.value} />
+          // Cell: (cell: any) => <Conditions value={cell.value} />
         }))
       }
     ])
   }, [records])
 
+  const getNodeDataMapping = (record: any): string[] => {
+    const mapping = []
+
+    mapping.push('<id>: ' + record.identity)
+    mapping.push('filename: ' + record.properties.filename)
+    mapping.push('label: ' + record.properties.label)
+    mapping.push('type: ' + record.labels.join(', '))
+
+    return mapping
+  }
+
   useEffect(() => {
-    const dataTest: Record<PropertyKey, string>[] = []
+    const tempData: Record<PropertyKey, string[]>[] = []
 
     records.map((record: Neo4jRecord) => {
       if (columns && columns[0] && columns[0].columns) {
-        const row: Record<PropertyKey, string> = {}
+        const row: Record<PropertyKey, string[]> = {}
 
         columns[0].columns.map(field => {
-          console.log(record.get(field.accessor))
+          row[field.accessor.toString()] = []
 
           if (
-            record.get(field.accessor).properties.hasOwnProperty('condition')
+            record.get(field.accessor).properties.hasOwnProperty('condition') // Relationship
           ) {
-            row[field.accessor.toString()] =
-              'conditions: ' + record.get(field.accessor).properties.condition
+            row[field.accessor.toString()].push(
+              'condition: ' + record.get(field.accessor).properties.condition
+            )
+            row[field.accessor.toString()].push(
+              'relationship type: ' + record.get(field.accessor).type
+            )
           } else {
-            row[field.accessor.toString()] = JSON.stringify(
-              record.get(field.accessor).properties
+            // Node
+            row[field.accessor.toString()].push(
+              ...getNodeDataMapping(record.get(field.accessor))
             )
           }
         })
 
-        dataTest.push(row)
+        tempData.push(row)
       }
     })
 
-    setData(dataTest)
+    setData(tempData)
   }, [records, columns])
-
-  console.log(data)
 
   return (
     <StyledTabularView>

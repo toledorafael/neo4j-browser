@@ -82,6 +82,10 @@ import RelatableView, {
 import { requestExceedsVisLimits } from 'browser/modules/Stream/CypherFrame/helpers'
 import { GlobalState } from 'shared/globalState'
 import { TabularStatusBar, TabularView } from './TabularView'
+import {
+  GraphStats,
+  getGraphStats
+} from 'browser/modules/D3Visualization/mapper'
 
 type CypherFrameBaseProps = {
   frame: Frame
@@ -310,6 +314,13 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
     result: BrowserRequestResult,
     query: string
   ): JSX.Element {
+    const graphElement: any = this.visElement
+      ? this.visElement.graphElement
+      : null
+    const graphStats = graphElement
+      ? getGraphStats(graphElement['graph'])
+      : null
+
     return (
       <StyledFrameBody
         data-testid="frame-loaded-contents"
@@ -335,7 +346,7 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
           <CodeView result={result} request={request} query={query} />
         </Display>
         <Display if={this.state.openView === viewTypes.TABULAR} lazy>
-          <TabularView result={result} />
+          <TabularView result={result} graphStats={graphStats} />
         </Display>
         <Display if={this.state.openView === viewTypes.ERRORS} lazy>
           <ErrorsView result={result} updated={this.props.request.updated} />
