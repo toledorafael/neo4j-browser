@@ -1,3 +1,4 @@
+import CheckBoxFilter from 'browser/modules/D3Visualization/components/CheckBoxFilter'
 import Table from 'browser/modules/D3Visualization/components/Table'
 import { GraphStats } from 'browser/modules/D3Visualization/mapper'
 import { Record as Neo4jRecord } from 'neo4j-driver'
@@ -43,7 +44,13 @@ type TabularViewProps = {
   graphStats: GraphStats | null
 }
 
-type ConditionProps = {
+type HeaderCellProps = {
+  value: PropertyKey
+  relTypes: string[]
+  record: any
+}
+
+type CellProps = {
   value: string[]
 }
 
@@ -60,7 +67,17 @@ const Conditions = ({ value }: ConditionProps) => {
   )
 } */
 
-const MultilineData = ({ value }: ConditionProps) => {
+const HeaderEntry = ({ value, relTypes, record }: HeaderCellProps) => {
+  console.log(value, relTypes, record)
+  return (
+    <>
+      {value}
+      <CheckBoxFilter options={relTypes} />
+    </>
+  )
+}
+
+const MultilineData = ({ value }: CellProps) => {
   return (
     <>
       {value.map(data => {
@@ -94,14 +111,31 @@ export const TabularViewComponent = ({
         : [],
     [result]
   )
-  console.log(graphStats)
+
+  console.log(records)
+
+  const relTypes: string[] = useMemo(
+    () =>
+      graphStats && graphStats.relTypes
+        ? Object.keys(graphStats.relTypes).filter(e => e !== '*')
+        : [],
+    [graphStats]
+  )
 
   useEffect(() => {
     setColumns([
       {
         Header: 'Tabular View Results',
         columns: records[0].keys.map(field => ({
-          Header: field,
+          //Header: field,
+          // eslint-disable-next-line react/display-name
+          Header: () => (
+            <HeaderEntry
+              value={field}
+              relTypes={relTypes}
+              record={records[0]}
+            />
+          ),
           accessor: field,
           // eslint-disable-next-line react/display-name
           Cell: (cell: any) => <MultilineData value={cell.value} />

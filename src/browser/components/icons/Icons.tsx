@@ -41,6 +41,7 @@ import download from 'icons/save.svg'
 import expand from 'icons/frame-fullscreen.svg'
 import shrink from 'icons/frame-shrink.svg'
 import file from 'icons/file.svg'
+import filter from 'icons/filter.svg'
 import folderEmpty from 'icons/folder-empty.svg'
 import help from 'icons/help.svg'
 import monitorPlay from 'icons/monitor-play.svg'
@@ -318,6 +319,10 @@ export const AlertIcon = (): JSX.Element => (
 )
 export const ErrorIcon = (): JSX.Element => (
   <IconContainer className="fa fa-file-text-o" text="Error" />
+)
+
+export const FilterIcon = (): JSX.Element => (
+  <IconContainer icon={filter} width={SMALL_SIZE} />
 )
 
 export const ZoomInIcon = ({
