@@ -31,27 +31,31 @@ const StyledInput = styled.input`
 `
 type CheckBoxFilterProps = {
   options: string[]
+  callback: (param: string[]) => void
 }
 
-const CheckBoxFilter = ({ options }: CheckBoxFilterProps) => {
+const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
   const [showFilter, setShowFilter] = useState(false)
   const [checkedAll, setCheckedAll] = useState(true)
   const [checked, setChecked] = useState(options.map(() => true))
   const checkAllRef = useRef<HTMLInputElement>(null)
 
-  const isIndeterminate = (): boolean => {
+  useEffect(() => {
     const numChecked = checked.filter(e => e === true).length
 
-    return numChecked > 0 && numChecked < options.length
-  }
-
-  console.log(options, checked)
-
-  useEffect(() => {
     if (checkAllRef && checkAllRef.current) {
-      checkAllRef.current.indeterminate = isIndeterminate()
-      console.log(isIndeterminate())
+      checkAllRef.current.indeterminate =
+        numChecked > 0 && numChecked < options.length
     }
+
+    setCheckedAll(numChecked === options.length)
+
+    callback(
+      options.reduce((acc: string[], cur: string, ind: number) => {
+        if (checked[ind] === true) acc.push(cur)
+        return acc
+      }, [])
+    )
   }, [checked])
 
   const selectAll = (): void => {

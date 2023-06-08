@@ -2,7 +2,7 @@ import CheckBoxFilter from 'browser/modules/D3Visualization/components/CheckBoxF
 import Table from 'browser/modules/D3Visualization/components/Table'
 import { GraphStats } from 'browser/modules/D3Visualization/mapper'
 import { Record as Neo4jRecord } from 'neo4j-driver'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { connect } from 'react-redux'
 import { BrowserRequestResult } from 'shared/modules/requests/requestsDuck'
 import styled from 'styled-components'
@@ -13,14 +13,6 @@ const StyledTabularView = styled.div`
   flex-direction: column;
   align-content: center;
   justify-content: flex-start;
-`
-
-const StyledCondition = styled.div`
-  padding: 0.5rem 1.25rem;
-  border-radius: 1.5rem;
-  color: #000000;
-  background-color: #ffe081;
-  width: fit-content;
 `
 
 const StyledDataEntry = styled.div`
@@ -48,31 +40,29 @@ type HeaderCellProps = {
   value: PropertyKey
   relTypes: string[]
   record: any
+  getSelectedOptions: (param: string[]) => void
 }
 
 type CellProps = {
   value: string[]
 }
 
-/* // Custom component to render Genres
-const Conditions = ({ value }: ConditionProps) => {
-  return (
-    <>
-      {value.search('conditions: ') == 0 ? (
-        <StyledCondition key={value}>{value.slice(12)}</StyledCondition>
-      ) : (
-        <>{value}</>
-      )}
-    </>
-  )
-} */
+const HeaderEntry = ({
+  value,
+  relTypes,
+  record,
+  getSelectedOptions
+}: HeaderCellProps) => {
+  const isRelationship = record
+    .get(value)
+    .properties.hasOwnProperty('condition')
 
-const HeaderEntry = ({ value, relTypes, record }: HeaderCellProps) => {
-  console.log(value, relTypes, record)
   return (
     <>
       {value}
-      <CheckBoxFilter options={relTypes} />
+      {isRelationship && (
+        <CheckBoxFilter options={relTypes} callback={getSelectedOptions} />
+      )}
     </>
   )
 }
@@ -112,7 +102,9 @@ export const TabularViewComponent = ({
     [result]
   )
 
-  console.log(records)
+  const getSelectedOptions = useCallback(param => {
+    console.log(param)
+  }, [])
 
   const relTypes: string[] = useMemo(
     () =>
@@ -134,6 +126,7 @@ export const TabularViewComponent = ({
               value={field}
               relTypes={relTypes}
               record={records[0]}
+              getSelectedOptions={getSelectedOptions}
             />
           ),
           accessor: field,
