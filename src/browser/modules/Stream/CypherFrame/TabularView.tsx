@@ -57,9 +57,12 @@ const HeaderEntry = ({
     .get(value)
     .properties.hasOwnProperty('condition')
 
+  const index = record.keys.indexOf(value)
+  const desc = ['Start node', 'Relationship', 'End node']
+
   return (
     <>
-      {value}
+      {value} - {desc[index]}
       {isRelationship && (
         <CheckBoxFilter options={relTypes} callback={getSelectedOptions} />
       )}
