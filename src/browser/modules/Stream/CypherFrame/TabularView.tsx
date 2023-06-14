@@ -70,6 +70,7 @@ const HeaderEntry = ({
   )
 }
 
+// Compute the formatted data cell
 const MultilineData = ({ value }: CellProps) => {
   return (
     <>
@@ -105,10 +106,6 @@ export const TabularViewComponent = ({
     [result]
   )
 
-  const getSelectedOptions = useCallback(param => {
-    console.log(param)
-  }, [])
-
   const relTypes: string[] = useMemo(
     () =>
       graphStats && graphStats.relTypes
@@ -116,13 +113,18 @@ export const TabularViewComponent = ({
         : [],
     [graphStats]
   )
+  const [filteredRelTypes, setFilteredRelTypes] = useState(relTypes)
+
+  // Set the filtered relationship types based on callback from CheckBoxFilter
+  const getSelectedOptions = useCallback(param => {
+    setFilteredRelTypes(param)
+  }, [])
 
   useEffect(() => {
     setColumns([
       {
         Header: 'Tabular View Results',
         columns: records[0].keys.map(field => ({
-          //Header: field,
           // eslint-disable-next-line react/display-name
           Header: () => (
             <HeaderEntry
@@ -157,34 +159,47 @@ export const TabularViewComponent = ({
 
     records.map((record: Neo4jRecord) => {
       if (columns && columns[0] && columns[0].columns) {
-        const row: Record<PropertyKey, string[]> = {}
-
+        // Check if the type of the relationship is selected by the user
+        let shouldBeFiltered = false
         columns[0].columns.map(field => {
-          row[field.accessor.toString()] = []
-
           if (
-            record.get(field.accessor).properties.hasOwnProperty('condition') // Relationship
-          ) {
-            row[field.accessor.toString()].push(
-              'condition: ' + record.get(field.accessor).properties.condition
-            )
-            row[field.accessor.toString()].push(
-              'relationship type: ' + record.get(field.accessor).type
-            )
-          } else {
-            // Node
-            row[field.accessor.toString()].push(
-              ...getNodeDataMapping(record.get(field.accessor))
-            )
-          }
+            record.get(field.accessor).properties.hasOwnProperty('condition') &&
+            !filteredRelTypes.includes(record.get(field.accessor).type)
+          )
+            shouldBeFiltered = true
         })
 
-        tempData.push(row)
+        if (!shouldBeFiltered) {
+          // Populate the row of entry
+          const row: Record<PropertyKey, string[]> = {}
+
+          columns[0].columns.map(field => {
+            row[field.accessor.toString()] = []
+
+            if (
+              record.get(field.accessor).properties.hasOwnProperty('condition') // Relationship
+            ) {
+              row[field.accessor.toString()].push(
+                'condition: ' + record.get(field.accessor).properties.condition
+              )
+              row[field.accessor.toString()].push(
+                'relationship type: ' + record.get(field.accessor).type
+              )
+            } else {
+              // Node
+              row[field.accessor.toString()].push(
+                ...getNodeDataMapping(record.get(field.accessor))
+              )
+            }
+          })
+
+          tempData.push(row)
+        }
       }
     })
 
     setData(tempData)
-  }, [records, columns])
+  }, [records, columns, filteredRelTypes])
 
   return (
     <StyledTabularView>

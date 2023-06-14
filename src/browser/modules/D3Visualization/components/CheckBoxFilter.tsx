@@ -29,6 +29,18 @@ const StyledOption = styled.div`
 const StyledInput = styled.input`
   margin-right: 0.5rem;
 `
+
+const StyledButton = styled.button`
+  background-color: #f5f5f5;
+  color: black;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  min-width: max-content;
+  border-radius: 5px;
+  margin: 0.5rem 0rem;
+  border: 2px solid #666;
+`
+
 type CheckBoxFilterProps = {
   options: string[]
   callback: (param: string[]) => void
@@ -38,6 +50,7 @@ const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
   const [showFilter, setShowFilter] = useState(false)
   const [checkedAll, setCheckedAll] = useState(true)
   const [checked, setChecked] = useState(options.map(() => true))
+  const [filterApplied, setFilterApplied] = useState(false)
   const checkAllRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -49,14 +62,19 @@ const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
     }
 
     setCheckedAll(numChecked === options.length)
-
-    callback(
-      options.reduce((acc: string[], cur: string, ind: number) => {
-        if (checked[ind] === true) acc.push(cur)
-        return acc
-      }, [])
-    )
+    setFilterApplied(false)
   }, [checked])
+
+  useEffect(() => {
+    if (filterApplied) {
+      callback(
+        options.reduce((acc: string[], cur: string, ind: number) => {
+          if (checked[ind] === true) acc.push(cur)
+          return acc
+        }, [])
+      )
+    }
+  }, [filterApplied])
 
   const selectAll = (): void => {
     if (checkedAll) {
@@ -71,6 +89,10 @@ const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
   const selectOne = (index: number): void => {
     const updated = checked.map((state, ind) => (ind == index ? !state : state))
     setChecked(updated)
+  }
+
+  const applyFilter = () => {
+    setFilterApplied(true)
   }
 
   return (
@@ -99,6 +121,7 @@ const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
               {option}
             </StyledOption>
           ))}
+          <StyledButton onClick={applyFilter}>Apply Filter</StyledButton>
         </Tooltip>
       )}
     </TooltipWrapper>
