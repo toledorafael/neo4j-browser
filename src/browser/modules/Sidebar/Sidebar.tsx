@@ -22,18 +22,18 @@ import React from 'react'
 import { connect } from 'react-redux'
 import DatabaseDrawer from '../DBMSInfo/DBMSInfo'
 // import VisualAnalysisDrawer from '../VisualAnalysis/VisualAnalysis'
-// import DocumentsDrawer from './Documents'
+import DocumentsDrawer from './Documents'
 import AboutDrawer from './About'
-// import SettingsDrawer from './Settings'
-// import GuideDrawer from './GuideDrawer'
-// import Favorites from './favorites'
-// import StaticScripts from './static-scripts'
-// import ProjectFilesDrawer from './ProjectFiles'
+import SettingsDrawer from './Settings'
+import GuideDrawer from './GuideDrawer'
+import Favorites from './favorites'
+import StaticScripts from './static-scripts'
+import ProjectFilesDrawer from './ProjectFiles'
 import TabNavigation, {
-  NavItem
-  // STANDARD_DRAWER_WIDTH
+  NavItem,
+  STANDARD_DRAWER_WIDTH
 } from 'browser-components/TabNavigation/Navigation'
-// import BrowserSync from '../Sync/BrowserSync'
+import BrowserSync from '../Sync/BrowserSync'
 import { GlobalState } from 'shared/globalState'
 import { isUserSignedIn } from 'shared/modules/sync/syncDuck'
 import { utilizeBrowserSync } from 'shared/modules/features/featuresDuck'
@@ -46,17 +46,17 @@ import { isRelateAvailable } from 'shared/modules/app/appDuck'
 
 import {
   DatabaseIcon,
-  // FavoritesIcon,
-  // DocumentsIcon,
-  // CloudSyncIcon,
-  // SettingsIcon,
-  AboutIcon
-  // ProjectFilesIcon,
-  // GuideDrawerIcon,
-  // VisualAnalysisIcon
+  FavoritesIcon,
+  DocumentsIcon,
+  CloudSyncIcon,
+  SettingsIcon,
+  AboutIcon,
+  ProjectFilesIcon,
+  GuideDrawerIcon,
+  VisualAnalysisIcon
 } from 'browser-components/icons/Icons'
 import { getCurrentDraft } from 'shared/modules/sidebar/sidebarDuck'
-// import { DrawerHeader } from 'browser-components/drawer/drawer-styled'
+import { DrawerHeader } from 'browser-components/drawer/drawer-styled'
 
 interface SidebarProps {
   openDrawer: string
@@ -72,46 +72,45 @@ interface SidebarProps {
 const Sidebar = ({
   openDrawer,
   onNavClick,
-  neo4jConnectionState,
-  // showStaticScripts,
+  // neo4jConnectionState,
+  showStaticScripts,
   // syncConnected,
   loadSync
 }: // isRelateAvailable,
 // scriptDraft
 SidebarProps) => {
   const topNavItemsList: NavItem[] = [
-    {
-      name: 'DBMS',
-      title: 'Database Information',
-      icon: function dbIcon(isOpen: boolean): JSX.Element {
-        return (
-          <DatabaseIcon
-            isOpen={isOpen}
-            connectionState={neo4jConnectionState}
-            title="Database"
-          />
-        )
-      },
-      content: DatabaseDrawer
-    }
     // {
-    //   name: 'Favorites',
-    //   title: 'Favorites',
-    //   icon: function favIcon(isOpen: boolean): JSX.Element {
-    //     return <FavoritesIcon isOpen={isOpen} title="Favorites" />
-    //   },
-    //   content: function FavoritesDrawer(): JSX.Element {
+    //   name: 'DBMS',
+    //   title: 'Database Information',
+    //   icon: function dbIcon(isOpen: boolean): JSX.Element {
     //     return (
-    //       <div style={{ width: STANDARD_DRAWER_WIDTH }}>
-    //         <DrawerHeader> Favorites </DrawerHeader>
-    //         <Favorites />
-    //         {showStaticScripts && <StaticScripts />}
-    //       </div>
+    //       <DatabaseIcon
+    //         isOpen={isOpen}
+    //         connectionState={neo4jConnectionState}
+    //         title="Database"
+    //       />
     //     )
-    //   }
+    //   },
+    //   content: DatabaseDrawer
     // },
-    // ...(isRelateAvailable
-    //   ? [
+    {
+      name: 'Favorites',
+      title: 'Favorites',
+      icon: function favIcon(isOpen: boolean): JSX.Element {
+        return <FavoritesIcon isOpen={isOpen} title="Favorites" />
+      },
+      content: function FavoritesDrawer(): JSX.Element {
+        return (
+          <div style={{ width: STANDARD_DRAWER_WIDTH }}>
+            <DrawerHeader> Favorites </DrawerHeader>
+            <Favorites />
+            {showStaticScripts && <StaticScripts />}
+          </div>
+        )
+      }
+    }
+    // ...(isRelateAvailable ? [
     //       {
     //         name: 'Project Files',
     //         title: 'Project Files',
@@ -131,7 +130,7 @@ SidebarProps) => {
     //     return <GuideDrawerIcon isOpen={isOpen} />
     //   },
     //   content: GuideDrawer
-    // },
+    // }
     // {
     //   name: 'VisualAnalysis',
     //   title: 'VisualAnalysis',
@@ -180,14 +179,14 @@ SidebarProps) => {
     //   },
     //   content: SettingsDrawer
     // },
-    {
-      name: 'About',
-      title: 'About Neo4j',
-      icon: function aboutIcon(isOpen: boolean): JSX.Element {
-        return <AboutIcon isOpen={isOpen} title="About Neo4j" />
-      },
-      content: AboutDrawer
-    }
+    // {
+    //   name: 'About',
+    //   title: 'About Neo4j',
+    //   icon: function aboutIcon(isOpen: boolean): JSX.Element {
+    //     return <AboutIcon isOpen={isOpen} title="About Neo4j" />
+    //   },
+    //   content: AboutDrawer
+    // }
   ].filter(({ name }) => loadSync || name !== 'Sync')
 
   return (
