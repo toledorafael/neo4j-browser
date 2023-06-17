@@ -44,6 +44,7 @@ import file from 'icons/file.svg'
 import filter from 'icons/filter.svg'
 import folderEmpty from 'icons/folder-empty.svg'
 import help from 'icons/help.svg'
+import menu from 'icons/menu.svg'
 import monitorPlay from 'icons/monitor-play.svg'
 import navigationMenuVertical from 'icons/navigation-menu-vertical.svg'
 import neo4j from 'icons/neo4j-icon.svg'
@@ -323,6 +324,9 @@ export const ErrorIcon = (): JSX.Element => (
 
 export const FilterIcon = (): JSX.Element => (
   <IconContainer icon={filter} width={SMALL_SIZE} />
+)
+export const MenuIcon = (): JSX.Element => (
+  <IconContainer icon={menu} width={SMALL_SIZE} />
 )
 
 export const ZoomInIcon = ({

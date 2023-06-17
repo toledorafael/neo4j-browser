@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { FilterIcon } from 'browser-components/icons/Icons'
+import { FilterIcon, MenuIcon } from 'browser-components/icons/Icons'
 import styled from 'styled-components'
 
 const TooltipWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  float: right;
+  margin-left: 1rem;
 `
 const Tooltip = styled.div`
   position: absolute;
@@ -44,9 +42,10 @@ const StyledButton = styled.button`
 type CheckBoxFilterProps = {
   options: string[]
   callback: (param: string[]) => void
+  type: string
 }
 
-const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
+const CheckBoxFilter = ({ options, callback, type }: CheckBoxFilterProps) => {
   const [showFilter, setShowFilter] = useState(false)
   const [checkedAll, setCheckedAll] = useState(true)
   const [checked, setChecked] = useState(options.map(() => true))
@@ -98,7 +97,7 @@ const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
   return (
     <TooltipWrapper>
       <div onClick={() => setShowFilter(!showFilter)}>
-        <FilterIcon />
+        {type === 'relationship' ? <FilterIcon /> : <MenuIcon />}
       </div>
       {showFilter && (
         <Tooltip>
@@ -121,7 +120,9 @@ const CheckBoxFilter = ({ options, callback }: CheckBoxFilterProps) => {
               {option}
             </StyledOption>
           ))}
-          <StyledButton onClick={applyFilter}>Apply Filter</StyledButton>
+          <StyledButton onClick={applyFilter}>
+            {type === 'relationship' ? 'Apply Filter' : 'Show Information'}
+          </StyledButton>
         </Tooltip>
       )}
     </TooltipWrapper>

@@ -26,6 +26,13 @@ const StyledLabel = styled.div`
   font-weight: bold;
 `
 
+const StyledHeader = styled.div`
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`
+
 interface TableConfig {
   Header: string
   columns: Record<PropertyKey, any>[]
@@ -41,6 +48,7 @@ type HeaderCellProps = {
   relTypes: string[]
   record: any
   getSelectedOptions: (param: string[]) => void
+  getSelectedAttributes: (param: string[]) => void
 }
 
 type CellProps = {
@@ -51,7 +59,8 @@ const HeaderEntry = ({
   value,
   relTypes,
   record,
-  getSelectedOptions
+  getSelectedOptions,
+  getSelectedAttributes
 }: HeaderCellProps) => {
   const isRelationship = record
     .get(value)
@@ -61,12 +70,24 @@ const HeaderEntry = ({
   const desc = ['Start node', 'Relationship', 'End node']
 
   return (
-    <>
+    <StyledHeader>
       {value} - {desc[index]}
-      {isRelationship && (
-        <CheckBoxFilter options={relTypes} callback={getSelectedOptions} />
+      {isRelationship ? (
+        <CheckBoxFilter
+          options={relTypes}
+          callback={getSelectedOptions}
+          type="relationship"
+        />
+      ) : index == 0 ? (
+        <CheckBoxFilter
+          options={['id', 'filename', 'label', 'type']}
+          callback={getSelectedAttributes}
+          type="node"
+        />
+      ) : (
+        <></>
       )}
-    </>
+    </StyledHeader>
   )
 }
 
@@ -114,10 +135,20 @@ export const TabularViewComponent = ({
     [graphStats]
   )
   const [filteredRelTypes, setFilteredRelTypes] = useState(relTypes)
+  const [selectedAttributes, setSelectedAttributes] = useState([
+    'id',
+    'filename',
+    'label',
+    'type'
+  ])
 
   // Set the filtered relationship types based on callback from CheckBoxFilter
   const getSelectedOptions = useCallback(param => {
     setFilteredRelTypes(param)
+  }, [])
+
+  const getSelectedAttributes = useCallback(param => {
+    setSelectedAttributes(param)
   }, [])
 
   useEffect(() => {
@@ -132,6 +163,7 @@ export const TabularViewComponent = ({
               relTypes={relTypes}
               record={records[0]}
               getSelectedOptions={getSelectedOptions}
+              getSelectedAttributes={getSelectedAttributes}
             />
           ),
           accessor: field,
@@ -146,10 +178,18 @@ export const TabularViewComponent = ({
   const getNodeDataMapping = (record: any): string[] => {
     const mapping = []
 
-    mapping.push('<id>: ' + record.identity)
-    mapping.push('filename: ' + record.properties.filename)
-    mapping.push('label: ' + record.properties.label)
-    mapping.push('type: ' + record.labels.join(', '))
+    if (selectedAttributes.includes('id')) {
+      mapping.push('id: ' + record.identity)
+    }
+    if (selectedAttributes.includes('filename')) {
+      mapping.push('filename: ' + record.properties.filename)
+    }
+    if (selectedAttributes.includes('label')) {
+      mapping.push('label: ' + record.properties.label)
+    }
+    if (selectedAttributes.includes('type')) {
+      mapping.push('type: ' + record.labels.join(', '))
+    }
 
     return mapping
   }
@@ -199,7 +239,7 @@ export const TabularViewComponent = ({
     })
 
     setData(tempData)
-  }, [records, columns, filteredRelTypes])
+  }, [records, columns, filteredRelTypes, selectedAttributes])
 
   return (
     <StyledTabularView>
