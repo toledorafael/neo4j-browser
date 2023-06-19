@@ -20,14 +20,23 @@
 
 import React, { useState } from 'react'
 import { Icon } from 'semantic-ui-react'
+import { log } from '../../Logging/Log'
 
 import {
+  StyledGraphLegend,
   StyledLegendInlineList,
   PaneBody,
   PaneHeader,
   PaneBodySectionTitle,
   PaneBodySectionSmallText,
-  PaneBodySectionHeaderWrapper
+  PaneBodySectionHeaderWrapper,
+  StyledLayoutPicker,
+  StyleRelationshipLayoutButtonGroup,
+  StyledRelationshipLayoutHeader,
+  StyleRelationshipLayoutButton,
+  StyleInputDiv,
+  StyleTextArea,
+  StyleSubmitButton
 } from './styled'
 import numberToUSLocale from 'shared/utils/number-to-US-locale'
 import { StyledTruncatedMessage } from 'browser/modules/Stream/styled'
@@ -39,7 +48,13 @@ import { connect } from 'react-redux'
 import { GlobalState } from 'shared/globalState'
 import * as actions from 'shared/modules/grass/grassDuck'
 import neoGraphStyle from '../graphStyle'
-import { FilterState } from 'shared/modules/filters/filters'
+
+import { FilterState, addFilterAction } from 'shared/modules/filters/filters'
+import { presetPaletteAction } from 'shared/modules/palette/palette'
+import { LayoutState, updateLayoutAction } from 'shared/modules/layout/layout'
+import { Action, Dispatch } from 'redux'
+import { getPatternDashes } from '../lib/visualization/utils/pattern'
+import { featureItems, relationshipLayouts } from './Graph'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -92,6 +107,11 @@ type OverviewPaneProps = {
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
   patternSelectorVisible: boolean
+  updateStyle: any
+  setLightTheme: () => void
+  setDarkTheme: () => void
+  addFilterAction: (filter: string) => void
+  updateLayoutAction: (layout: LayoutState) => void
 }
 
 export const OVERVIEW_STEP_SIZE = 50
@@ -109,7 +129,12 @@ function OverviewPane({
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
   setRelTypeVisibility,
-  patternSelectorVisible
+  patternSelectorVisible,
+  updateStyle,
+  setLightTheme,
+  setDarkTheme,
+  addFilterAction,
+  updateLayoutAction
 }: OverviewPaneProps): JSX.Element {
   const [maxLabelsCount, setMaxLabelsCount] = useState(OVERVIEW_STEP_SIZE)
   const [maxRelationshipsCount, setMaxRelationshipsCount] = useState(
@@ -139,6 +164,41 @@ function OverviewPane({
     : []
   const totalNumOfLabelTypes = labels ? Object.keys(labels).length : 0
   const totalNumOfRelTypes = relTypes ? Object.keys(relTypes).length : 0
+
+  const [currentLayout, setCurrentLayout] = useState(
+    relationshipLayouts[featureItems[0].items[0].id]
+  )
+  const [featureExpressionLayout, setFeatureExpressionLayout] = useState(
+    featureItems[0]
+  )
+  const [newConditionType, setNewConditionType] = useState('')
+
+  const handleSubmit = () => {
+    if (newConditionType) {
+      addFilterAction(newConditionType)
+      // Logging filter creation
+      log('createNewFilter, ' + newConditionType)
+
+      graphStyle.addCondition(newConditionType)
+      updateStyle(graphStyle.toSheet())
+
+      // Clear text input
+      Array.from(document.querySelectorAll('textArea')).forEach(
+        (input: any) => (input.value = '')
+      )
+
+      /* const stats = getGraphStats(graph)
+      const newstats = {
+        labels: stats.labels,
+        relTypes: stats.relTypes
+      }
+      onGraphModelChange(newstats) */
+    }
+  }
+
+  const updateFeatureExpressionState = (event: any) => {
+    setNewConditionType(event.target.value)
+  }
 
   return (
     <>
@@ -252,12 +312,109 @@ function OverviewPane({
               nodeCount
             )} nodes, ${numberToUSLocale(relationshipCount)} relationships.`}
         </div>
+
+        {/* Graph controlls */}
+        {/* Input box to enter a new filter */}
+        <StyleInputDiv>
+          <StyleTextArea
+            placeholder="Feature expression"
+            onChange={updateFeatureExpressionState}
+          />
+          <StyleSubmitButton onClick={handleSubmit}>
+            Create filter
+          </StyleSubmitButton>
+        </StyleInputDiv>
+
+        {/* Layout switcher */}
+        <StyledLayoutPicker>
+          <StyleRelationshipLayoutButtonGroup>
+            <StyledRelationshipLayoutHeader>
+              Layout
+            </StyledRelationshipLayoutHeader>
+            {featureItems.map(layout => (
+              <StyleRelationshipLayoutButton
+                className={layout === featureExpressionLayout ? 'selected' : ''}
+                key={layout.display}
+                onClick={() => {
+                  if (featureExpressionLayout !== layout) {
+                    const newLayout = relationshipLayouts[layout.items[0].id]
+                    updateLayoutAction(newLayout)
+                    log('change to ' + layout.display)
+
+                    setFeatureExpressionLayout(layout)
+                    setCurrentLayout(newLayout)
+                  }
+                }}
+              >
+                {layout.display}
+              </StyleRelationshipLayoutButton>
+            ))}
+          </StyleRelationshipLayoutButtonGroup>
+        </StyledLayoutPicker>
+
+        <StyledGraphLegend>
+          {/* Theme switcher */}
+          <button onClick={setLightTheme} style={{ marginRight: '8px' }}>
+            Dark Theme
+          </button>
+          <button onClick={setDarkTheme}>Light Theme</button>
+
+          {/* Legend for filters */}
+          <table>
+            <tr>
+              <th colSpan={2}>Feature Expressions</th>
+            </tr>
+
+            {filters &&
+              filters.map((condType: any) => {
+                const style = graphStyle.forCondition(condType)
+                if (style.get('color') === 'var(--graph-color0)') return null
+                return (
+                  <tr key={condType}>
+                    <td>
+                      <svg width="180" height="15" viewBox="0 -6 144 12">
+                        <line
+                          x1="0"
+                          x2="144"
+                          y1="0"
+                          y2="0"
+                          stroke={style.get('color')}
+                          strokeWidth="5"
+                          strokeDasharray={
+                            currentLayout.localPattern
+                              ? getPatternDashes(style.get('pattern'), 5)
+                              : ''
+                          }
+                        />
+                      </svg>
+                    </td>
+                    <td>
+                      <div className="legend-label" title={condType}>
+                        {condType}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+          </table>
+        </StyledGraphLegend>
       </PaneBody>
     </>
   )
 }
 
-export default connect((state: GlobalState) => ({
-  graphStyleData: actions.getGraphStyleData(state),
-  filters: state.filters
-}))(OverviewPane)
+const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
+  setLightTheme: () => dispatch(presetPaletteAction('light')),
+  setDarkTheme: () => dispatch(presetPaletteAction('dark')),
+  addFilterAction: (filter: string) => dispatch(addFilterAction(filter)),
+  updateLayoutAction: (layout: LayoutState) =>
+    dispatch(updateLayoutAction(layout))
+})
+
+export default connect(
+  (state: GlobalState) => ({
+    graphStyleData: actions.getGraphStyleData(state),
+    filters: state.filters
+  }),
+  mapDispatchToProps
+)(OverviewPane)

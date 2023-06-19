@@ -345,6 +345,7 @@ export class ExplorerLocal extends Component<
           setNodeLabelVisibility={this.setNodeLabelVisibility.bind(this)}
           setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
           patternSelectorVisible={this.state.patternSelectorVisible}
+          updateStyle={this.props.updateStyle}
         />
       </StyledFullSizeContainer>
     )

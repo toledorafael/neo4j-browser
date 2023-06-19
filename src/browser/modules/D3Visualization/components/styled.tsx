@@ -333,18 +333,15 @@ export const StyleToggleGroupMarksButton = styled.button`
 `
 
 export const StyleSubmitButton = styled.button`
-  position: absolute;
-  top: 60px;
-  right: 60px;
   list-style-type: none;
-  font-size: 1.5em;
+  font-size: 1em;
   border: none;
   border-radius: 8px;
   color: white;
   background: green;
   border-color: white;
-  padding: 0 32px;
-  line-height: 32px;
+  padding: 0 1rem;
+  line-height: 28px;
   &:focus {
     outline: none;
   }
@@ -358,17 +355,12 @@ export const StyleSubmitButton = styled.button`
 `
 
 export const StyledLayoutPicker = styled.div`
-  position: absolute;
-  top: 110px;
-  left: 4px;
   border: none;
 `
 
 export const StyleRelationshipLayoutButtonGroup = styled.div`
   display: inline-block;
-  vertical-align: top;
-  width: 200px;
-  margin-right: 8px;
+  width: 150px;
   border: none;
   border-radius: 8px;
   background: grey;
@@ -376,9 +368,9 @@ export const StyleRelationshipLayoutButtonGroup = styled.div`
 `
 
 export const StyledRelationshipLayoutHeader = styled.div`
-  line-height: 32px;
-  height: 32px;
-  font-size: 1.5em;
+  line-height: 20px;
+  height: 24px;
+  font-size: 1em;
   user-select: none;
   color: white;
   text-align: center;
@@ -388,9 +380,9 @@ export const StyledRelationshipLayoutHeader = styled.div`
 
 export const StyleRelationshipLayoutButton = styled.button`
   width: 100%;
-  line-height: 32px;
-  height: 32px;
-  font-size: 1.5em;
+  line-height: 20px;
+  height: 24px;
+  font-size: 1em;
   border: none;
   border-radius: 4px;
   background: grey;
@@ -434,9 +426,6 @@ export const StyleToggleButton = styled.button`
 `
 
 export const StyleInputDiv = styled.div`
-  position: absolute;
-  top: 4px;
-  left: 4px;
   color: black;
   width: 300px;
   background: white;
@@ -445,7 +434,6 @@ export const StyleInputDiv = styled.div`
 `
 
 export const StyleTextArea = styled.textarea`
-  position: relative;
   width: 300px;
   height: 4em;
   line-height: 1.2em;
@@ -615,12 +603,10 @@ export const StyledPatternSelectorItem = styled.div`
 `
 
 export const StyledGraphLegend = styled.div`
-  line-height: 16px;
-  font-size: 16px;
-  position: absolute;
-  left: -1px;
-  bottom: -1px;
-  padding: 16px;
+  line-height: 12px;
+  font-size: 12px;
+  padding: 0.75rem;
+  margin-top: 1rem;
   background: white;
   border-top-right-radius: 2px;
   border: grey solid 1px;
@@ -628,7 +614,7 @@ export const StyledGraphLegend = styled.div`
   td {
     padding: 4px 8px;
     .legend-label {
-      width: 400px;
+      width: fit-content;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;

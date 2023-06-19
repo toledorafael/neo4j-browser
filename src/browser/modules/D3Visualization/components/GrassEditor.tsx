@@ -359,7 +359,7 @@ export class GrassEditorComponent extends Component<
         cursor: 'default'
       }
       pickers =
-        this.props.layout !== 'separate'
+        this.props.layout.arrowLayout !== 'separate'
           ? [
               // this.colorPicker(styleForRelType.selector, styleForRelType, false),
               this.widthPicker(

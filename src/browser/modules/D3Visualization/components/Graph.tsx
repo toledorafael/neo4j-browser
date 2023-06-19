@@ -19,35 +19,19 @@
  */
 
 import React, { Component } from 'react'
-import { log } from '../../Logging/Log'
 import { createGraph, mapRelationships, getGraphStats } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import {
-  StyledZoomHolder,
-  StyledSvgWrapper,
-  StyledZoomButton,
-  StyleInputDiv,
-  StyleSubmitButton,
-  StyleTextArea,
-  StyleRelationshipLayoutButton,
-  StyleRelationshipLayoutButtonGroup,
-  StyledGraphLegend,
-  StyledLayoutPicker,
-  StyledRelationshipLayoutHeader
-} from './styled'
+import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton } from './styled'
 import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
 
 type State = any
 
-import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { connect } from 'react-redux'
-import { presetPaletteAction } from 'shared/modules/palette/palette'
-import { addFilterAction } from 'shared/modules/filters/filters'
 import { GlobalState } from 'shared/globalState'
-import { updateLayoutAction } from 'shared/modules/layout/layout'
+import { LayoutState } from 'shared/modules/layout/layout'
 
 interface RelationshipLayout {
   arrowLayout: 'stripes' | 'segments' | 'separate'
@@ -58,7 +42,7 @@ interface RelationshipLayout {
   localPattern?: boolean
 }
 
-const relationshipLayouts: Record<string, RelationshipLayout> = {
+export const relationshipLayouts: Record<string, RelationshipLayout> = {
   stripes: {
     arrowLayout: 'stripes',
     globalShape: true
@@ -114,7 +98,7 @@ interface FeatureItem {
   }[]
 }
 
-const featureItems: FeatureItem[] = [
+export const featureItems: FeatureItem[] = [
   {
     display: 'Colour segments',
     items: [
@@ -173,7 +157,7 @@ const featureItems: FeatureItem[] = [
   }
 ]
 
-export class Graph extends Component<any, State> {
+export class Graph extends Component<any, State, { layout: LayoutState }> {
   graph: any
   graphEH: any
   graphView: any
@@ -183,10 +167,7 @@ export class Graph extends Component<any, State> {
     zoomInLimitReached: false,
     zoomOutLimitReached: false,
     shouldResize: false,
-    featureExpressionLayout: featureItems[0],
-    currentLayout: relationshipLayouts[featureItems[0].items[0].id],
     scaleFactor: 1,
-    featureExpression: 'Enter feature expression...',
     newConditionType: '',
     showLoadingOverlay: false,
     showFilters: true
@@ -195,7 +176,8 @@ export class Graph extends Component<any, State> {
   graphInit(el: any) {
     this.svgElement = el
     if (this.svgElement && !this.svgElement.__graphStyle) {
-      this.svgElement.__graphStyle = this.state.currentLayout
+      this.svgElement.__graphStyle =
+        relationshipLayouts[featureItems[0].items[0].id]
     }
     if (this.svgElement && !this.svgElement.__uid) {
       this.svgElement.__uid = Math.floor(Math.random() * Math.pow(2, 52))
@@ -293,7 +275,7 @@ export class Graph extends Component<any, State> {
         labels: stats.labels,
         relTypes: stats.relTypes
       }
-      // this.props.onGraphModelChange(getGraphStats(this.graph))
+
       this.props.onGraphModelChange(newstats)
       this.graphView.update()
       this.graphEH.onItemMouseOut()
@@ -316,6 +298,12 @@ export class Graph extends Component<any, State> {
     }
     if (prevProps.hiddenRelTypes !== this.props.hiddenRelTypes) {
       this.graphView.localStyle.hiddenRelTypes = this.props.hiddenRelTypes
+      this.graphView.update()
+    }
+
+    // Update the layout type
+    if (prevProps.layout !== this.props.layout) {
+      this.svgElement.__graphStyle = this.props.layout
       this.graphView.update()
     }
   }
@@ -346,30 +334,7 @@ export class Graph extends Component<any, State> {
     )
   }
 
-  updateFeatureExpressionState(event: any) {
-    this.setState({ newConditionType: event.target.value })
-  }
-
-  handleSubmit() {
-    if (this.state.newConditionType) {
-      this.props.addFilterAction(this.state.newConditionType)
-      // Logging filter creation
-      log('createNewFilter, ' + this.state.newConditionType)
-      this.props.graphStyle.addCondition(this.state.newConditionType)
-      this.props.updateStyle(this.props.graphStyle.toSheet())
-      const stats = getGraphStats(this.graph)
-      Array.from(document.querySelectorAll('textArea')).forEach(
-        (input: any) => (input.value = '')
-      )
-      const newstats = {
-        labels: stats.labels,
-        relTypes: stats.relTypes
-      }
-      // this.props.onGraphModelChange(getGraphStats(this.graph))
-      this.props.onGraphModelChange(newstats)
-    }
-  }
-
+  /*
   handleToggleStripes() {
     if (this.svgElement) {
       this.svgElement.__graphStyle.toggleStripes = !this.svgElement.__graphStyle
@@ -392,205 +357,14 @@ export class Graph extends Component<any, State> {
   inputFeatureExpression() {
     if (this.props.fullscreen && this.state.showFilters) {
       // TODO: Add condition to only show PC form if the user is interested in learn about that
-      if (
-        // this.checkPropertyList(
-        //   this.graph._relationships[0].propertyList,
-        //   'condition'
-        // )
-        true
-      ) {
-        // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
-        return (
-          // <StyleInputForm onSubmit={this.handleSubmit.bind(this)}></StyleInputForm>
-          <StyleInputDiv>
-            <StyleTextArea
-              placeholder="Feature expression"
-              onChange={this.updateFeatureExpressionState.bind(this)}
-            />
-            <StyleSubmitButton onClick={this.handleSubmit.bind(this)}>
-              Create filter
-            </StyleSubmitButton>
-          </StyleInputDiv>
-        )
-      }
+      // TODO: Change the property name to the property name of the PC's in the graph Ramy has submitted
     }
     return null
   }
-
-  inputToggleStripes() {
-    if (this.props.fullscreen && this.state.showFilters) {
-      return (
-        <StyledLayoutPicker>
-          {/* <StyleRelationshipLayoutButtonGroup>
-            <StyledRelationshipLayoutHeader>
-              Rel Type
-            </StyledRelationshipLayoutHeader>
-            {this.state.featureExpressionLayout.items.map(layout => (
-              <StyleRelationshipLayoutButton
-                className={
-                  relationshipLayouts[layout.id] === this.state.currentLayout
-                    ? 'selected'
-                    : ''
-                }
-                key={layout.id}
-                onClick={() => {
-                  const newLayout = relationshipLayouts[layout.id]
-                  this.setState({
-                    currentLayout: newLayout
-                  })
-                  this.props.setPatternSelectorVisible(newLayout.localPattern)
-                  this.svgElement && (this.svgElement.__graphStyle = newLayout)
-                  this.graphView.update()
-                }}
-              >
-                {layout.display}
-              </StyleRelationshipLayoutButton>
-            ))}
-          </StyleRelationshipLayoutButtonGroup> */}
-          <StyleRelationshipLayoutButtonGroup>
-            <StyledRelationshipLayoutHeader>
-              Layout
-            </StyledRelationshipLayoutHeader>
-            {featureItems.map(layout => (
-              <StyleRelationshipLayoutButton
-                className={
-                  layout === this.state.featureExpressionLayout
-                    ? 'selected'
-                    : ''
-                }
-                key={layout.display}
-                onClick={() => {
-                  if (this.state.featureExpressionLayout !== layout) {
-                    const newLayout = relationshipLayouts[layout.items[0].id]
-                    this.props.updateLayoutAction(newLayout.arrowLayout)
-                    log('change to ' + layout.display)
-                    this.setState({
-                      featureExpressionLayout: layout,
-                      currentLayout: newLayout
-                    })
-                    this.props.setPatternSelectorVisible(newLayout.localPattern)
-                    this.svgElement &&
-                      (this.svgElement.__graphStyle = newLayout)
-                    this.graphView.update()
-                  }
-                }}
-              >
-                {layout.display}
-              </StyleRelationshipLayoutButton>
-            ))}
-          </StyleRelationshipLayoutButtonGroup>
-        </StyledLayoutPicker>
-      )
-    }
-    return null
-  }
-
-  legend() {
-    if (this.props.fullscreen && this.state.showFilters) {
-      return (
-        <StyledGraphLegend>
-          <button
-            onClick={this.props.setLightTheme}
-            style={{ marginRight: '8px' }}
-          >
-            Dark Theme
-          </button>
-          <button onClick={this.props.setDarkTheme}>Light Theme</button>
-          {/* <button onClick={this.props.setLightCustomTheme}>Light 2</button>
-          <button onClick={this.props.setDarkCustomTheme}>Dark 2</button> */}
-          <table>
-            {/* <tr>
-              <th colSpan={2}>Edge Types</th>
-            </tr>
-            {this.props.stats.relTypes &&
-              Object.keys(this.props.stats.relTypes).map(relType => {
-                const style = this.props.graphStyle.forRelationship({
-                  type: relType
-                })
-                return relType === '*' ? null : (
-                  <tr>
-                    <td>
-                      <svg width="180" height="15" viewBox="0 -6 144 12">
-                        <line
-                          x1="0"
-                          x2="144"
-                          y1="0"
-                          y2="0"
-                          stroke="#888"
-                          strokeWidth="5"
-                          strokeDasharray={
-                            (this.state.currentLayout.globalPattern &&
-                              getPatternDashes(style.get('pattern'), 5)) ||
-                            ''
-                          }
-                        />
-                        {this.state.currentLayout.globalShape && (
-                          <path
-                            d={getShapeDef(
-                              style.get('shape'),
-                              { x: 0, y: 0 },
-                              11
-                            )}
-                            stroke="black"
-                            strokeWidth="1"
-                            fill="#ffffff77"
-                          />
-                        )}
-                      </svg>
-                    </td>
-                    <td>
-                      <div className="legend-label" title={relType}>
-                        {relType}
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })} */}
-            <tr>
-              <th colSpan={2}>Feature Expressions</th>
-            </tr>
-            {this.props.conditionTypes &&
-              this.props.conditionTypes.map((condType: any) => {
-                const style = this.props.graphStyle.forCondition(condType)
-                if (style.get('color') === 'var(--graph-color0)') return null
-                return (
-                  <tr key={condType}>
-                    <td>
-                      <svg width="180" height="15" viewBox="0 -6 144 12">
-                        <line
-                          x1="0"
-                          x2="144"
-                          y1="0"
-                          y2="0"
-                          stroke={style.get('color')}
-                          strokeWidth="5"
-                          strokeDasharray={
-                            this.state.currentLayout.localPattern
-                              ? getPatternDashes(style.get('pattern'), 5)
-                              : ''
-                          }
-                        />
-                      </svg>
-                    </td>
-                    <td>
-                      <div className="legend-label" title={condType}>
-                        {condType}
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-          </table>
-        </StyledGraphLegend>
-      )
-    } else {
-      return null
-    }
-  }
+  */
 
   render() {
     return (
-      // <div>
       <StyledSvgWrapper>
         {this.state.showLoadingOverlay && (
           <div
@@ -614,25 +388,17 @@ export class Graph extends Component<any, State> {
         {/* {this.inputSlider()} */}
         {this.zoomButtons()}
         {/* {this.inputToggle()} */}
-        {this.inputFeatureExpression()}
-        {this.inputToggleStripes()}
-        {this.legend()}
+        {/* this.inputFeatureExpression() */}
+        {/* this.inputToggleStripes() */}
+        {/* this.legend() */}
       </StyledSvgWrapper>
-      // </div>
     )
   }
 }
 
-export const GraphComponent = connect(
-  (state: GlobalState) => ({
-    conditionTypes: state.filters
-  }),
-  dispatch => ({
-    setLightTheme: () => dispatch(presetPaletteAction('light')),
-    setDarkTheme: () => dispatch(presetPaletteAction('dark')),
-    setLightCustomTheme: () => dispatch(presetPaletteAction('lightCustom')),
-    setDarkCustomTheme: () => dispatch(presetPaletteAction('darkCustom')),
-    addFilterAction: (filter: string) => dispatch(addFilterAction(filter)),
-    updateLayoutAction: (layout: string) => dispatch(updateLayoutAction(layout))
-  })
-)(Graph)
+const mapStateToProps = (state: GlobalState) => ({
+  onditionTypes: state.filters,
+  layout: state.layout
+})
+
+export const GraphComponent = connect(mapStateToProps)(Graph)

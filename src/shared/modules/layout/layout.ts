@@ -2,17 +2,21 @@ const UPDATE_LAYOUT = 'layout/UPDATE'
 
 interface UpdateLayoutAction {
   type: typeof UPDATE_LAYOUT
-  layout: string
+  layout: LayoutState
 }
 
-export type LayoutState = string
+export type LayoutState = Record<string, any>
 
-export function updateLayoutAction(layout: string): UpdateLayoutAction {
+export function updateLayoutAction(layout: LayoutState): UpdateLayoutAction {
   return { type: UPDATE_LAYOUT, layout }
 }
 
 export default function layoutReducer(
-  state: LayoutState = 'stripes',
+  state: LayoutState = {
+    arrowLayout: 'segments',
+    textAbove: true,
+    globalText: true
+  },
   action: UpdateLayoutAction
 ): LayoutState {
   if (action.type === UPDATE_LAYOUT) {
