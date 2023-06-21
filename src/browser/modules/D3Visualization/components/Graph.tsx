@@ -90,7 +90,7 @@ export const relationshipLayouts: Record<string, RelationshipLayout> = {
   }
 }
 
-interface FeatureItem {
+export interface FeatureItem {
   display: string
   items: {
     display: string
@@ -302,8 +302,9 @@ export class Graph extends Component<any, State, { layout: LayoutState }> {
     }
 
     // Update the layout type
-    if (prevProps.layout !== this.props.layout) {
-      this.svgElement.__graphStyle = this.props.layout
+    if (prevProps.layout.items[0].id !== this.props.layout.items[0].id) {
+      this.svgElement.__graphStyle =
+        relationshipLayouts[this.props.layout.items[0].id]
       this.graphView.update()
     }
   }

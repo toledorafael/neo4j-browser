@@ -1,3 +1,8 @@
+import {
+  FeatureItem,
+  featureItems
+} from 'browser/modules/D3Visualization/components/Graph'
+
 const UPDATE_LAYOUT = 'layout/UPDATE'
 
 interface UpdateLayoutAction {
@@ -5,18 +10,14 @@ interface UpdateLayoutAction {
   layout: LayoutState
 }
 
-export type LayoutState = Record<string, any>
+export type LayoutState = FeatureItem
 
 export function updateLayoutAction(layout: LayoutState): UpdateLayoutAction {
   return { type: UPDATE_LAYOUT, layout }
 }
 
 export default function layoutReducer(
-  state: LayoutState = {
-    arrowLayout: 'segments',
-    textAbove: true,
-    globalText: true
-  },
+  state: LayoutState = featureItems[0],
   action: UpdateLayoutAction
 ): LayoutState {
   if (action.type === UPDATE_LAYOUT) {

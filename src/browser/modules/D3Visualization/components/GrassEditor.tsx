@@ -42,6 +42,7 @@ import PatternSelector from './PatternSelector'
 import { removeFilterAction } from 'shared/modules/filters/filters'
 import { PaletteState } from 'shared/modules/palette/palette'
 import { LayoutState } from 'shared/modules/layout/layout'
+import { relationshipLayouts } from './Graph'
 
 type GrassEditorProps = {
   graphStyleData?: any
@@ -359,7 +360,8 @@ export class GrassEditorComponent extends Component<
         cursor: 'default'
       }
       pickers =
-        this.props.layout.arrowLayout !== 'separate'
+        relationshipLayouts[this.props.layout.items[0].id].arrowLayout !==
+        'separate'
           ? [
               // this.colorPicker(styleForRelType.selector, styleForRelType, false),
               this.widthPicker(

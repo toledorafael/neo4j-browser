@@ -102,6 +102,7 @@ type OverviewPaneProps = {
   relationshipCount: number | null
   stats: GraphStats
   filters: FilterState
+  layout: LayoutState
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
@@ -125,6 +126,7 @@ function OverviewPane({
   relationshipCount,
   stats,
   filters,
+  layout,
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
@@ -169,7 +171,7 @@ function OverviewPane({
     relationshipLayouts[featureItems[0].items[0].id]
   )
   const [featureExpressionLayout, setFeatureExpressionLayout] = useState(
-    featureItems[0]
+    layout ? layout : featureItems[0]
   )
   const [newConditionType, setNewConditionType] = useState('')
 
@@ -331,22 +333,25 @@ function OverviewPane({
             <StyledRelationshipLayoutHeader>
               Layout
             </StyledRelationshipLayoutHeader>
-            {featureItems.map(layout => (
+            {featureItems.map(featureItem => (
               <StyleRelationshipLayoutButton
-                className={layout === featureExpressionLayout ? 'selected' : ''}
-                key={layout.display}
+                className={
+                  featureItem === featureExpressionLayout ? 'selected' : ''
+                }
+                key={featureItem.display}
                 onClick={() => {
-                  if (featureExpressionLayout !== layout) {
-                    const newLayout = relationshipLayouts[layout.items[0].id]
-                    updateLayoutAction(newLayout)
-                    log('change to ' + layout.display)
+                  if (featureExpressionLayout !== featureItem) {
+                    updateLayoutAction(featureItem)
+                    log('change to ' + featureItem.display)
 
-                    setFeatureExpressionLayout(layout)
-                    setCurrentLayout(newLayout)
+                    setFeatureExpressionLayout(featureItem)
+                    setCurrentLayout(
+                      relationshipLayouts[featureItem.items[0].id]
+                    )
                   }
                 }}
               >
-                {layout.display}
+                {featureItem.display}
               </StyleRelationshipLayoutButton>
             ))}
           </StyleRelationshipLayoutButtonGroup>
@@ -414,7 +419,8 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
 export default connect(
   (state: GlobalState) => ({
     graphStyleData: actions.getGraphStyleData(state),
-    filters: state.filters
+    filters: state.filters,
+    layout: state.layout
   }),
   mapDispatchToProps
 )(OverviewPane)
