@@ -1,6 +1,6 @@
 import { log } from '../../../browser/modules/Logging/Log'
 
-const lightPalette = {
+const darkPalette = {
   colors: [
     '#a5abb6',
     '#ffe081',
@@ -47,10 +47,11 @@ const lightPalette = {
     '#345c4f'
   ],
   textColor: '#000000',
-  condColor: '#ffffff'
+  condColor: '#ffffff',
+  theme: 'dark'
 }
 
-const darkPalette = {
+const lightPalette = {
   colors: [
     '#9aa1ac',
     '#423204',
@@ -97,7 +98,8 @@ const darkPalette = {
     '#5fa28c'
   ],
   textColor: '#ffffff',
-  condColor: '#000000'
+  condColor: '#000000',
+  theme: 'light'
 }
 
 const lightCustomPalette = {
@@ -153,7 +155,8 @@ const lightCustomPalette = {
     '#bfef45'
   ],
   textColor: '#000000',
-  condColor: '#000000'
+  condColor: '#000000',
+  theme: 'light-custom'
 }
 
 const darkCustomPalette = {
@@ -209,10 +212,11 @@ const darkCustomPalette = {
     '#911eb4'
   ],
   textColor: '#ffffff',
-  condColor: '#ffffff'
+  condColor: '#ffffff',
+  theme: 'dark-custom'
 }
 
-const initialState = darkPalette
+const initialState = lightPalette
 
 export interface PaletteState {
   colors: string[]
@@ -220,6 +224,7 @@ export interface PaletteState {
   conditionColors: string[]
   textColor: string
   condColor: string
+  theme: string
 }
 
 interface ResetPaletteAction {

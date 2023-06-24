@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Icon } from 'semantic-ui-react'
 import { log } from '../../Logging/Log'
 
@@ -47,7 +47,10 @@ import * as actions from 'shared/modules/grass/grassDuck'
 import neoGraphStyle from '../graphStyle'
 
 import { FilterState, addFilterAction } from 'shared/modules/filters/filters'
-import { presetPaletteAction } from 'shared/modules/palette/palette'
+import {
+  PaletteState,
+  presetPaletteAction
+} from 'shared/modules/palette/palette'
 import { LayoutState, updateLayoutAction } from 'shared/modules/layout/layout'
 import { Action, Dispatch } from 'redux'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
@@ -102,6 +105,7 @@ type OverviewPaneProps = {
   stats: GraphStats
   filters: FilterState
   layout: LayoutState
+  palette: PaletteState
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
@@ -126,6 +130,7 @@ function OverviewPane({
   stats,
   filters,
   layout,
+  palette,
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
@@ -173,7 +178,6 @@ function OverviewPane({
     layout ? layout : featureItems[0]
   )
   const [newConditionType, setNewConditionType] = useState('')
-  const [isDarkThemeSelected, setIsDarkThemeSelected] = useState(false)
 
   const handleSubmit = () => {
     if (newConditionType) {
@@ -202,13 +206,13 @@ function OverviewPane({
     setNewConditionType(event.target.value)
   }
 
-  useEffect(() => {
-    if (isDarkThemeSelected) {
-      setLightTheme()
-    } else {
+  const changeTheme = () => {
+    if (palette.theme === 'light') {
       setDarkTheme()
+    } else {
+      setLightTheme()
     }
-  }, [isDarkThemeSelected])
+  }
 
   return (
     <>
@@ -377,8 +381,8 @@ function OverviewPane({
           <StyleToggleWrapper>
             <span style={{ marginRight: '6px' }}>Dark</span>
             <Switch
-              onChange={() => setIsDarkThemeSelected(!isDarkThemeSelected)}
-              checked={!isDarkThemeSelected}
+              onChange={() => changeTheme()}
+              checked={palette.theme === 'light'}
               className="react-switch"
               handleDiameter={16}
               height={24}
@@ -482,7 +486,8 @@ export default connect(
   (state: GlobalState) => ({
     graphStyleData: actions.getGraphStyleData(state),
     filters: state.filters,
-    layout: state.layout
+    layout: state.layout,
+    palette: state.palette
   }),
   mapDispatchToProps
 )(OverviewPane)
