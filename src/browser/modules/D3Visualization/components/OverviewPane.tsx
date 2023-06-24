@@ -387,7 +387,7 @@ function OverviewPane({
               handleDiameter={16}
               height={24}
               width={48}
-              onColor="#bdc3c7"
+              onColor="#8ecae6"
               offColor="#181a1d"
               checkedIcon={false}
               uncheckedIcon={
@@ -430,14 +430,14 @@ function OverviewPane({
         </div>
 
         {/* Legend for filters */}
-        <StyledGraphLegend>
-          <table>
-            <tr>
-              <th colSpan={2}>Feature Expressions</th>
-            </tr>
+        {filters && filters.length > 0 && (
+          <StyledGraphLegend>
+            <table>
+              <tr>
+                <th colSpan={2}>Feature Expressions</th>
+              </tr>
 
-            {filters &&
-              filters.map((condType: any) => {
+              {filters.map((condType: any) => {
                 const style = graphStyle.forCondition(condType)
                 if (style.get('color') === 'var(--graph-color0)') return null
                 return (
@@ -467,8 +467,9 @@ function OverviewPane({
                   </tr>
                 )
               })}
-          </table>
-        </StyledGraphLegend>
+            </table>
+          </StyledGraphLegend>
+        )}
       </PaneBody>
     </>
   )

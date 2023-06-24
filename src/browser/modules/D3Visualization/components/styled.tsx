@@ -333,14 +333,17 @@ export const StyleToggleGroupMarksButton = styled.button`
 `
 
 export const StyleSubmitButton = styled.button`
+  width: 100%;
+  max-width: 280px;
   list-style-type: none;
   font-size: 1em;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.25rem;
   color: white;
-  background: green;
+  background: #53917e;
   border-color: white;
   padding: 0 1rem;
+  margin-bottom: 0.75rem;
   line-height: 28px;
   &:focus {
     outline: none;
@@ -363,18 +366,21 @@ export const StyleToggleWrapper = styled.label`
 
 export const StyleInputDiv = styled.div`
   color: black;
-  width: 300px;
+  width: 95%;
   background: white;
   border: none;
-  border-radius: 3px;
+  margin-top: 0.5rem;
 `
 
 export const StyleTextArea = styled.textarea`
-  width: 300px;
+  width: 100%;
+  max-width: 280px;
   height: 4em;
   line-height: 1.2em;
   resize: none;
   padding: 3px;
+  border: rgb(189, 195, 199) solid 1px;
+  border-radius: 0.25rem;
 `
 
 export const StyledZoomHolder = styled.div<{
@@ -539,13 +545,14 @@ export const StyledPatternSelectorItem = styled.div`
 `
 
 export const StyledGraphLegend = styled.div`
+  width: 500px;
   line-height: 12px;
   font-size: 12px;
   padding: 0.75rem;
-  margin-top: 1rem;
+  margin: 1rem 1rem 1rem 0rem;
   background: white;
-  border-top-right-radius: 2px;
-  border: grey solid 1px;
+  border-radius: 0.25rem;
+  border: rgb(189, 195, 199) solid 1px;
 
   td {
     padding: 4px 8px;
@@ -558,7 +565,7 @@ export const StyledGraphLegend = styled.div`
   }
 
   th {
-    padding: 12px 8px 4px 8px;
+    padding: 4px 8px;
     text-align: left;
   }
 `
