@@ -389,7 +389,7 @@ export const StyledZoomHolder = styled.div<{
 }>`
   position: ${props => (props.fullscreen ? 'fixed' : 'absolute')};
   bottom: 0;
-  right: ${props => props.offset}px;
+  right: 0;
   padding: 6px 6px 0 6px;
   border-left: ${props => props.theme.inFrameBorder};
   border-right: ${props => props.theme.inFrameBorder};
@@ -425,7 +425,7 @@ export const StyledNodeInspectorContainer = styled.div<{
   width: number
 }>`
   position: absolute;
-  right: 0;
+  left: 0px;
   top: 3px;
   z-index: 1;
   width: ${props => props.width}px;
@@ -443,7 +443,7 @@ export const StyledNodeInspectorTopMenuChevron = styled.div<{
 }>`
   cursor: pointer;
   position: absolute;
-  right: 0px;
+  left: 0px;
   top: 6px;
   z-index: 2;
   width: 32px;
@@ -477,7 +477,7 @@ export const AlternatingTable = styled.table`
 
 export const PaneHeader = styled.div`
   font-size: 16px;
-  margin-top: 10px;
+  margin: 10px 0px 0px 20px;
   flex: 0 0 auto;
 `
 
