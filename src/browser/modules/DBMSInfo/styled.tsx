@@ -63,6 +63,21 @@ export const StyledProperty = styled(chip)`
     border-color: #fff;
   }
 `
+export const StyleRelationshipLayoutButton = styled(chip)`
+  border-radius: 3px;
+  background-color: #dadfe1;
+  color: #6c7a89;
+  &:hover,
+  &:focus,
+  &:visited {
+    background-color: #b9bebf;
+  }
+  &.selected {
+    background: #95a5a6;
+    color: white;
+  }
+`
+
 export const StyledTable = styled.table``
 export const StyledKey = styled.td`
   text-align: right;

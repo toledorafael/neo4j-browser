@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Icon } from 'semantic-ui-react'
 import { log } from '../../Logging/Log'
 
@@ -30,13 +30,10 @@ import {
   PaneBodySectionTitle,
   PaneBodySectionSmallText,
   PaneBodySectionHeaderWrapper,
-  StyledLayoutPicker,
-  StyleRelationshipLayoutButtonGroup,
-  StyledRelationshipLayoutHeader,
-  StyleRelationshipLayoutButton,
   StyleInputDiv,
   StyleTextArea,
-  StyleSubmitButton
+  StyleSubmitButton,
+  StyleToggleWrapper
 } from './styled'
 import numberToUSLocale from 'shared/utils/number-to-US-locale'
 import { StyledTruncatedMessage } from 'browser/modules/Stream/styled'
@@ -55,6 +52,8 @@ import { LayoutState, updateLayoutAction } from 'shared/modules/layout/layout'
 import { Action, Dispatch } from 'redux'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { featureItems, relationshipLayouts } from './Graph'
+import { StyleRelationshipLayoutButton } from 'browser/modules/DBMSInfo/styled'
+import Switch from 'react-switch'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -174,6 +173,7 @@ function OverviewPane({
     layout ? layout : featureItems[0]
   )
   const [newConditionType, setNewConditionType] = useState('')
+  const [isDarkThemeSelected, setIsDarkThemeSelected] = useState(false)
 
   const handleSubmit = () => {
     if (newConditionType) {
@@ -201,6 +201,14 @@ function OverviewPane({
   const updateFeatureExpressionState = (event: any) => {
     setNewConditionType(event.target.value)
   }
+
+  useEffect(() => {
+    if (isDarkThemeSelected) {
+      setLightTheme()
+    } else {
+      setDarkTheme()
+    }
+  }, [isDarkThemeSelected])
 
   return (
     <>
@@ -328,11 +336,13 @@ function OverviewPane({
         </StyleInputDiv>
 
         {/* Layout switcher */}
-        <StyledLayoutPicker>
-          <StyleRelationshipLayoutButtonGroup>
-            <StyledRelationshipLayoutHeader>
-              Layout
-            </StyledRelationshipLayoutHeader>
+        <div>
+          <PaneBodySectionHeader
+            title={'Layout'}
+            numOfElementsVisible={featureItems.length}
+            totalNumOfElements={featureItems.length}
+          />
+          <StyledLegendInlineList>
             {featureItems.map(featureItem => (
               <StyleRelationshipLayoutButton
                 className={
@@ -354,17 +364,69 @@ function OverviewPane({
                 {featureItem.display}
               </StyleRelationshipLayoutButton>
             ))}
-          </StyleRelationshipLayoutButtonGroup>
-        </StyledLayoutPicker>
+          </StyledLegendInlineList>
+        </div>
 
+        {/* Theme switcher */}
+        <div>
+          <PaneBodySectionHeader
+            title={'Theme'}
+            numOfElementsVisible={2}
+            totalNumOfElements={2}
+          />
+          <StyleToggleWrapper>
+            <span style={{ marginRight: '6px' }}>Dark</span>
+            <Switch
+              onChange={() => setIsDarkThemeSelected(!isDarkThemeSelected)}
+              checked={!isDarkThemeSelected}
+              className="react-switch"
+              handleDiameter={16}
+              height={24}
+              width={48}
+              onColor="#bdc3c7"
+              offColor="#181a1d"
+              checkedIcon={false}
+              uncheckedIcon={
+                <svg
+                  height="100%"
+                  width="100%"
+                  viewBox="-24 -24 96.00 96.00"
+                  id="b"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#ffffff"
+                  stroke="#ffffff"
+                  strokeWidth="1.44"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                  }}
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <defs>
+                      <style>
+                        {
+                          'fill:none;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;'
+                        }
+                      </style>
+                    </defs>
+                    <path d="m32.8,29.3c-8.9-.8-16.2-7.8-17.5-16.6-.3-1.8-.3-3.7,0-5.4.2-1.4-1.4-2.3-2.5-1.6C6.3,9.7,2.1,16.9,2.5,25c.5,10.7,9,19.5,19.7,20.4,10.6.9,19.8-6,22.5-15.6.4-1.4-1-2.6-2.3-2-2.9,1.3-6.1,1.8-9.6,1.5Z"></path>
+                  </g>
+                </svg>
+              }
+            />
+            <span style={{ marginLeft: '6px' }}>Light</span>
+          </StyleToggleWrapper>
+        </div>
+
+        {/* Legend for filters */}
         <StyledGraphLegend>
-          {/* Theme switcher */}
-          <button onClick={setLightTheme} style={{ marginRight: '8px' }}>
-            Dark Theme
-          </button>
-          <button onClick={setDarkTheme}>Light Theme</button>
-
-          {/* Legend for filters */}
           <table>
             <tr>
               <th colSpan={2}>Feature Expressions</th>

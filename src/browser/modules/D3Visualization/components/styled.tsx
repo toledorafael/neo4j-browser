@@ -354,75 +354,11 @@ export const StyleSubmitButton = styled.button`
   }
 `
 
-export const StyledLayoutPicker = styled.div`
-  border: none;
-`
-
-export const StyleRelationshipLayoutButtonGroup = styled.div`
-  display: inline-block;
-  width: 150px;
-  border: none;
-  border-radius: 8px;
-  background: grey;
-  padding: 0 4px;
-`
-
-export const StyledRelationshipLayoutHeader = styled.div`
-  line-height: 20px;
-  height: 24px;
-  font-size: 1em;
-  user-select: none;
-  color: white;
-  text-align: center;
-  border-bottom: white 2px solid;
-  margin: 4px 0;
-`
-
-export const StyleRelationshipLayoutButton = styled.button`
-  width: 100%;
-  line-height: 20px;
-  height: 24px;
-  font-size: 1em;
-  border: none;
-  border-radius: 4px;
-  background: grey;
-  color: white;
-  display: block;
-  &:focus {
-    outline: none;
-  }
-  &:hover {
-    background: darkgrey;
-  }
-  &.selected {
-    background: white;
-    color: grey;
-  }
-  margin: 4px 0;
-`
-
-export const StyleToggleButton = styled.button`
-  position: absolute;
-  top: 100px;
-  right: 120px;
-  list-style-type: none;
-  font-size: 1.5em;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  background: red;
-  border-color: white;
-  padding: 15px 32px;
-  &:focus {
-    outline: none;
-  }
-  &.faded {
-    opacity: 0.3;
-    cursor: auto;
-    &:hover {
-      color: #9b9da2;
-    }
-  }
+export const StyleToggleWrapper = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin: 0.5rem 0;
 `
 
 export const StyleInputDiv = styled.div`
