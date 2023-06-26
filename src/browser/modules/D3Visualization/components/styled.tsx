@@ -23,6 +23,7 @@ import styled from 'styled-components'
 export const legendRowHeight = 32
 export const inspectorFooterContractedHeight = 22
 export const panelMinWidth = 200
+export const tablePanelMinWidth = 500
 
 export const StyledSvgWrapper = styled.div`
   line-height: 0;
@@ -422,10 +423,11 @@ export const StyledZoomButton = styled.button`
 `
 
 export const StyledNodeInspectorContainer = styled.div<{
+  position: string
   width: number
 }>`
   position: absolute;
-  left: 0px;
+  ${props => (props.position === 'left' ? `left: 0px;` : `right: 0px;`)}
   top: 3px;
   z-index: 1;
   width: ${props => props.width}px;
@@ -440,10 +442,11 @@ export const StyledNodeInspectorContainer = styled.div<{
 `
 export const StyledNodeInspectorTopMenuChevron = styled.div<{
   expanded: boolean
+  position: string
 }>`
   cursor: pointer;
   position: absolute;
-  left: 0px;
+  ${props => (props.position === 'left' ? `left: 0px;` : `right: 0px;`)}
   top: 6px;
   z-index: 2;
   width: 32px;

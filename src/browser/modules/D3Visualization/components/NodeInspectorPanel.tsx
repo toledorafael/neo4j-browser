@@ -20,10 +20,10 @@ interface NodeInspectorPanelProps {
   hasTruncatedFields: boolean
   hoveredItem: VizItem
   selectedItem: VizItem
-  setWidth: (width: number) => void
+  setWidth: (propertiesPanelwidth: number) => void
   stats: GraphStats
   toggleExpanded: () => void
-  width: number
+  propertiesPanelwidth: number
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
@@ -49,7 +49,7 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
       setWidth,
       stats,
       toggleExpanded,
-      width,
+      propertiesPanelwidth,
       hiddenNodeLabels,
       hiddenRelationshipTypes,
       setNodeLabelVisibility,
@@ -66,6 +66,7 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
     return (
       <>
         <StyledNodeInspectorTopMenuChevron
+          position="left"
           expanded={expanded}
           onClick={toggleExpanded}
         >
@@ -84,11 +85,12 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
 
         {expanded && (
           <StyledNodeInspectorContainer
-            width={width}
+            position={'left'}
+            width={propertiesPanelwidth}
             data-testid="vizInspector"
           >
             <Resizable
-              width={width}
+              width={propertiesPanelwidth}
               height={300 /*doesn't matter but required prop */}
               resizeHandles={['e']}
               onResize={(_e, { size }) => setWidth(size.width)}

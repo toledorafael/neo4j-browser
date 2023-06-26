@@ -13,11 +13,13 @@ const StyledTabularView = styled.div`
   flex-direction: column;
   align-content: center;
   justify-content: flex-start;
+  overflow: scroll;
 `
 
 const StyledDataEntry = styled.div`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   line-height: 1.5rem;
 `
 
@@ -27,7 +29,7 @@ const StyledLabel = styled.div`
 `
 
 const StyledHeader = styled.div`
-  white-space: nowrap;
+  white-space: normal;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

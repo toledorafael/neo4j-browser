@@ -34,13 +34,19 @@ import { GraphStyle } from './OverviewPane'
 import { VizItem } from './types'
 import { deepEquals } from 'services/utils'
 import { defaultPanelWidth, NodeInspectorPanel } from './NodeInspectorPanel'
-import { panelMinWidth, StyledFullSizeContainer } from './styled'
+import {
+  panelMinWidth,
+  StyledFullSizeContainer,
+  tablePanelMinWidth
+} from './styled'
 import {
   getNodePropertiesExpandedByDefault,
   setNodePropertiesExpandedByDefault
 } from 'shared/modules/frames/framesDuck'
 import { Action, Dispatch } from 'redux'
 import { PaletteState } from 'shared/modules/palette/palette'
+import { BrowserRequestResult } from 'shared/modules/requests/requestsDuck'
+import { defaultTablePanelWidth, TablePanel } from './TablePanel'
 
 const deduplicateNodes = (nodes: any) => {
   return nodes.reduce(
@@ -70,6 +76,7 @@ type ExplorerComponentProps = {
   assignVisElement: any
   getAutoCompleteCallback: any
   setGraph: any
+  result: BrowserRequestResult
   hasTruncatedFields: boolean
 }
 type ExporerReduxProps = {
@@ -87,8 +94,10 @@ type ExplorerComponentState = {
   stats: GraphStats
   styleVersion: number
   freezeLegend: boolean
-  width: number
+  propertiesPanelwidth: number
+  tablePanelwidth: number
   nodePropertiesExpanded: boolean
+  tableExpanded: boolean
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   patternSelectorVisible: boolean
@@ -144,8 +153,10 @@ export class ExplorerLocal extends Component<
       selectedItem,
       hoveredItem: selectedItem,
       freezeLegend: false,
-      width: defaultPanelWidth(),
+      propertiesPanelwidth: defaultPanelWidth(),
+      tablePanelwidth: defaultTablePanelWidth(),
       nodePropertiesExpanded: this.props.nodePropertiesExpandedByDefault,
+      tableExpanded: false,
       hiddenNodeLabels: [],
       hiddenRelationshipTypes: [],
       patternSelectorVisible: false
@@ -312,7 +323,9 @@ export class ExplorerLocal extends Component<
           getAutoCompleteCallback={this.props.getAutoCompleteCallback}
           setGraph={this.props.setGraph}
           offset={
-            (this.state.nodePropertiesExpanded ? this.state.width : 0) + 4
+            (this.state.nodePropertiesExpanded
+              ? this.state.propertiesPanelwidth
+              : 0) + 4
           }
           hiddenNodeLabels={this.state.hiddenNodeLabels}
           hiddenRelTypes={this.state.hiddenRelationshipTypes}
@@ -328,9 +341,14 @@ export class ExplorerLocal extends Component<
           hoveredItem={this.state.hoveredItem}
           selectedItem={this.state.selectedItem}
           stats={this.state.stats}
-          width={this.state.width}
-          setWidth={(width: number) =>
-            this.setState({ width: Math.max(panelMinWidth, width) })
+          propertiesPanelwidth={this.state.propertiesPanelwidth}
+          setWidth={(propertiesPanelwidth: number) =>
+            this.setState({
+              propertiesPanelwidth: Math.max(
+                panelMinWidth,
+                propertiesPanelwidth
+              )
+            })
           }
           expanded={this.state.nodePropertiesExpanded}
           toggleExpanded={() => {
@@ -346,6 +364,21 @@ export class ExplorerLocal extends Component<
           setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
           patternSelectorVisible={this.state.patternSelectorVisible}
           updateStyle={this.props.updateStyle}
+        />
+        <TablePanel
+          stats={this.state.stats}
+          tablePanelwidth={this.state.tablePanelwidth}
+          setWidth={(tablePanelwidth: number) =>
+            this.setState({
+              tablePanelwidth: Math.max(tablePanelMinWidth, tablePanelwidth)
+            })
+          }
+          expanded={this.state.tableExpanded}
+          toggleExpanded={() => {
+            const { tableExpanded } = this.state
+            this.setState({ tableExpanded: !tableExpanded })
+          }}
+          result={this.props.result}
         />
       </StyledFullSizeContainer>
     )
