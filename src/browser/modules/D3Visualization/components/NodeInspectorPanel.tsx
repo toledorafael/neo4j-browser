@@ -29,6 +29,7 @@ interface NodeInspectorPanelProps {
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
   patternSelectorVisible: boolean
+  updateStyle: any
 }
 
 export type NodeInspectorPanelState = {
@@ -53,7 +54,8 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
       hiddenRelationshipTypes,
       setNodeLabelVisibility,
       setRelTypeVisibility,
-      patternSelectorVisible
+      patternSelectorVisible,
+      updateStyle
     } = this.props
 
     const relevantItems = ['node', 'relationship']
@@ -70,12 +72,12 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
           {expanded ? (
             <Icon
               title="Collapse the Node Properties display"
-              name="chevron right"
+              name="chevron left"
             />
           ) : (
             <Icon
               title="Expand the Node Properties display"
-              name="chevron left"
+              name="chevron right"
             />
           )}
         </StyledNodeInspectorTopMenuChevron>
@@ -88,7 +90,7 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
             <Resizable
               width={width}
               height={300 /*doesn't matter but required prop */}
-              resizeHandles={['w']}
+              resizeHandles={['e']}
               onResize={(_e, { size }) => setWidth(size.width)}
             >
               <PaneContainer>
@@ -117,6 +119,7 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
                     setNodeLabelVisibility={setNodeLabelVisibility}
                     setRelTypeVisibility={setRelTypeVisibility}
                     patternSelectorVisible={patternSelectorVisible}
+                    updateStyle={updateStyle}
                   />
                 )}
               </PaneContainer>

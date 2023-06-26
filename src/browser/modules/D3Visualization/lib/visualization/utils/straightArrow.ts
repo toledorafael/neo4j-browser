@@ -49,6 +49,7 @@ export default class StraightArrow {
     const startArrow = startRadius
     const endShaft = startArrow + this.shaftLength
     const endArrow = startArrow + this.length
+
     const shaftRadius = shaftWidth / 2
     const headRadius = headWidth / 2
 
@@ -57,8 +58,9 @@ export default class StraightArrow {
       const hLength = headHeight
       const distance = Math.min(6, startRadius / colorCount)
       this.separateArrowWidth = distance * colorCount
-      const sRadius = distance * 0.25
-      const hRadius = distance * 0.4
+
+      const sRadius = distance * 0.3
+      const hRadius = distance * 0.5
       const offset = distance * (index - (colorCount - 1) / 2)
       const extraLength =
         endRadius - Math.sqrt(endRadius * endRadius - offset * offset)

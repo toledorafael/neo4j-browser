@@ -41,6 +41,8 @@ import { Action, Dispatch } from 'redux'
 import PatternSelector from './PatternSelector'
 import { removeFilterAction } from 'shared/modules/filters/filters'
 import { PaletteState } from 'shared/modules/palette/palette'
+import { LayoutState } from 'shared/modules/layout/layout'
+import { relationshipLayouts } from './Graph'
 
 type GrassEditorProps = {
   graphStyleData?: any
@@ -59,6 +61,7 @@ export class GrassEditorComponent extends Component<
   GrassEditorProps & {
     palette: PaletteState
     removeFilter: (value: string) => void
+    layout: LayoutState
   }
 > {
   graphStyle: any
@@ -184,16 +187,15 @@ export class GrassEditorComponent extends Component<
     )
   }
 
-  widthPicker(selector: any, styleForItem: any) {
+  widthPicker(selector: any, styleForItem: any, property: string) {
     const widthSelectors = this.graphStyle
-      .defaultArrayWidths()
+      .defaultArrayWidths(property)
       .map((widthValue: any, i: any) => {
         const onClick = () => {
           this.updateStyle(selector, widthValue)
         }
         const style = { width: this.widths[i] }
-        const active =
-          styleForItem.get('shaft-width') === widthValue['shaft-width']
+        const active = styleForItem.get(property) === widthValue[property]
         return (
           <StyledPickerListItem key={toKeyString('width' + i)}>
             <StyledPickerSelector
@@ -204,10 +206,13 @@ export class GrassEditorComponent extends Component<
           </StyledPickerListItem>
         )
       })
+
     return (
-      <StyledInlineListItem key="width-picker">
+      <StyledInlineListItem key={`${property}-picker`}>
         <StyledInlineList>
-          <StyledInlineListItem>Line width:</StyledInlineListItem>
+          <StyledInlineListItem>
+            {property == 'shaft-width' ? 'Line width:' : 'Arrowhead size:'}
+          </StyledInlineListItem>
           {widthSelectors}
         </StyledInlineList>
       </StyledInlineListItem>
@@ -354,16 +359,35 @@ export class GrassEditorComponent extends Component<
         color: styleForRelType.get('text-color-internal'),
         cursor: 'default'
       }
-      pickers = [
-        // this.colorPicker(styleForRelType.selector, styleForRelType, false),
-        this.widthPicker(styleForRelType.selector, styleForRelType)
-        // this.captionPicker(
-        //   styleForRelType.selector,
-        //   styleForRelType,
-        //   this.props.selectedRelType.propertyKeys,
-        //   true
-        // )
-      ]
+      pickers =
+        relationshipLayouts[this.props.layout.items[0].id].arrowLayout !==
+        'separate'
+          ? [
+              // this.colorPicker(styleForRelType.selector, styleForRelType, false),
+              this.widthPicker(
+                styleForRelType.selector,
+                styleForRelType,
+                'shaft-width'
+              ),
+              this.widthPicker(
+                styleForRelType.selector,
+                styleForRelType,
+                'head-width'
+              )
+              // this.captionPicker(
+              //   styleForRelType.selector,
+              //   styleForRelType,
+              //   this.props.selectedRelType.propertyKeys,
+              //   true
+              // )
+            ]
+          : [
+              this.widthPicker(
+                styleForRelType.selector,
+                styleForRelType,
+                'head-width'
+              )
+            ]
       title = (
         <StyledTokenRelationshipType style={inlineStyle}>
           {this.props.selectedRelType.relType || '*'}
@@ -480,7 +504,8 @@ export class GrassEditorComponent extends Component<
 const mapStateToProps = (state: GlobalState) => ({
   graphStyleData: actions.getGraphStyleData(state),
   meta: state.meta,
-  palette: state.palette
+  palette: state.palette,
+  layout: state.layout
 })
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
