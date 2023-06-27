@@ -14,6 +14,7 @@ const StyledTabularView = styled.div`
   align-content: center;
   justify-content: flex-start;
   overflow-y: scroll;
+  min-height: 300px;
 `
 
 const StyledDataEntry = styled.div`
@@ -43,14 +44,17 @@ interface TableConfig {
 type TabularViewProps = {
   result: BrowserRequestResult
   graphStats: GraphStats | null
+  hiddenRelationshipTypes: string[]
+  setRelTypeVisibility: (type: string, value: boolean) => void
 }
 
 type HeaderCellProps = {
   value: PropertyKey
   relTypes: string[]
   record: any
-  getSelectedOptions: (param: string[]) => void
   getSelectedAttributes: (param: string[]) => void
+  hiddenRelationshipTypes: string[]
+  setRelTypeVisibility: (type: string, value: boolean) => void
 }
 
 type CellProps = {
@@ -61,8 +65,9 @@ const HeaderEntry = ({
   value,
   relTypes,
   record,
-  getSelectedOptions,
-  getSelectedAttributes
+  getSelectedAttributes,
+  hiddenRelationshipTypes,
+  setRelTypeVisibility
 }: HeaderCellProps) => {
   const isRelationship = record
     .get(value)
@@ -71,20 +76,25 @@ const HeaderEntry = ({
   const index = record.keys.indexOf(value)
   const desc = ['Start node', 'Relationship', 'End node']
 
+  console.log(hiddenRelationshipTypes)
   return (
     <StyledHeader>
       {value} - {desc[index]}
       {isRelationship ? (
         <CheckBoxFilter
           options={relTypes}
-          callback={getSelectedOptions}
+          callback={() => {}}
           type="relationship"
+          hiddenRelationshipTypes={hiddenRelationshipTypes}
+          setRelTypeVisibility={setRelTypeVisibility}
         />
       ) : index == 0 ? (
         <CheckBoxFilter
           options={['id', 'filename', 'label', 'type']}
           callback={getSelectedAttributes}
           type="node"
+          hiddenRelationshipTypes={hiddenRelationshipTypes}
+          setRelTypeVisibility={setRelTypeVisibility}
         />
       ) : (
         <></>
@@ -116,7 +126,9 @@ const MultilineData = ({ value }: CellProps) => {
 
 export const TabularViewComponent = ({
   result,
-  graphStats
+  graphStats,
+  hiddenRelationshipTypes,
+  setRelTypeVisibility
 }: TabularViewProps): JSX.Element => {
   const [columns, setColumns] = useState<TableConfig[]>([])
   const [data, setData] = useState<Record<PropertyKey, string[]>[]>([])
@@ -144,11 +156,7 @@ export const TabularViewComponent = ({
     'type'
   ])
 
-  // Set the filtered relationship types based on callback from CheckBoxFilter
-  const getSelectedOptions = useCallback(param => {
-    setFilteredRelTypes(param)
-  }, [])
-
+  // Set the selected attributes based on callback from CheckBoxFilter
   const getSelectedAttributes = useCallback(param => {
     setSelectedAttributes(param)
   }, [])
@@ -164,8 +172,9 @@ export const TabularViewComponent = ({
               value={field}
               relTypes={relTypes}
               record={records[0]}
-              getSelectedOptions={getSelectedOptions}
               getSelectedAttributes={getSelectedAttributes}
+              hiddenRelationshipTypes={hiddenRelationshipTypes}
+              setRelTypeVisibility={setRelTypeVisibility}
             />
           ),
           accessor: field,
@@ -175,7 +184,7 @@ export const TabularViewComponent = ({
         }))
       }
     ])
-  }, [records])
+  }, [records, hiddenRelationshipTypes, relTypes])
 
   const getNodeDataMapping = (record: any): string[] => {
     const mapping = []
@@ -202,16 +211,21 @@ export const TabularViewComponent = ({
     records.map((record: Neo4jRecord) => {
       if (columns && columns[0] && columns[0].columns) {
         // Check if the type of the relationship is selected by the user
-        let shouldBeFiltered = false
+        let shouldBeInvisible = false
         columns[0].columns.map(field => {
+          const isHidden =
+            hiddenRelationshipTypes != undefined &&
+            hiddenRelationshipTypes.includes(record.get(field.accessor).type)
+
           if (
             record.get(field.accessor).properties.hasOwnProperty('condition') &&
-            !filteredRelTypes.includes(record.get(field.accessor).type)
-          )
-            shouldBeFiltered = true
+            isHidden
+          ) {
+            shouldBeInvisible = true
+          }
         })
 
-        if (!shouldBeFiltered) {
+        if (!shouldBeInvisible) {
           // Populate the row of entry
           const row: Record<PropertyKey, string[]> = {}
 
@@ -241,7 +255,13 @@ export const TabularViewComponent = ({
     })
 
     setData(tempData)
-  }, [records, columns, filteredRelTypes, selectedAttributes])
+  }, [
+    records,
+    columns,
+    filteredRelTypes,
+    hiddenRelationshipTypes,
+    selectedAttributes
+  ])
 
   return (
     <StyledTabularView>

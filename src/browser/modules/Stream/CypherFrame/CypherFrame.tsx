@@ -346,7 +346,12 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
           <CodeView result={result} request={request} query={query} />
         </Display>
         <Display if={this.state.openView === viewTypes.TABULAR} lazy>
-          <TabularView result={result} graphStats={graphStats} />
+          <TabularView
+            result={result}
+            graphStats={graphStats}
+            hiddenRelationshipTypes={[]}
+            setRelTypeVisibility={() => {}}
+          />
         </Display>
         <Display if={this.state.openView === viewTypes.ERRORS} lazy>
           <ErrorsView result={result} updated={this.props.request.updated} />

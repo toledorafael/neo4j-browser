@@ -43,14 +43,30 @@ type CheckBoxFilterProps = {
   options: string[]
   callback: (param: string[]) => void
   type: string
+  hiddenRelationshipTypes: string[]
+  setRelTypeVisibility: (type: string, value: boolean) => void
 }
 
-const CheckBoxFilter = ({ options, callback, type }: CheckBoxFilterProps) => {
+const CheckBoxFilter = ({
+  options,
+  callback,
+  type,
+  hiddenRelationshipTypes,
+  setRelTypeVisibility
+}: CheckBoxFilterProps) => {
   const [showFilter, setShowFilter] = useState(false)
   const [checkedAll, setCheckedAll] = useState(true)
   const [checked, setChecked] = useState(options.map(() => true))
   const [filterApplied, setFilterApplied] = useState(false)
   const checkAllRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (hiddenRelationshipTypes !== undefined) {
+      setChecked(
+        options.map(option => !hiddenRelationshipTypes.includes(option))
+      )
+    }
+  }, [hiddenRelationshipTypes])
 
   useEffect(() => {
     const numChecked = checked.filter(e => e === true).length
@@ -72,6 +88,10 @@ const CheckBoxFilter = ({ options, callback, type }: CheckBoxFilterProps) => {
           return acc
         }, [])
       )
+
+      options.map((option, ind) => {
+        setRelTypeVisibility(option, checked[ind])
+      })
     }
   }, [filterApplied])
 

@@ -377,6 +377,8 @@ export class ExplorerLocal extends Component<
             this.setState({ tableExpanded: !tableExpanded })
           }}
           result={this.props.result}
+          hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
+          setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
         />
       </StyledFullSizeContainer>
     )

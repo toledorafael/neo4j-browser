@@ -21,12 +21,6 @@ const Table = ({ columns, data }: TableProps) => {
     data
   })
 
-  const [filterInput, setFilterInput] = useState('')
-  const handleFilterChange = (e: any) => {
-    const value = e.target.value || ''
-    setFilterInput(value)
-  }
-
   const [selectedCell, setSelectedCell] = useState([-1, -1])
   const clickOnCell = (rIndex: number, cIndex: number) => {
     if (rIndex === selectedCell[0] && cIndex === selectedCell[1]) {
@@ -37,66 +31,59 @@ const Table = ({ columns, data }: TableProps) => {
   }
 
   return (
-    <>
-      {/* <input
-        value={filterInput}
-        onChange={handleFilterChange}
-        placeholder={'Search name'}
-      /> */}
-      <table className="data-table" {...getTableProps()}>
-        <thead className="data-sticky-header">
-          {headerGroups.map((headerGroup, rIndex) => {
-            return rIndex !== 0 ? (
-              <tr
-                className="data-row data-header"
-                {...headerGroup.getHeaderGroupProps()}
-                key={rIndex}
-              >
-                {headerGroup.headers.map((column, cIndex) => (
-                  <th
+    <table className="data-table" {...getTableProps()}>
+      <thead className="data-sticky-header">
+        {headerGroups.map((headerGroup, rIndex) => {
+          return rIndex !== 0 ? (
+            <tr
+              className="data-row data-header"
+              {...headerGroup.getHeaderGroupProps()}
+              key={rIndex}
+            >
+              {headerGroup.headers.map((column, cIndex) => (
+                <th
+                  className="data-cell"
+                  {...column.getHeaderProps()}
+                  key={cIndex}
+                >
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ) : (
+            <></>
+          )
+        })}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map((row, rIndex) => {
+          prepareRow(row)
+
+          return (
+            <tr className="data-row" {...row.getRowProps()} key={rIndex}>
+              {row.cells.map((cell, cIndex) => {
+                const isSelected =
+                  rIndex === selectedCell[0] && cIndex === selectedCell[1]
+
+                return (
+                  <td
                     className="data-cell"
-                    {...column.getHeaderProps()}
+                    {...cell.getCellProps()}
                     key={cIndex}
+                    onClick={() => clickOnCell(rIndex, cIndex)}
+                    style={{
+                      backgroundColor: isSelected ? '#E0E0E0' : 'white'
+                    }}
                   >
-                    {column.render('Header')}
-                  </th>
-                ))}
-              </tr>
-            ) : (
-              <></>
-            )
-          })}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, rIndex) => {
-            prepareRow(row)
-
-            return (
-              <tr className="data-row" {...row.getRowProps()} key={rIndex}>
-                {row.cells.map((cell, cIndex) => {
-                  const isSelected =
-                    rIndex === selectedCell[0] && cIndex === selectedCell[1]
-
-                  return (
-                    <td
-                      className="data-cell"
-                      {...cell.getCellProps()}
-                      key={cIndex}
-                      onClick={() => clickOnCell(rIndex, cIndex)}
-                      style={{
-                        backgroundColor: isSelected ? '#E0E0E0' : 'white'
-                      }}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </>
+                    {cell.render('Cell')}
+                  </td>
+                )
+              })}
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
   )
 }
 

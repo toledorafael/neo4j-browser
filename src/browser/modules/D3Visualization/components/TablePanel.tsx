@@ -19,6 +19,8 @@ interface TablePanelProps {
   toggleExpanded: () => void
   tablePanelwidth: number
   result: BrowserRequestResult
+  hiddenRelationshipTypes: string[]
+  setRelTypeVisibility: (type: string, value: boolean) => void
 }
 
 export const defaultTablePanelWidth = (): number =>
@@ -32,7 +34,9 @@ export class TablePanel extends Component<TablePanelProps> {
       stats,
       toggleExpanded,
       tablePanelwidth,
-      result
+      result,
+      hiddenRelationshipTypes,
+      setRelTypeVisibility
     } = this.props
 
     return (
@@ -65,7 +69,12 @@ export class TablePanel extends Component<TablePanelProps> {
               onResize={(_e, { size }) => setWidth(size.width)}
             >
               <PaneContainer>
-                <TabularView result={result} graphStats={stats} />
+                <TabularView
+                  result={result}
+                  graphStats={stats}
+                  hiddenRelationshipTypes={hiddenRelationshipTypes}
+                  setRelTypeVisibility={setRelTypeVisibility}
+                />
               </PaneContainer>
             </Resizable>
           </StyledNodeInspectorContainer>
