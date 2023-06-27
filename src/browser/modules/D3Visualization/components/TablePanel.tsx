@@ -19,6 +19,7 @@ interface TablePanelProps {
   toggleExpanded: () => void
   tablePanelwidth: number
   result: BrowserRequestResult
+  hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setRelTypeVisibility: (type: string, value: boolean) => void
 }
@@ -35,6 +36,7 @@ export class TablePanel extends Component<TablePanelProps> {
       toggleExpanded,
       tablePanelwidth,
       result,
+      hiddenNodeLabels,
       hiddenRelationshipTypes,
       setRelTypeVisibility
     } = this.props
@@ -72,6 +74,7 @@ export class TablePanel extends Component<TablePanelProps> {
                 <TabularView
                   result={result}
                   graphStats={stats}
+                  hiddenNodeLabels={hiddenNodeLabels}
                   hiddenRelationshipTypes={hiddenRelationshipTypes}
                   setRelTypeVisibility={setRelTypeVisibility}
                 />

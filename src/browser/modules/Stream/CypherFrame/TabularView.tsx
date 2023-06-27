@@ -44,6 +44,7 @@ interface TableConfig {
 type TabularViewProps = {
   result: BrowserRequestResult
   graphStats: GraphStats | null
+  hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setRelTypeVisibility: (type: string, value: boolean) => void
 }
@@ -127,6 +128,7 @@ const MultilineData = ({ value }: CellProps) => {
 export const TabularViewComponent = ({
   result,
   graphStats,
+  hiddenNodeLabels,
   hiddenRelationshipTypes,
   setRelTypeVisibility
 }: TabularViewProps): JSX.Element => {
@@ -148,7 +150,6 @@ export const TabularViewComponent = ({
         : [],
     [graphStats]
   )
-  const [filteredRelTypes, setFilteredRelTypes] = useState(relTypes)
   const [selectedAttributes, setSelectedAttributes] = useState([
     'id',
     'filename',
@@ -213,15 +214,24 @@ export const TabularViewComponent = ({
         // Check if the type of the relationship is selected by the user
         let shouldBeInvisible = false
         columns[0].columns.map(field => {
-          const isHidden =
-            hiddenRelationshipTypes != undefined &&
-            hiddenRelationshipTypes.includes(record.get(field.accessor).type)
+          const isRelationship = record
+            .get(field.accessor)
+            .properties.hasOwnProperty('condition')
 
-          if (
-            record.get(field.accessor).properties.hasOwnProperty('condition') &&
-            isHidden
-          ) {
-            shouldBeInvisible = true
+          if (isRelationship) {
+            if (
+              hiddenRelationshipTypes != undefined &&
+              hiddenRelationshipTypes.includes(record.get(field.accessor).type)
+            ) {
+              shouldBeInvisible = true
+            }
+          } else {
+            if (
+              hiddenNodeLabels != undefined &&
+              hiddenNodeLabels.includes(record.get(field.accessor).labels[0])
+            ) {
+              shouldBeInvisible = true
+            }
           }
         })
 
@@ -258,7 +268,7 @@ export const TabularViewComponent = ({
   }, [
     records,
     columns,
-    filteredRelTypes,
+    hiddenNodeLabels,
     hiddenRelationshipTypes,
     selectedAttributes
   ])

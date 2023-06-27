@@ -349,6 +349,7 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
           <TabularView
             result={result}
             graphStats={graphStats}
+            hiddenNodeLabels={[]}
             hiddenRelationshipTypes={[]}
             setRelTypeVisibility={() => {}}
           />
