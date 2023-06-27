@@ -446,7 +446,7 @@ export const StyledNodeInspectorTopMenuChevron = styled.div<{
 }>`
   cursor: pointer;
   position: absolute;
-  ${props => (props.position === 'left' ? `left: 0px;` : `right: 0px;`)}
+  ${props => (props.position === 'left' ? `left: 0px;` : `right: 20px;`)}
   top: 6px;
   z-index: 2;
   width: 32px;

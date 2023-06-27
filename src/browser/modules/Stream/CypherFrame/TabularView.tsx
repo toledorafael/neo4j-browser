@@ -13,7 +13,7 @@ const StyledTabularView = styled.div`
   flex-direction: column;
   align-content: center;
   justify-content: flex-start;
-  overflow: scroll;
+  overflow-y: scroll;
 `
 
 const StyledDataEntry = styled.div`
