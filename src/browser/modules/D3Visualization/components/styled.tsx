@@ -390,7 +390,7 @@ export const StyledZoomHolder = styled.div<{
 }>`
   position: ${props => (props.fullscreen ? 'fixed' : 'absolute')};
   bottom: 0;
-  right: 0;
+  right: ${props => props.offset}px;
   padding: 6px 6px 0 6px;
   border-left: ${props => props.theme.inFrameBorder};
   border-right: ${props => props.theme.inFrameBorder};

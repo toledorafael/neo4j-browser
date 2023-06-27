@@ -323,9 +323,7 @@ export class ExplorerLocal extends Component<
           getAutoCompleteCallback={this.props.getAutoCompleteCallback}
           setGraph={this.props.setGraph}
           offset={
-            (this.state.nodePropertiesExpanded
-              ? this.state.propertiesPanelwidth
-              : 0) + 4
+            (this.state.tableExpanded ? this.state.tablePanelwidth : 0) + 4
           }
           hiddenNodeLabels={this.state.hiddenNodeLabels}
           hiddenRelTypes={this.state.hiddenRelationshipTypes}
