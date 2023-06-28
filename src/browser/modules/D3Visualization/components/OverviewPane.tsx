@@ -20,14 +20,20 @@
 
 import React, { useState } from 'react'
 import { Icon } from 'semantic-ui-react'
+import { log } from '../../Logging/Log'
 
 import {
+  StyledGraphLegend,
   StyledLegendInlineList,
   PaneBody,
   PaneHeader,
   PaneBodySectionTitle,
   PaneBodySectionSmallText,
-  PaneBodySectionHeaderWrapper
+  PaneBodySectionHeaderWrapper,
+  StyleInputDiv,
+  StyleTextArea,
+  StyleSubmitButton,
+  StyleToggleWrapper
 } from './styled'
 import numberToUSLocale from 'shared/utils/number-to-US-locale'
 import { StyledTruncatedMessage } from 'browser/modules/Stream/styled'
@@ -39,7 +45,18 @@ import { connect } from 'react-redux'
 import { GlobalState } from 'shared/globalState'
 import * as actions from 'shared/modules/grass/grassDuck'
 import neoGraphStyle from '../graphStyle'
-import { FilterState } from 'shared/modules/filters/filters'
+
+import { FilterState, addFilterAction } from 'shared/modules/filters/filters'
+import {
+  PaletteState,
+  presetPaletteAction
+} from 'shared/modules/palette/palette'
+import { LayoutState, updateLayoutAction } from 'shared/modules/layout/layout'
+import { Action, Dispatch } from 'redux'
+import { getPatternDashes } from '../lib/visualization/utils/pattern'
+import { featureItems, relationshipLayouts } from './Graph'
+import { StyleRelationshipLayoutButton } from 'browser/modules/DBMSInfo/styled'
+import Switch from 'react-switch'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -87,11 +104,18 @@ type OverviewPaneProps = {
   relationshipCount: number | null
   stats: GraphStats
   filters: FilterState
+  layout: LayoutState
+  palette: PaletteState
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
   patternSelectorVisible: boolean
+  updateStyle: any
+  setLightTheme: () => void
+  setDarkTheme: () => void
+  addFilterAction: (filter: string) => void
+  updateLayoutAction: (layout: LayoutState) => void
 }
 
 export const OVERVIEW_STEP_SIZE = 50
@@ -105,11 +129,18 @@ function OverviewPane({
   relationshipCount,
   stats,
   filters,
+  layout,
+  palette,
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
   setRelTypeVisibility,
-  patternSelectorVisible
+  patternSelectorVisible,
+  updateStyle,
+  setLightTheme,
+  setDarkTheme,
+  addFilterAction,
+  updateLayoutAction
 }: OverviewPaneProps): JSX.Element {
   const [maxLabelsCount, setMaxLabelsCount] = useState(OVERVIEW_STEP_SIZE)
   const [maxRelationshipsCount, setMaxRelationshipsCount] = useState(
@@ -139,6 +170,49 @@ function OverviewPane({
     : []
   const totalNumOfLabelTypes = labels ? Object.keys(labels).length : 0
   const totalNumOfRelTypes = relTypes ? Object.keys(relTypes).length : 0
+
+  const [currentLayout, setCurrentLayout] = useState(
+    relationshipLayouts[featureItems[0].items[0].id]
+  )
+  const [featureExpressionLayout, setFeatureExpressionLayout] = useState(
+    layout ? layout : featureItems[0]
+  )
+  const [newConditionType, setNewConditionType] = useState('')
+
+  const handleSubmit = () => {
+    if (newConditionType) {
+      addFilterAction(newConditionType)
+      // Logging filter creation
+      log('createNewFilter, ' + newConditionType)
+
+      graphStyle.addCondition(newConditionType)
+      updateStyle(graphStyle.toSheet())
+
+      // Clear text input
+      Array.from(document.querySelectorAll('textArea')).forEach(
+        (input: any) => (input.value = '')
+      )
+
+      /* const stats = getGraphStats(graph)
+      const newstats = {
+        labels: stats.labels,
+        relTypes: stats.relTypes
+      }
+      onGraphModelChange(newstats) */
+    }
+  }
+
+  const updateFeatureExpressionState = (event: any) => {
+    setNewConditionType(event.target.value)
+  }
+
+  const changeTheme = () => {
+    if (palette.theme === 'light') {
+      setDarkTheme()
+    } else {
+      setLightTheme()
+    }
+  }
 
   return (
     <>
@@ -252,12 +326,169 @@ function OverviewPane({
               nodeCount
             )} nodes, ${numberToUSLocale(relationshipCount)} relationships.`}
         </div>
+
+        {/* Graph controlls */}
+        {/* Input box to enter a new filter */}
+        <StyleInputDiv>
+          <StyleTextArea
+            placeholder="Feature expression"
+            onChange={updateFeatureExpressionState}
+          />
+          <StyleSubmitButton onClick={handleSubmit}>
+            Create filter
+          </StyleSubmitButton>
+        </StyleInputDiv>
+
+        {/* Layout switcher */}
+        <div>
+          <PaneBodySectionHeader
+            title={'Layout'}
+            numOfElementsVisible={featureItems.length}
+            totalNumOfElements={featureItems.length}
+          />
+          <StyledLegendInlineList>
+            {featureItems.map(featureItem => (
+              <StyleRelationshipLayoutButton
+                className={
+                  featureItem === featureExpressionLayout ? 'selected' : ''
+                }
+                key={featureItem.display}
+                onClick={() => {
+                  if (featureExpressionLayout !== featureItem) {
+                    updateLayoutAction(featureItem)
+                    log('change to ' + featureItem.display)
+
+                    setFeatureExpressionLayout(featureItem)
+                    setCurrentLayout(
+                      relationshipLayouts[featureItem.items[0].id]
+                    )
+                  }
+                }}
+              >
+                {featureItem.display}
+              </StyleRelationshipLayoutButton>
+            ))}
+          </StyledLegendInlineList>
+        </div>
+
+        {/* Theme switcher */}
+        <div>
+          <PaneBodySectionHeader
+            title={'Theme'}
+            numOfElementsVisible={2}
+            totalNumOfElements={2}
+          />
+          <StyleToggleWrapper>
+            <span style={{ marginRight: '6px' }}>Dark</span>
+            <Switch
+              onChange={() => changeTheme()}
+              checked={palette.theme === 'light'}
+              className="react-switch"
+              handleDiameter={16}
+              height={24}
+              width={48}
+              onColor="#8ecae6"
+              offColor="#181a1d"
+              checkedIcon={false}
+              uncheckedIcon={
+                <svg
+                  height="100%"
+                  width="100%"
+                  viewBox="-24 -24 96.00 96.00"
+                  id="b"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#ffffff"
+                  stroke="#ffffff"
+                  strokeWidth="1.44"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                  }}
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <defs>
+                      <style>
+                        {
+                          'fill:none;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;'
+                        }
+                      </style>
+                    </defs>
+                    <path d="m32.8,29.3c-8.9-.8-16.2-7.8-17.5-16.6-.3-1.8-.3-3.7,0-5.4.2-1.4-1.4-2.3-2.5-1.6C6.3,9.7,2.1,16.9,2.5,25c.5,10.7,9,19.5,19.7,20.4,10.6.9,19.8-6,22.5-15.6.4-1.4-1-2.6-2.3-2-2.9,1.3-6.1,1.8-9.6,1.5Z"></path>
+                  </g>
+                </svg>
+              }
+            />
+            <span style={{ marginLeft: '6px' }}>Light</span>
+          </StyleToggleWrapper>
+        </div>
+
+        {/* Legend for filters */}
+        {filters && filters.length > 0 && (
+          <StyledGraphLegend>
+            <table>
+              <tr>
+                <th colSpan={2}>Feature Expressions</th>
+              </tr>
+
+              {filters.map((condType: any) => {
+                const style = graphStyle.forCondition(condType)
+                if (style.get('color') === 'var(--graph-color0)') return null
+                return (
+                  <tr key={condType}>
+                    <td>
+                      <svg width="180" height="15" viewBox="0 -6 144 12">
+                        <line
+                          x1="0"
+                          x2="144"
+                          y1="0"
+                          y2="0"
+                          stroke={style.get('color')}
+                          strokeWidth="5"
+                          strokeDasharray={
+                            currentLayout.localPattern
+                              ? getPatternDashes(style.get('pattern'), 5)
+                              : ''
+                          }
+                        />
+                      </svg>
+                    </td>
+                    <td>
+                      <div className="legend-label" title={condType}>
+                        {condType}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </table>
+          </StyledGraphLegend>
+        )}
       </PaneBody>
     </>
   )
 }
 
-export default connect((state: GlobalState) => ({
-  graphStyleData: actions.getGraphStyleData(state),
-  filters: state.filters
-}))(OverviewPane)
+const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
+  setLightTheme: () => dispatch(presetPaletteAction('light')),
+  setDarkTheme: () => dispatch(presetPaletteAction('dark')),
+  addFilterAction: (filter: string) => dispatch(addFilterAction(filter)),
+  updateLayoutAction: (layout: LayoutState) =>
+    dispatch(updateLayoutAction(layout))
+})
+
+export default connect(
+  (state: GlobalState) => ({
+    graphStyleData: actions.getGraphStyleData(state),
+    filters: state.filters,
+    layout: state.layout,
+    palette: state.palette
+  }),
+  mapDispatchToProps
+)(OverviewPane)

@@ -333,94 +333,18 @@ export const StyleToggleGroupMarksButton = styled.button`
 `
 
 export const StyleSubmitButton = styled.button`
-  position: absolute;
-  top: 60px;
-  right: 60px;
-  list-style-type: none;
-  font-size: 1.5em;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  background: green;
-  border-color: white;
-  padding: 0 32px;
-  line-height: 32px;
-  &:focus {
-    outline: none;
-  }
-  &.faded {
-    opacity: 0.3;
-    cursor: auto;
-    &:hover {
-      color: #9b9da2;
-    }
-  }
-`
-
-export const StyledLayoutPicker = styled.div`
-  position: absolute;
-  top: 110px;
-  left: 4px;
-  border: none;
-`
-
-export const StyleRelationshipLayoutButtonGroup = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  width: 200px;
-  margin-right: 8px;
-  border: none;
-  border-radius: 8px;
-  background: grey;
-  padding: 0 4px;
-`
-
-export const StyledRelationshipLayoutHeader = styled.div`
-  line-height: 32px;
-  height: 32px;
-  font-size: 1.5em;
-  user-select: none;
-  color: white;
-  text-align: center;
-  border-bottom: white 2px solid;
-  margin: 4px 0;
-`
-
-export const StyleRelationshipLayoutButton = styled.button`
   width: 100%;
-  line-height: 32px;
-  height: 32px;
-  font-size: 1.5em;
-  border: none;
-  border-radius: 4px;
-  background: grey;
-  color: white;
-  display: block;
-  &:focus {
-    outline: none;
-  }
-  &:hover {
-    background: darkgrey;
-  }
-  &.selected {
-    background: white;
-    color: grey;
-  }
-  margin: 4px 0;
-`
-
-export const StyleToggleButton = styled.button`
-  position: absolute;
-  top: 100px;
-  right: 120px;
+  max-width: 280px;
   list-style-type: none;
-  font-size: 1.5em;
+  font-size: 1em;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.25rem;
   color: white;
-  background: red;
+  background: #53917e;
   border-color: white;
-  padding: 15px 32px;
+  padding: 0 1rem;
+  margin-bottom: 0.75rem;
+  line-height: 28px;
   &:focus {
     outline: none;
   }
@@ -431,26 +355,32 @@ export const StyleToggleButton = styled.button`
       color: #9b9da2;
     }
   }
+`
+
+export const StyleToggleWrapper = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin: 0.5rem 0;
 `
 
 export const StyleInputDiv = styled.div`
-  position: absolute;
-  top: 4px;
-  left: 4px;
   color: black;
-  width: 300px;
+  width: 95%;
   background: white;
   border: none;
-  border-radius: 3px;
+  margin-top: 0.5rem;
 `
 
 export const StyleTextArea = styled.textarea`
-  position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 280px;
   height: 4em;
   line-height: 1.2em;
   resize: none;
   padding: 3px;
+  border: rgb(189, 195, 199) solid 1px;
+  border-radius: 0.25rem;
 `
 
 export const StyledZoomHolder = styled.div<{
@@ -459,7 +389,7 @@ export const StyledZoomHolder = styled.div<{
 }>`
   position: ${props => (props.fullscreen ? 'fixed' : 'absolute')};
   bottom: 0;
-  right: ${props => props.offset}px;
+  right: 0;
   padding: 6px 6px 0 6px;
   border-left: ${props => props.theme.inFrameBorder};
   border-right: ${props => props.theme.inFrameBorder};
@@ -495,7 +425,7 @@ export const StyledNodeInspectorContainer = styled.div<{
   width: number
 }>`
   position: absolute;
-  right: 0;
+  left: 0px;
   top: 3px;
   z-index: 1;
   width: ${props => props.width}px;
@@ -513,7 +443,7 @@ export const StyledNodeInspectorTopMenuChevron = styled.div<{
 }>`
   cursor: pointer;
   position: absolute;
-  right: 0px;
+  left: 0px;
   top: 6px;
   z-index: 2;
   width: 32px;
@@ -547,7 +477,7 @@ export const AlternatingTable = styled.table`
 
 export const PaneHeader = styled.div`
   font-size: 16px;
-  margin-top: 10px;
+  margin: 10px 0px 0px 20px;
   flex: 0 0 auto;
 `
 
@@ -615,20 +545,19 @@ export const StyledPatternSelectorItem = styled.div`
 `
 
 export const StyledGraphLegend = styled.div`
-  line-height: 16px;
-  font-size: 16px;
-  position: absolute;
-  left: -1px;
-  bottom: -1px;
-  padding: 16px;
+  width: 500px;
+  line-height: 12px;
+  font-size: 12px;
+  padding: 0.75rem;
+  margin: 1rem 1rem 1rem 0rem;
   background: white;
-  border-top-right-radius: 2px;
-  border: grey solid 1px;
+  border-radius: 0.25rem;
+  border: rgb(189, 195, 199) solid 1px;
 
   td {
     padding: 4px 8px;
     .legend-label {
-      width: 400px;
+      width: fit-content;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
@@ -636,7 +565,7 @@ export const StyledGraphLegend = styled.div`
   }
 
   th {
-    padding: 12px 8px 4px 8px;
+    padding: 4px 8px;
     text-align: left;
   }
 `
