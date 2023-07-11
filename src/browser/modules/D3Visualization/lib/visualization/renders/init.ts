@@ -21,9 +21,13 @@ import Renderer from '../components/renderer'
 import d3 from 'd3'
 import { getPatternDashes } from '../utils/pattern'
 import { getShapeDef } from '../utils/shapes'
+import { updatePathColorMapAction } from 'shared/modules/pathColorMap/pathColorMap'
+import { store } from 'browser/AppInit'
 const noop = function() {}
 
 const nodeRingStrokeSize = 8
+
+export const pathColorMap = new Map<string, string[]>()
 
 const nodeOutline = new Renderer({
   onGraphChange(selection: any, viz: any) {
@@ -203,9 +207,13 @@ function getRelationshipStyle(rel: any, viz: any) {
 function updateArrow(pathGroups: any, viz: any) {
   const layout =
     pathGroups.node() && pathGroups.node().closest('.neod3viz').__graphStyle
+  pathColorMap.clear()
+
   const paths = pathGroups.selectAll('path').data((rel: any) => {
     if (rel.arrow) {
       const { colors, patterns } = getRelationshipStyle(rel, viz)
+      pathColorMap.set(rel.id + '', colors)
+
       return rel.arrow
         .outline(rel.shortCaptionLength, colors.length, layout.arrowLayout)
         .map((a: any) => ({ pathDef: a, colors, patterns, rel }))
@@ -213,6 +221,7 @@ function updateArrow(pathGroups: any, viz: any) {
       return []
     }
   })
+
   paths.enter().append('path')
   paths.exit().remove()
 
@@ -291,6 +300,8 @@ const arrowPath = new Renderer({
       .classed('outline', true)
 
     updateArrow(paths, viz)
+    store.dispatch(updatePathColorMapAction(pathColorMap)) // Update path color mappings
+
     // updateGradient(paths, viz)
     // this feature needs to be redone
     // .attr('stroke-width', '3px')

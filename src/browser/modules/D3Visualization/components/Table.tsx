@@ -1,14 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useTable } from 'react-table'
+import styled from 'styled-components'
 
 import '../../../styles/data-table.css'
+
+const StyledColorsContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+`
+
+const StyledColorDiv = styled.div<{ color: string; width: number }>`
+  // background-color: rgba(255, 122, 89, .5);
+  background-color: ${props => props.color};
+  height: 100%;
+  width: ${props => props.width}%;
+  display: inline-block;
+`
 
 type TableProps = {
   columns: any
   data: any
+  colorMap: string[][]
 }
 
-const Table = ({ columns, data }: TableProps) => {
+const Table = ({ columns, data, colorMap }: TableProps) => {
   // Use the useTable Hook to send the columns and data to build the table
   const {
     getTableProps, // table props from react-table
@@ -20,15 +38,6 @@ const Table = ({ columns, data }: TableProps) => {
     columns,
     data
   })
-
-  const [selectedCell, setSelectedCell] = useState([-1, -1])
-  const clickOnCell = (rIndex: number, cIndex: number) => {
-    if (rIndex === selectedCell[0] && cIndex === selectedCell[1]) {
-      setSelectedCell([-1, -1])
-    } else {
-      setSelectedCell([rIndex, cIndex])
-    }
-  }
 
   return (
     <table className="data-table" {...getTableProps()}>
@@ -62,20 +71,27 @@ const Table = ({ columns, data }: TableProps) => {
           return (
             <tr className="data-row" {...row.getRowProps()} key={rIndex}>
               {row.cells.map((cell, cIndex) => {
-                const isSelected =
-                  rIndex === selectedCell[0] && cIndex === selectedCell[1]
+                const colors = cIndex == 1 ? colorMap[rIndex] : []
+                const colorWidth = 100.0 / colors.length
 
                 return (
                   <td
                     className="data-cell"
                     {...cell.getCellProps()}
                     key={cIndex}
-                    onClick={() => clickOnCell(rIndex, cIndex)}
-                    style={{
-                      backgroundColor: isSelected ? '#E0E0E0' : 'white'
-                    }}
                   >
-                    {cell.render('Cell')}
+                    <>
+                      <StyledColorsContainer>
+                        {colors.map((color, colorIndex) => (
+                          <StyledColorDiv
+                            key={colorIndex}
+                            color={color}
+                            width={colorWidth}
+                          />
+                        ))}
+                      </StyledColorsContainer>
+                      {cell.render('Cell')}
+                    </>
                   </td>
                 )
               })}

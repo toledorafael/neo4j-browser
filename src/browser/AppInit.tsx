@@ -124,7 +124,7 @@ const enhancer: StoreEnhancer<GlobalState> = compose(
     : (f: unknown) => f
 )
 
-const store = createStore<GlobalState>(
+export const store = createStore<GlobalState>(
   reducer,
   getAll() as GlobalState, // rehydrate from local storage on app start
   enhancer

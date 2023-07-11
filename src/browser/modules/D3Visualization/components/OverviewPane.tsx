@@ -57,6 +57,10 @@ import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { featureItems, relationshipLayouts } from './Graph'
 import { StyleRelationshipLayoutButton } from 'browser/modules/DBMSInfo/styled'
 import Switch from 'react-switch'
+import {
+  PathColorMapState,
+  rerenderPathColorMapAction
+} from 'shared/modules/pathColorMap/pathColorMap'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -106,6 +110,7 @@ type OverviewPaneProps = {
   filters: FilterState
   layout: LayoutState
   palette: PaletteState
+  pathColorMap: PathColorMapState
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
@@ -131,6 +136,7 @@ function OverviewPane({
   filters,
   layout,
   palette,
+  pathColorMap,
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
@@ -193,12 +199,8 @@ function OverviewPane({
         (input: any) => (input.value = '')
       )
 
-      /* const stats = getGraphStats(graph)
-      const newstats = {
-        labels: stats.labels,
-        relTypes: stats.relTypes
-      }
-      onGraphModelChange(newstats) */
+      // Update context
+      rerenderPathColorMapAction(!pathColorMap.shouldRerender)
     }
   }
 
@@ -480,7 +482,9 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
   setDarkTheme: () => dispatch(presetPaletteAction('dark')),
   addFilterAction: (filter: string) => dispatch(addFilterAction(filter)),
   updateLayoutAction: (layout: LayoutState) =>
-    dispatch(updateLayoutAction(layout))
+    dispatch(updateLayoutAction(layout)),
+  rerenderPathColorMapAction: (shouldRerender: boolean) =>
+    dispatch(rerenderPathColorMapAction(shouldRerender))
 })
 
 export default connect(
@@ -488,7 +492,8 @@ export default connect(
     graphStyleData: actions.getGraphStyleData(state),
     filters: state.filters,
     layout: state.layout,
-    palette: state.palette
+    palette: state.palette,
+    pathColorMap: state.pathColorMap
   }),
   mapDispatchToProps
 )(OverviewPane)

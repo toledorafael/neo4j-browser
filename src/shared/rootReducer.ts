@@ -69,6 +69,7 @@ import experimentalFeaturesReducer, {
 import { paletteReducer } from 'shared/modules/palette/palette'
 import filtersReducer from './modules/filters/filters'
 import layoutReducer from './modules/layout/layout'
+import pathColorMapReducer from './modules/pathColorMap/pathColorMap'
 
 export default {
   [connections]: connectionsReducer,
@@ -94,5 +95,6 @@ export default {
   [experimentalFeatures]: experimentalFeaturesReducer,
   palette: paletteReducer,
   filters: filtersReducer,
-  layout: layoutReducer
+  layout: layoutReducer,
+  pathColorMap: pathColorMapReducer
 }

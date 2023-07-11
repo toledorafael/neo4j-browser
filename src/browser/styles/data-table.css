@@ -7,6 +7,7 @@
 
 .data-sticky-header {
   position: sticky;
+  z-index: 10;
   top: -25px;
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
@@ -23,11 +24,12 @@
 }
 
 .data-row .data-cell {
-  color: #666;
+  color: #1c1c1c;
   line-height: 1.2;
   font-weight: unset !important;
   padding: 0.5rem 1rem;
   border: 1px solid #f2f2f2;
+  position: relative;
 }
 
 .data-cell {

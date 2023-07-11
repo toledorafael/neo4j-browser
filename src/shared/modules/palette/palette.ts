@@ -46,6 +46,21 @@ const darkPalette = {
     '#a32e66',
     '#345c4f'
   ],
+  tableConditionColors: [
+    '#80879150',
+    '#5d480850',
+    '#904d8550',
+    '#ca561c50',
+    '#1c97b550',
+    '#bd1d1e50',
+    '#a2896550',
+    '#4d995450',
+    '#c5517f50',
+    '#1d579a50',
+    '#b6870e50',
+    '#a32e6650',
+    '#345c4f50'
+  ],
   textColor: '#000000',
   condColor: '#ffffff',
   theme: 'dark'
@@ -96,6 +111,21 @@ const lightPalette = {
     '#ffd59a',
     '#de85a1',
     '#5fa28c'
+  ],
+  tableConditionColors: [
+    '#a5abb650',
+    '#ffe08150',
+    '#d1a1c950',
+    '#f8aa8a50',
+    '#5de6f450',
+    '#f27e7e50',
+    '#e4d7c350',
+    '#98db9e50',
+    '#f0c7d650',
+    '#5b9be950',
+    '#ffd59a50',
+    '#de85a150',
+    '#5fa28c50'
   ],
   textColor: '#ffffff',
   condColor: '#000000',
@@ -154,6 +184,23 @@ const lightCustomPalette = {
     '#ffe119',
     '#bfef45'
   ],
+  tableConditionColors: [
+    '#a9a9a950',
+    '#e6194b50',
+    '#f5823150',
+    '#3cb44b50',
+    '#42d4f450',
+    '#f032e650',
+
+    '#fabed450',
+    '#ffd8b150',
+    '#fffac850',
+    '#aaffc350',
+    '#dcbeff50',
+
+    '#ffe11950',
+    '#bfef4550'
+  ],
   textColor: '#000000',
   condColor: '#000000',
   theme: 'light-custom'
@@ -211,6 +258,23 @@ const darkCustomPalette = {
     '#4363d8',
     '#911eb4'
   ],
+  tableConditionColors: [
+    '#a9a9a950',
+    '#e6194b50',
+    '#f5823150',
+    '#3cb44b50',
+    '#42d4f450',
+    '#f032e650',
+
+    '#fabed450',
+    '#ffd8b150',
+    '#fffac850',
+    '#aaffc350',
+    '#dcbeff50',
+
+    '#ffe11950',
+    '#bfef4550'
+  ],
   textColor: '#ffffff',
   condColor: '#ffffff',
   theme: 'dark-custom'
@@ -222,6 +286,7 @@ export interface PaletteState {
   colors: string[]
   borderColors: string[]
   conditionColors: string[]
+  tableConditionColors: string[]
   textColor: string
   condColor: string
   theme: string

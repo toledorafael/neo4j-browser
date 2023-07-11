@@ -398,7 +398,7 @@ export class Graph extends Component<any, State, { layout: LayoutState }> {
 }
 
 const mapStateToProps = (state: GlobalState) => ({
-  onditionTypes: state.filters,
+  conditionTypes: state.filters,
   layout: state.layout
 })
 

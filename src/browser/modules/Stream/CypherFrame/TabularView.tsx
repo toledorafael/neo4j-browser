@@ -4,6 +4,8 @@ import { GraphStats } from 'browser/modules/D3Visualization/mapper'
 import { Record as Neo4jRecord } from 'neo4j-driver'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { connect } from 'react-redux'
+import { GlobalState } from 'shared/globalState'
+import { PathColorMapState } from 'shared/modules/pathColorMap/pathColorMap'
 import { BrowserRequestResult } from 'shared/modules/requests/requestsDuck'
 import styled from 'styled-components'
 
@@ -47,6 +49,7 @@ type TabularViewProps = {
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setRelTypeVisibility: (type: string, value: boolean) => void
+  pathColorMap: PathColorMapState
 }
 
 type HeaderCellProps = {
@@ -77,7 +80,6 @@ const HeaderEntry = ({
   const index = record.keys.indexOf(value)
   const desc = ['Start node', 'Relationship', 'End node']
 
-  console.log(hiddenRelationshipTypes)
   return (
     <StyledHeader>
       {value} - {desc[index]}
@@ -109,7 +111,7 @@ const MultilineData = ({ value }: CellProps) => {
   return (
     <>
       {value.map(data => {
-        const dataArray = data.split('\n')
+        const dataArray = data.split('\n') as string[]
 
         return dataArray.map((dataEntry, index) => {
           const dataMapping = dataEntry.split(': ')
@@ -130,10 +132,12 @@ export const TabularViewComponent = ({
   graphStats,
   hiddenNodeLabels,
   hiddenRelationshipTypes,
-  setRelTypeVisibility
+  setRelTypeVisibility,
+  pathColorMap
 }: TabularViewProps): JSX.Element => {
   const [columns, setColumns] = useState<TableConfig[]>([])
   const [data, setData] = useState<Record<PropertyKey, string[]>[]>([])
+  const [colorMap, setColorMap] = useState<string[][]>([])
 
   const records: Neo4jRecord[] = useMemo(
     () =>
@@ -208,6 +212,7 @@ export const TabularViewComponent = ({
 
   useEffect(() => {
     const tempData: Record<PropertyKey, string[]>[] = []
+    const colorTempData: string[][] = []
 
     records.map((record: Neo4jRecord) => {
       if (columns && columns[0] && columns[0].columns) {
@@ -245,6 +250,14 @@ export const TabularViewComponent = ({
             if (
               record.get(field.accessor).properties.hasOwnProperty('condition') // Relationship
             ) {
+              colorTempData.push(
+                (
+                  pathColorMap.pathColorMap.get(
+                    String(record.get(field.accessor).identity)
+                  ) || []
+                ).map(color => color.replace('condition', 'table-condition'))
+              )
+
               row[field.accessor.toString()].push(
                 'condition: ' + record.get(field.accessor).properties.condition
               )
@@ -265,12 +278,14 @@ export const TabularViewComponent = ({
     })
 
     setData(tempData)
+    setColorMap(colorTempData)
   }, [
     records,
     columns,
     hiddenNodeLabels,
     hiddenRelationshipTypes,
-    selectedAttributes
+    selectedAttributes,
+    pathColorMap
   ])
 
   return (
@@ -278,7 +293,7 @@ export const TabularViewComponent = ({
       {records.length === 0 ? (
         'Query results are currently unavailable.'
       ) : (
-        <Table columns={columns} data={data} />
+        <Table columns={columns} data={data} colorMap={colorMap} />
       )}
     </StyledTabularView>
   )
@@ -288,5 +303,7 @@ export const TabularStatusBarComponent = () => {
   return <>The results are for testing purposes only.</>
 }
 
-export const TabularView = connect()(TabularViewComponent)
+export const TabularView = connect((state: GlobalState) => ({
+  pathColorMap: state.pathColorMap
+}))(TabularViewComponent)
 export const TabularStatusBar = connect()(TabularStatusBarComponent)
