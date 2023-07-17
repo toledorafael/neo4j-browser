@@ -41,8 +41,7 @@ import {
   PlanIcon,
   AlertIcon,
   ErrorIcon,
-  SpinnerIcon,
-  TabularIcon
+  SpinnerIcon
 } from 'browser-components/icons/Icons'
 import { AsciiView, AsciiStatusbar } from './AsciiView'
 import { CodeView, CodeStatusbar } from './CodeView'
@@ -279,17 +278,6 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
           }}
         >
           <CodeIcon />
-        </CypherFrameButton>
-      )}
-      {!resultIsError(this.props.request) && (
-        <CypherFrameButton
-          data-testid="cypherFrameSidebarTabular"
-          selected={this.state.openView === viewTypes.TABULAR}
-          onClick={() => {
-            this.changeView(viewTypes.TABULAR)
-          }}
-        >
-          <TabularIcon />
         </CypherFrameButton>
       )}
     </FrameSidebar>

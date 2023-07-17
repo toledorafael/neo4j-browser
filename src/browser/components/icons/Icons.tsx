@@ -306,9 +306,6 @@ export const AsciiIcon = (): JSX.Element => (
 export const CodeIcon = (): JSX.Element => (
   <IconContainer icon={appWindowCode} text="Code" width={LARGE_SIZE} />
 )
-export const TabularIcon = (): JSX.Element => (
-  <IconContainer icon={table} text="Tabular" width={LARGE_SIZE} />
-)
 export const ComponentInteractionIcon = (): JSX.Element => (
   <IconContainer icon={componentInteraction} text="Interactions" width={20} />
 )

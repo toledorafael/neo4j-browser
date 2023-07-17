@@ -332,11 +332,6 @@ export const TabularViewComponent = ({
   )
 }
 
-export const TabularStatusBarComponent = () => {
-  return <>The results are for testing purposes only.</>
-}
-
 export const TabularView = connect((state: GlobalState) => ({
   pathColorMap: state.pathColorMap
 }))(TabularViewComponent)
-export const TabularStatusBar = connect()(TabularStatusBarComponent)

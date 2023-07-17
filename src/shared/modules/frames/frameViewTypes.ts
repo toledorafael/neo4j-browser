@@ -24,7 +24,6 @@ export const WARNINGS = 'WARNINGS'
 export const ERRORS = 'ERRORS'
 export const TABLE = 'TABLE'
 export const CODE = 'CODE'
-export const TABULAR = 'TABULAR'
 export const ERROR = 'ERROR'
 export const TEXT = 'TEXT'
 export const COMPONENTINTERACTION = 'COMPONENTINTERACTION'
@@ -36,7 +35,6 @@ export type FrameView =
   | typeof ERRORS
   | typeof TABLE
   | typeof CODE
-  | typeof TABULAR
   | typeof ERROR
   | typeof TEXT
   | typeof COMPONENTINTERACTION
