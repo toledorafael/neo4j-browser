@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTable } from 'react-table'
 import styled from 'styled-components'
 
@@ -24,9 +24,10 @@ type TableProps = {
   columns: any
   data: any
   colorMap: string[][]
+  dataToHighlight: number[][]
 }
 
-const Table = ({ columns, data, colorMap }: TableProps) => {
+const Table = ({ columns, data, colorMap, dataToHighlight }: TableProps) => {
   // Use the useTable Hook to send the columns and data to build the table
   const {
     getTableProps, // table props from react-table
@@ -38,6 +39,35 @@ const Table = ({ columns, data, colorMap }: TableProps) => {
     columns,
     data
   })
+
+  const [cellsToBeHighlighted, setCellsToBeHighlighted] = useState<number[][]>(
+    []
+  )
+
+  const triggerCellSelect = (rIndex: number, cIndex: number) => {
+    console.log('Selecting: row ', rIndex, '; col ', cIndex)
+    setCellsToBeHighlighted([[rIndex, cIndex]])
+  }
+
+  useEffect(() => {
+    setCellsToBeHighlighted(dataToHighlight)
+  }, [dataToHighlight])
+
+  const shouldBeHighlighted = (rIndex: number, cIndex: number) => {
+    let res = false
+    cellsToBeHighlighted.map(indexPair => {
+      if (indexPair[0] === rIndex && indexPair[1] === cIndex) res = true
+    })
+
+    if (res && document.getElementsByClassName('data-row' + rIndex)[0]) {
+      document.getElementsByClassName('data-row' + rIndex)[0].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      })
+    }
+    return res
+  }
 
   return (
     <table className="data-table" {...getTableProps()}>
@@ -69,16 +99,28 @@ const Table = ({ columns, data, colorMap }: TableProps) => {
           prepareRow(row)
 
           return (
-            <tr className="data-row" {...row.getRowProps()} key={rIndex}>
+            <tr
+              className={'data-row' + rIndex}
+              {...row.getRowProps()}
+              key={rIndex}
+            >
               {row.cells.map((cell, cIndex) => {
                 const colors = cIndex == 1 ? colorMap[rIndex] : []
                 const colorWidth = 100.0 / colors.length
+                let isSelected = shouldBeHighlighted(rIndex, cIndex)
 
                 return (
                   <td
                     className="data-cell"
                     {...cell.getCellProps()}
                     key={cIndex}
+                    onClick={() => {
+                      isSelected = !isSelected
+                      triggerCellSelect(rIndex, cIndex)
+                    }}
+                    style={{
+                      backgroundColor: isSelected ? '#E0E0E0' : 'white'
+                    }}
                   >
                     <>
                       <StyledColorsContainer>

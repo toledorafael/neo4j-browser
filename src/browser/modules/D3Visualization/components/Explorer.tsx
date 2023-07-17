@@ -383,6 +383,8 @@ export class ExplorerLocal extends Component<
           hiddenNodeLabels={this.state.hiddenNodeLabels}
           hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
+          hoveredItem={this.state.hoveredItem}
+          selectedItem={this.state.selectedItem}
         />
       </StyledFullSizeContainer>
     )

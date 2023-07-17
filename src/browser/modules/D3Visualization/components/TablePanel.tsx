@@ -11,6 +11,7 @@ import {
 } from './styled'
 import { TabularView } from 'browser/modules/Stream/CypherFrame/TabularView'
 import { BrowserRequestResult } from 'shared/modules/requests/requestsDuck'
+import { VizItem } from './types'
 
 interface TablePanelProps {
   expanded: boolean
@@ -22,6 +23,8 @@ interface TablePanelProps {
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setRelTypeVisibility: (type: string, value: boolean) => void
+  hoveredItem: VizItem
+  selectedItem: VizItem
 }
 
 export const defaultTablePanelWidth = (): number =>
@@ -38,8 +41,15 @@ export class TablePanel extends Component<TablePanelProps> {
       result,
       hiddenNodeLabels,
       hiddenRelationshipTypes,
-      setRelTypeVisibility
+      setRelTypeVisibility,
+      hoveredItem,
+      selectedItem
     } = this.props
+
+    const relevantItems = ['node', 'relationship']
+    const hoveringNodeOrRelationship =
+      hoveredItem && relevantItems.includes(hoveredItem.type)
+    const shownEl = hoveringNodeOrRelationship ? hoveredItem : selectedItem
 
     return (
       <>
@@ -77,6 +87,7 @@ export class TablePanel extends Component<TablePanelProps> {
                   hiddenNodeLabels={hiddenNodeLabels}
                   hiddenRelationshipTypes={hiddenRelationshipTypes}
                   setRelTypeVisibility={setRelTypeVisibility}
+                  vizItem={shownEl}
                 />
               </PaneContainer>
             </Resizable>

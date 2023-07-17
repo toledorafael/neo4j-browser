@@ -1,5 +1,9 @@
 import CheckBoxFilter from 'browser/modules/D3Visualization/components/CheckBoxFilter'
 import Table from 'browser/modules/D3Visualization/components/Table'
+import {
+  NodeItem,
+  RelationshipItem
+} from 'browser/modules/D3Visualization/components/types'
 import { GraphStats } from 'browser/modules/D3Visualization/mapper'
 import { Record as Neo4jRecord } from 'neo4j-driver'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -49,6 +53,7 @@ type TabularViewProps = {
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setRelTypeVisibility: (type: string, value: boolean) => void
+  vizItem: NodeItem | RelationshipItem
   pathColorMap: PathColorMapState
 }
 
@@ -133,11 +138,15 @@ export const TabularViewComponent = ({
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setRelTypeVisibility,
+  vizItem,
   pathColorMap
 }: TabularViewProps): JSX.Element => {
   const [columns, setColumns] = useState<TableConfig[]>([])
   const [data, setData] = useState<Record<PropertyKey, string[]>[]>([])
   const [colorMap, setColorMap] = useState<string[][]>([])
+  const [dataToBeHighlighted, setDataToBeHighlighted] = useState<number[][]>([])
+  const highlightNode = vizItem.type === 'node'
+  const highlightRelationship = vizItem.type === 'relationship'
 
   const records: Neo4jRecord[] = useMemo(
     () =>
@@ -212,9 +221,10 @@ export const TabularViewComponent = ({
 
   useEffect(() => {
     const tempData: Record<PropertyKey, string[]>[] = []
+    const indexPairs: number[][] = []
     const colorTempData: string[][] = []
 
-    records.map((record: Neo4jRecord) => {
+    records.map((record: Neo4jRecord, rowInd: number) => {
       if (columns && columns[0] && columns[0].columns) {
         // Check if the type of the relationship is selected by the user
         let shouldBeInvisible = false
@@ -244,7 +254,7 @@ export const TabularViewComponent = ({
           // Populate the row of entry
           const row: Record<PropertyKey, string[]> = {}
 
-          columns[0].columns.map(field => {
+          columns[0].columns.map((field, colInd) => {
             row[field.accessor.toString()] = []
 
             if (
@@ -264,11 +274,27 @@ export const TabularViewComponent = ({
               row[field.accessor.toString()].push(
                 'relationship type: ' + record.get(field.accessor).type
               )
+
+              if (
+                highlightRelationship &&
+                Number(vizItem.item.id) ===
+                  Number(record.get(field.accessor).identity)
+              ) {
+                indexPairs.push([rowInd, colInd])
+              }
             } else {
               // Node
               row[field.accessor.toString()].push(
                 ...getNodeDataMapping(record.get(field.accessor))
               )
+
+              if (
+                highlightNode &&
+                Number(vizItem.item.id) ===
+                  Number(record.get(field.accessor).identity)
+              ) {
+                indexPairs.push([rowInd, colInd])
+              }
             }
           })
 
@@ -277,6 +303,7 @@ export const TabularViewComponent = ({
       }
     })
 
+    setDataToBeHighlighted(indexPairs)
     setData(tempData)
     setColorMap(colorTempData)
   }, [
@@ -285,6 +312,7 @@ export const TabularViewComponent = ({
     hiddenNodeLabels,
     hiddenRelationshipTypes,
     selectedAttributes,
+    vizItem,
     pathColorMap
   ])
 
@@ -293,7 +321,12 @@ export const TabularViewComponent = ({
       {records.length === 0 ? (
         'Query results are currently unavailable.'
       ) : (
-        <Table columns={columns} data={data} colorMap={colorMap} />
+        <Table
+          columns={columns}
+          data={data}
+          dataToHighlight={dataToBeHighlighted}
+          colorMap={colorMap}
+        />
       )}
     </StyledTabularView>
   )

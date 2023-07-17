@@ -1,5 +1,4 @@
 .data-table {
-  border: 1px solid black;
   border-radius: 2.5rem;
   table-layout: fixed;
   width: 100%;
@@ -36,4 +35,6 @@
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   display: table-cell;
+  padding: 0.5rem 1rem;
+  position: relative;
 }
