@@ -180,9 +180,9 @@ function OverviewPane({
   const totalNumOfLabelTypes = labels ? Object.keys(labels).length : 0
   const totalNumOfRelTypes = relTypes ? Object.keys(relTypes).length : 0
 
-  const [currentLayout, setCurrentLayout] = useState(
+  /* const [currentLayout, setCurrentLayout] = useState(
     relationshipLayouts[featureItems[0].items[0].id]
-  )
+  ) */
   const [featureExpressionLayout, setFeatureExpressionLayout] = useState(
     layout ? layout : featureItems[0]
   )
@@ -366,9 +366,9 @@ function OverviewPane({
                         log('change to ' + featureItem.display)
 
                         setFeatureExpressionLayout(featureItem)
-                        setCurrentLayout(
+                        /* setCurrentLayout(
                           relationshipLayouts[featureItem.items[0].id]
-                        )
+                        ) */
                       }
                     }}
                   >
@@ -440,6 +440,7 @@ function OverviewPane({
         </div>
 
         {/* Legend for filters */}
+        {/*
         {filters && filters.length > 0 && (
           <StyledGraphLegend>
             <table>
@@ -479,7 +480,7 @@ function OverviewPane({
               })}
             </table>
           </StyledGraphLegend>
-        )}
+        )} */}
       </PaneBody>
     </>
   )
