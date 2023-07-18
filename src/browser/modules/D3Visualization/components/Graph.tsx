@@ -96,6 +96,7 @@ export interface FeatureItem {
     display: string
     id: keyof typeof relationshipLayouts
   }[]
+  example: string
 }
 
 export const featureItems: FeatureItem[] = [
@@ -114,7 +115,8 @@ export const featureItems: FeatureItem[] = [
       //   id: 'segments-pattern',
       //   display: 'Pattern'
       // }
-    ]
+    ],
+    example: './assets/images/layout-examples/segments.png'
   },
   {
     display: 'Colour stripes',
@@ -127,7 +129,8 @@ export const featureItems: FeatureItem[] = [
         id: 'stripes',
         display: 'Symbols'
       }
-    ]
+    ],
+    example: './assets/images/layout-examples/stripes.png'
   },
   {
     display: 'Individual links',
@@ -140,7 +143,8 @@ export const featureItems: FeatureItem[] = [
         id: 'separate',
         display: 'Symbols'
       }
-    ]
+    ],
+    example: './assets/images/layout-examples/links.png'
   },
   {
     display: 'Colour+Shape',
@@ -153,7 +157,8 @@ export const featureItems: FeatureItem[] = [
         id: 'segments-local-pattern',
         display: 'Symbols'
       }
-    ]
+    ],
+    example: ''
   }
 ]
 

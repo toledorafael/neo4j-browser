@@ -55,7 +55,10 @@ import { LayoutState, updateLayoutAction } from 'shared/modules/layout/layout'
 import { Action, Dispatch } from 'redux'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { featureItems, relationshipLayouts } from './Graph'
-import { StyleRelationshipLayoutButton } from 'browser/modules/DBMSInfo/styled'
+import {
+  StyleRelationshipLayoutButton,
+  StyledLayoutWrapper
+} from 'browser/modules/DBMSInfo/styled'
 import Switch from 'react-switch'
 import {
   PathColorMapState,
@@ -349,27 +352,32 @@ function OverviewPane({
             totalNumOfElements={featureItems.length}
           />
           <StyledLegendInlineList>
-            {featureItems.map(featureItem => (
-              <StyleRelationshipLayoutButton
-                className={
-                  featureItem === featureExpressionLayout ? 'selected' : ''
-                }
-                key={featureItem.display}
-                onClick={() => {
-                  if (featureExpressionLayout !== featureItem) {
-                    updateLayoutAction(featureItem)
-                    log('change to ' + featureItem.display)
+            {featureItems.map(featureItem => {
+              return (
+                <StyledLayoutWrapper key={featureItem.display}>
+                  <StyleRelationshipLayoutButton
+                    className={
+                      featureItem === featureExpressionLayout ? 'selected' : ''
+                    }
+                    key={featureItem.display}
+                    onClick={() => {
+                      if (featureExpressionLayout !== featureItem) {
+                        updateLayoutAction(featureItem)
+                        log('change to ' + featureItem.display)
 
-                    setFeatureExpressionLayout(featureItem)
-                    setCurrentLayout(
-                      relationshipLayouts[featureItem.items[0].id]
-                    )
-                  }
-                }}
-              >
-                {featureItem.display}
-              </StyleRelationshipLayoutButton>
-            ))}
+                        setFeatureExpressionLayout(featureItem)
+                        setCurrentLayout(
+                          relationshipLayouts[featureItem.items[0].id]
+                        )
+                      }
+                    }}
+                  >
+                    {featureItem.display}
+                  </StyleRelationshipLayoutButton>
+                  <img src={featureItem.example} height="26" />
+                </StyledLayoutWrapper>
+              )
+            })}
           </StyledLegendInlineList>
         </div>
 
