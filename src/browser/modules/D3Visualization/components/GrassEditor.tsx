@@ -330,12 +330,12 @@ export class GrassEditorComponent extends Component<
       }
       pickers = [
         this.colorPicker(styleForLabel.selector, styleForLabel, false),
-        this.sizePicker(styleForLabel.selector, styleForLabel)
-        // this.captionPicker(
-        //   styleForLabel.selector,
-        //   styleForLabel,
-        //   this.props.selectedLabel.propertyKeys
-        // )
+        this.sizePicker(styleForLabel.selector, styleForLabel),
+        this.captionPicker(
+          styleForLabel.selector,
+          styleForLabel,
+          this.props.selectedLabel.propertyKeys
+        )
       ]
       title = (
         <StyledLabelToken style={inlineStyle}>
