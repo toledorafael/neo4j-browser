@@ -25,9 +25,16 @@ type TableProps = {
   data: any
   colorMap: string[][]
   dataToHighlight: number[][]
+  triggerCellSelect: (rIndex: number, cIndex: number) => void
 }
 
-const Table = ({ columns, data, colorMap, dataToHighlight }: TableProps) => {
+const Table = ({
+  columns,
+  data,
+  colorMap,
+  dataToHighlight,
+  triggerCellSelect
+}: TableProps) => {
   // Use the useTable Hook to send the columns and data to build the table
   const {
     getTableProps, // table props from react-table
@@ -43,11 +50,6 @@ const Table = ({ columns, data, colorMap, dataToHighlight }: TableProps) => {
   const [cellsToBeHighlighted, setCellsToBeHighlighted] = useState<number[][]>(
     []
   )
-
-  const triggerCellSelect = (rIndex: number, cIndex: number) => {
-    console.log('Selecting: row ', rIndex, '; col ', cIndex)
-    setCellsToBeHighlighted([[rIndex, cIndex]])
-  }
 
   useEffect(() => {
     setCellsToBeHighlighted(dataToHighlight)
@@ -116,6 +118,7 @@ const Table = ({ columns, data, colorMap, dataToHighlight }: TableProps) => {
                     key={cIndex}
                     onClick={() => {
                       isSelected = !isSelected
+                      setCellsToBeHighlighted([[rIndex, cIndex]])
                       triggerCellSelect(rIndex, cIndex)
                     }}
                     style={{

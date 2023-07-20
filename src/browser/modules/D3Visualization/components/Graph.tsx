@@ -32,6 +32,9 @@ type State = any
 import { connect } from 'react-redux'
 import { GlobalState } from 'shared/globalState'
 import { LayoutState } from 'shared/modules/layout/layout'
+import Node from '../lib/visualization/components/node'
+import Relationship from '../lib/visualization/components/relationship'
+import { SelectionState } from 'shared/modules/selection/selection'
 
 interface RelationshipLayout {
   arrowLayout: 'stripes' | 'segments' | 'separate'
@@ -162,7 +165,11 @@ export const featureItems: FeatureItem[] = [
   }
 ]
 
-export class Graph extends Component<any, State, { layout: LayoutState }> {
+export class Graph extends Component<
+  any,
+  State,
+  { layout: LayoutState; selection: SelectionState }
+> {
   graph: any
   graphEH: any
   graphView: any
@@ -312,6 +319,28 @@ export class Graph extends Component<any, State, { layout: LayoutState }> {
         relationshipLayouts[this.props.layout.items[0].id]
       this.graphView.update()
     }
+
+    // Update node and relationship selection
+    if (prevProps.selection !== this.props.selection) {
+      if (this.props.selection.type === 'Node') {
+        const findNode = this.graphEH.graph
+          .nodes()
+          .filter((node: Node) => node.id == this.props.selection.id)[0]
+
+        this.graphEH.nodeClicked(findNode)
+      } else {
+        const findRelationship = this.graphEH.graph
+          .relationships()
+          .filter(
+            (relationship: Relationship) =>
+              relationship.id == this.props.selection.id
+          )[0]
+
+        this.graphEH.onRelationshipClicked(findRelationship)
+      }
+
+      this.graphView.update()
+    }
   }
 
   zoomButtons() {
@@ -404,7 +433,8 @@ export class Graph extends Component<any, State, { layout: LayoutState }> {
 
 const mapStateToProps = (state: GlobalState) => ({
   conditionTypes: state.filters,
-  layout: state.layout
+  layout: state.layout,
+  selection: state.selection
 })
 
 export const GraphComponent = connect(mapStateToProps)(Graph)

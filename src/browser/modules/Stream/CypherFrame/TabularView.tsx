@@ -8,9 +8,14 @@ import { GraphStats } from 'browser/modules/D3Visualization/mapper'
 import { Record as Neo4jRecord } from 'neo4j-driver'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { connect } from 'react-redux'
+import { Action, Dispatch } from 'redux'
 import { GlobalState } from 'shared/globalState'
 import { PathColorMapState } from 'shared/modules/pathColorMap/pathColorMap'
 import { BrowserRequestResult } from 'shared/modules/requests/requestsDuck'
+import {
+  SelectionState,
+  selectionAction
+} from 'shared/modules/selection/selection'
 import styled from 'styled-components'
 
 const StyledTabularView = styled.div`
@@ -55,6 +60,7 @@ type TabularViewProps = {
   setRelTypeVisibility: (type: string, value: boolean) => void
   vizItem: NodeItem | RelationshipItem
   pathColorMap: PathColorMapState
+  selectNodeOrRelationship: (selection: SelectionState) => void
 }
 
 type HeaderCellProps = {
@@ -68,6 +74,11 @@ type HeaderCellProps = {
 
 type CellProps = {
   value: string[]
+}
+
+type TypeIndexPair = {
+  type: 'Node' | 'Relationship'
+  id: number
 }
 
 const HeaderEntry = ({
@@ -139,10 +150,14 @@ export const TabularViewComponent = ({
   hiddenRelationshipTypes,
   setRelTypeVisibility,
   vizItem,
-  pathColorMap
+  pathColorMap,
+  selectNodeOrRelationship
 }: TabularViewProps): JSX.Element => {
   const [columns, setColumns] = useState<TableConfig[]>([])
-  const [data, setData] = useState<Record<PropertyKey, string[]>[]>([])
+  const [dataAsText, setDataAsText] = useState<Record<PropertyKey, string[]>[]>(
+    []
+  )
+  const [data, setData] = useState<Record<PropertyKey, TypeIndexPair>[]>([])
   const [colorMap, setColorMap] = useState<string[][]>([])
   const [dataToBeHighlighted, setDataToBeHighlighted] = useState<number[][]>([])
   const highlightNode = vizItem.type === 'node'
@@ -174,6 +189,10 @@ export const TabularViewComponent = ({
   const getSelectedAttributes = useCallback(param => {
     setSelectedAttributes(param)
   }, [])
+
+  const triggerCellSelect = (rIndex: number, cIndex: number) => {
+    selectNodeOrRelationship(Object.values(data[rIndex])[cIndex])
+  }
 
   useEffect(() => {
     setColumns([
@@ -221,6 +240,7 @@ export const TabularViewComponent = ({
 
   useEffect(() => {
     const tempData: Record<PropertyKey, string[]>[] = []
+    const tempDataIndex: Record<PropertyKey, TypeIndexPair>[] = []
     const indexPairs: number[][] = []
     const colorTempData: string[][] = []
 
@@ -253,6 +273,7 @@ export const TabularViewComponent = ({
         if (!shouldBeInvisible) {
           // Populate the row of entry
           const row: Record<PropertyKey, string[]> = {}
+          const rowDataIndex: Record<PropertyKey, TypeIndexPair> = {}
 
           columns[0].columns.map((field, colInd) => {
             row[field.accessor.toString()] = []
@@ -274,6 +295,11 @@ export const TabularViewComponent = ({
               row[field.accessor.toString()].push(
                 'relationship type: ' + record.get(field.accessor).type
               )
+              // Keep track of the index and type of the cell of data
+              rowDataIndex[field.accessor.toString()] = {
+                type: 'Relationship',
+                id: Number(record.get(field.accessor).identity)
+              }
 
               if (
                 highlightRelationship &&
@@ -287,6 +313,10 @@ export const TabularViewComponent = ({
               row[field.accessor.toString()].push(
                 ...getNodeDataMapping(record.get(field.accessor))
               )
+              rowDataIndex[field.accessor.toString()] = {
+                type: 'Node',
+                id: Number(record.get(field.accessor).identity)
+              }
 
               if (
                 highlightNode &&
@@ -299,12 +329,14 @@ export const TabularViewComponent = ({
           })
 
           tempData.push(row)
+          tempDataIndex.push(rowDataIndex)
         }
       }
     })
 
     setDataToBeHighlighted(indexPairs)
-    setData(tempData)
+    setDataAsText(tempData)
+    setData(tempDataIndex)
     setColorMap(colorTempData)
   }, [
     records,
@@ -323,15 +355,24 @@ export const TabularViewComponent = ({
       ) : (
         <Table
           columns={columns}
-          data={data}
+          data={dataAsText}
           dataToHighlight={dataToBeHighlighted}
           colorMap={colorMap}
+          triggerCellSelect={triggerCellSelect}
         />
       )}
     </StyledTabularView>
   )
 }
 
-export const TabularView = connect((state: GlobalState) => ({
-  pathColorMap: state.pathColorMap
-}))(TabularViewComponent)
+const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
+  selectNodeOrRelationship: (selection: SelectionState) =>
+    dispatch(selectionAction(selection))
+})
+
+export const TabularView = connect(
+  (state: GlobalState) => ({
+    pathColorMap: state.pathColorMap
+  }),
+  mapDispatchToProps
+)(TabularViewComponent)

@@ -70,6 +70,7 @@ import { paletteReducer } from 'shared/modules/palette/palette'
 import filtersReducer from './modules/filters/filters'
 import layoutReducer from './modules/layout/layout'
 import pathColorMapReducer from './modules/pathColorMap/pathColorMap'
+import selectionReducer from './modules/selection/selection'
 
 export default {
   [connections]: connectionsReducer,
@@ -96,5 +97,6 @@ export default {
   palette: paletteReducer,
   filters: filtersReducer,
   layout: layoutReducer,
-  pathColorMap: pathColorMapReducer
+  pathColorMap: pathColorMapReducer,
+  selection: selectionReducer
 }
