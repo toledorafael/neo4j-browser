@@ -44,6 +44,7 @@ export const StyledLabel = styled(chip)`
 `
 export const StyledRelationship = styled(chip)`
   border-radius: 3px;
+  opacity: 0.7;
   &:hover,
   &:focus,
   &:visited {

@@ -216,6 +216,7 @@ export const StyledLabelToken = styled(StyledToken)`
   cursor: default;
 `
 export const StyledTokenRelationshipType = styled(StyledToken)`
+  opacity: 0.7;
   padding: 4px 7px 4px 5px;
   border-radius: 3px;
   word-break: break-all;
@@ -256,9 +257,11 @@ export const StyledPickerSelector = styled.a`
   margin-top: 1px;
   line-height: 0;
   cursor: pointer;
-  opacity: 0.4;
   &:hover {
-    opacity: 1;
+    > .ring {
+      stroke: #fdcc59;
+      opacity: 0.3;
+    }
   }
   &.active {
     opacity: 1;
