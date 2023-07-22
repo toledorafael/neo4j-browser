@@ -332,55 +332,6 @@ function OverviewPane({
             )} nodes, ${numberToUSLocale(relationshipCount)} relationships.`}
         </div>
 
-        {/* Graph controlls */}
-        {/* Input box to enter a new filter */}
-        <StyleInputDiv>
-          <StyleTextArea
-            placeholder="Feature expression"
-            onChange={updateFeatureExpressionState}
-          />
-          <StyleSubmitButton onClick={handleSubmit}>
-            Create filter
-          </StyleSubmitButton>
-        </StyleInputDiv>
-
-        {/* Layout switcher */}
-        <div>
-          <PaneBodySectionHeader
-            title={'Layout'}
-            numOfElementsVisible={featureItems.length}
-            totalNumOfElements={featureItems.length}
-          />
-          <StyledLegendInlineList>
-            {featureItems.map(featureItem => {
-              return (
-                <StyledLayoutWrapper key={featureItem.display}>
-                  <StyleRelationshipLayoutButton
-                    className={
-                      featureItem === featureExpressionLayout ? 'selected' : ''
-                    }
-                    key={featureItem.display}
-                    onClick={() => {
-                      if (featureExpressionLayout !== featureItem) {
-                        updateLayoutAction(featureItem)
-                        log('change to ' + featureItem.display)
-
-                        setFeatureExpressionLayout(featureItem)
-                        /* setCurrentLayout(
-                          relationshipLayouts[featureItem.items[0].id]
-                        ) */
-                      }
-                    }}
-                  >
-                    {featureItem.display}
-                  </StyleRelationshipLayoutButton>
-                  <img src={featureItem.example} height="26" />
-                </StyledLayoutWrapper>
-              )
-            })}
-          </StyledLegendInlineList>
-        </div>
-
         {/* Theme switcher */}
         <div>
           <PaneBodySectionHeader
@@ -437,6 +388,55 @@ function OverviewPane({
             />
             <span style={{ marginLeft: '6px' }}>Light</span>
           </StyleToggleWrapper>
+        </div>
+
+        {/* Graph controlls */}
+        {/* Input box to enter a new filter */}
+        <StyleInputDiv>
+          <StyleTextArea
+            placeholder="Feature expression"
+            onChange={updateFeatureExpressionState}
+          />
+          <StyleSubmitButton onClick={handleSubmit}>
+            Create filter
+          </StyleSubmitButton>
+        </StyleInputDiv>
+
+        {/* Layout switcher */}
+        <div>
+          <PaneBodySectionHeader
+            title={'Layout'}
+            numOfElementsVisible={featureItems.length}
+            totalNumOfElements={featureItems.length}
+          />
+          <StyledLegendInlineList>
+            {featureItems.map(featureItem => {
+              return (
+                <StyledLayoutWrapper key={featureItem.display}>
+                  <StyleRelationshipLayoutButton
+                    className={
+                      featureItem === featureExpressionLayout ? 'selected' : ''
+                    }
+                    key={featureItem.display}
+                    onClick={() => {
+                      if (featureExpressionLayout !== featureItem) {
+                        updateLayoutAction(featureItem)
+                        log('change to ' + featureItem.display)
+
+                        setFeatureExpressionLayout(featureItem)
+                        /* setCurrentLayout(
+                          relationshipLayouts[featureItem.items[0].id]
+                        ) */
+                      }
+                    }}
+                  >
+                    {featureItem.display}
+                  </StyleRelationshipLayoutButton>
+                  <img src={featureItem.example} height="26" />
+                </StyledLayoutWrapper>
+              )
+            })}
+          </StyledLegendInlineList>
         </div>
 
         {/* Legend for filters */}
