@@ -118,7 +118,6 @@ type OverviewPaneProps = {
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
-  patternSelectorVisible: boolean
   updateStyle: any
   setLightTheme: () => void
   setDarkTheme: () => void
@@ -144,7 +143,6 @@ function OverviewPane({
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
   setRelTypeVisibility,
-  patternSelectorVisible,
   updateStyle,
   setLightTheme,
   setDarkTheme,
@@ -187,6 +185,10 @@ function OverviewPane({
     layout ? layout : featureItems[0]
   )
   const [newConditionType, setNewConditionType] = useState('')
+  const [isPatternSelectorVisible, setIsPatternSelectorVisible] = useState(
+    relationshipLayouts[featureExpressionLayout.items[0].id].localPattern ||
+      false
+  )
 
   const handleSubmit = () => {
     if (newConditionType) {
@@ -306,7 +308,7 @@ function OverviewPane({
                   selectedFilter={{
                     condition: filter
                   }}
-                  patternSelectorVisible={patternSelectorVisible}
+                  patternSelectorVisible={isPatternSelectorVisible}
                 />
               ))}
             </StyledLegendInlineList>
@@ -424,9 +426,10 @@ function OverviewPane({
                         log('change to ' + featureItem.display)
 
                         setFeatureExpressionLayout(featureItem)
-                        /* setCurrentLayout(
+                        setIsPatternSelectorVisible(
                           relationshipLayouts[featureItem.items[0].id]
-                        ) */
+                            .localPattern || false
+                        )
                       }
                     }}
                   >

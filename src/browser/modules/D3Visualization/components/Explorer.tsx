@@ -100,7 +100,6 @@ type ExplorerComponentState = {
   tableExpanded: boolean
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
-  patternSelectorVisible: boolean
 }
 type FullExplorerProps = ExplorerComponentProps & ExporerReduxProps
 
@@ -158,8 +157,7 @@ export class ExplorerLocal extends Component<
       nodePropertiesExpanded: this.props.nodePropertiesExpandedByDefault,
       tableExpanded: false,
       hiddenNodeLabels: [],
-      hiddenRelationshipTypes: [],
-      patternSelectorVisible: false
+      hiddenRelationshipTypes: []
     }
   }
 
@@ -330,9 +328,6 @@ export class ExplorerLocal extends Component<
           }
           hiddenNodeLabels={this.state.hiddenNodeLabels}
           hiddenRelTypes={this.state.hiddenRelationshipTypes}
-          setPatternSelectorVisible={(value: boolean) => {
-            this.setState({ patternSelectorVisible: value })
-          }}
           updateStyle={this.props.updateStyle}
         />
         <NodeInspectorPanel
@@ -363,7 +358,6 @@ export class ExplorerLocal extends Component<
           hiddenRelationshipTypes={this.state.hiddenRelationshipTypes}
           setNodeLabelVisibility={this.setNodeLabelVisibility.bind(this)}
           setRelTypeVisibility={this.setRelTypeVisibility.bind(this)}
-          patternSelectorVisible={this.state.patternSelectorVisible}
           updateStyle={this.props.updateStyle}
         />
         <TablePanel

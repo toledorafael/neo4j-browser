@@ -64,6 +64,7 @@ export function StyleableRelType({
         (selectedRelType && selectedRelType.relType) ||
         (selectedFilter && selectedFilter.condition)
       }
+      style={{ marginLeft: '80px !important' }}
       trigger={
         <StyledRelationship
           style={{

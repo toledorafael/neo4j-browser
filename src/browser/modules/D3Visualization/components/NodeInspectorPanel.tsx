@@ -28,7 +28,6 @@ interface NodeInspectorPanelProps {
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
-  patternSelectorVisible: boolean
   updateStyle: any
 }
 
@@ -54,7 +53,6 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
       hiddenRelationshipTypes,
       setNodeLabelVisibility,
       setRelTypeVisibility,
-      patternSelectorVisible,
       updateStyle
     } = this.props
 
@@ -120,7 +118,6 @@ export class NodeInspectorPanel extends Component<NodeInspectorPanelProps> {
                     hiddenRelationshipTypes={hiddenRelationshipTypes}
                     setNodeLabelVisibility={setNodeLabelVisibility}
                     setRelTypeVisibility={setRelTypeVisibility}
-                    patternSelectorVisible={patternSelectorVisible}
                     updateStyle={updateStyle}
                   />
                 )}
