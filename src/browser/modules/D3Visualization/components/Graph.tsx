@@ -161,7 +161,7 @@ export const featureItems: FeatureItem[] = [
         display: 'Symbols'
       }
     ],
-    example: ''
+    example: './assets/images/layout-examples/shapes.png'
   }
 ]
 
