@@ -269,6 +269,12 @@ export const StyledPickerSelector = styled.a`
 `
 export const StyledCircleSelector = styled(StyledPickerSelector)`
   border-radius: 50%;
+  &:hover {
+    box-shadow: 0 0 0 1.5px #9195a0;
+  }
+  &.active {
+    box-shadow: 0 0 0 1.5px black;
+  }
 `
 export const StyledCaptionSelector = styled.a`
   cursor: pointer;
