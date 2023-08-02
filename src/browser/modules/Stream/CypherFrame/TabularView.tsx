@@ -244,7 +244,7 @@ export const TabularViewComponent = ({
     const indexPairs: number[][] = []
     const colorTempData: string[][] = []
 
-    records.map((record: Neo4jRecord, rowInd: number) => {
+    records.map((record: Neo4jRecord) => {
       if (columns && columns[0] && columns[0].columns) {
         // Check if the type of the relationship is selected by the user
         let shouldBeInvisible = false
@@ -306,7 +306,7 @@ export const TabularViewComponent = ({
                 Number(vizItem.item.id) ===
                   Number(record.get(field.accessor).identity)
               ) {
-                indexPairs.push([rowInd, colInd])
+                indexPairs.push([tempData.length, colInd])
               }
             } else {
               // Node
@@ -323,7 +323,7 @@ export const TabularViewComponent = ({
                 Number(vizItem.item.id) ===
                   Number(record.get(field.accessor).identity)
               ) {
-                indexPairs.push([rowInd, colInd])
+                indexPairs.push([tempData.length, colInd])
               }
             }
           })
