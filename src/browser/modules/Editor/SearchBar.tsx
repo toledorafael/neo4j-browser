@@ -6,27 +6,46 @@ function SearchBar({ onSearchSelected }: { onSearchSelected: any }) {
   const [items, setItems] = useState([
     {
       id: 0,
-      name: 'Are all calls coming from the same class?'
+      name: 'Are all calls coming from the same class?',
+      query: [
+        'MATCH (c1:cClass)-[:contain]->(f1:cFunction)-[:call]->(f2:cFunction{id:"',
+        '"}) WITH f2, f1, count(c1) as totalClasses, collect(c1) as classes RETURN DISTINCT  totalClasses, classes;'
+      ]
     },
     {
       id: 1,
-      name: 'How are these types or objects related?'
+      name: 'How are these types or objects related?',
+      query: [
+        'MATCH typeRelation=(t1:cClass{id:"',
+        '"})-[:compose|inherit*]->(t2:cClass{id:"',
+        '"}) RETURN typeRelation;'
+      ]
     },
     {
       id: 2,
-      name: 'Where is this field declared in the type hierarchy?'
+      name: 'Where is this field declared in the type hierarchy?',
+      query: [
+        'MATCH (field:cVariable{id:"',
+        '"})<-[:contain]-(class:cClass) MATCH typeHierarchy=(class)-[:compose|inherit*]->(otherType:cClass) RETURN field, typeHierarchy;'
+      ]
     },
     {
       id: 3,
-      name: "What is this type's type hierarchy?"
+      name: "What is this type's type hierarchy?",
+      query: [
+        'MATCH typeHierarchy=(t1:cClass{id:"',
+        '"})-[:compose|inherit*]->(otherType:cClass) RETURN typeHierarchy;'
+      ]
     },
     {
       id: 4,
-      name: 'What are the parts of this type?'
+      name: 'What are the parts of this type?',
+      query: [
+        'MATCH (member)<-[:contain]-(class:cClass{id:"',
+        '"}) RETURN member.id;'
+      ]
     }
   ])
-
-  const [question, setQuestion] = useState('')
 
   //   useEffect(() => {
   //     document.title = `You clicked ${count} times`;
@@ -36,9 +55,7 @@ function SearchBar({ onSearchSelected }: { onSearchSelected: any }) {
     // TODO: update searchbar with selected item
     // this.setState({selectedQuestion: item.name})
     // TODO: show form with parameters for questions
-    setQuestion(item.name)
-    console.log(question)
-    onSearchSelected(item) // TODO: paste query on editor
+    onSearchSelected(item.query) // TODO: paste query on editor
   }
 
   return (
@@ -46,7 +63,7 @@ function SearchBar({ onSearchSelected }: { onSearchSelected: any }) {
       <ReactSearchAutocomplete
         items={items}
         onSelect={handleOnSelect}
-        placeholder={question}
+        placeholder={'Type your question here'}
       />
     </SearchBarContainer>
   )
