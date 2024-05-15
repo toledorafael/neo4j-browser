@@ -153,7 +153,7 @@ class Monaco extends React.Component<MonacoProps, MonacoState> {
   private internalSetValue = (value: string): void => {
     if (!this.editor) return
     this.editor.setValue(value)
-    this.editor.focus()
+    // this.editor.focus()
 
     const lines = this.editor.getModel()?.getLinesContent() || []
     const linesLength = lines.length
