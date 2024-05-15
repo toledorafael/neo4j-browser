@@ -80,3 +80,11 @@ export const ScriptTitle = styled.div<{ unsaved: boolean }>`
   font-size: 14px;
   line-height: 23px;
 `
+
+export const SearchBarContainer = styled.div`
+  max-width: 1000px;
+  margin: auto;
+  padding: 4px;
+  display: block;
+  z-index: 99 !important;
+`

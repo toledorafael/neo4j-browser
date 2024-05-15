@@ -204,6 +204,7 @@
     "react-dom": "^16.9.0",
     "react-redux": "^5.0.7",
     "react-resizable": "^3.0.4",
+    "react-search-autocomplete": "5.0.0",
     "react-suber": "1.0.4",
     "react-svg-inline": "^2.1.1",
     "react-switch": "^7.0.0",

@@ -51,7 +51,8 @@ import {
   Header,
   EditorContainer,
   FlexContainer,
-  ScriptTitle
+  ScriptTitle,
+  SearchBarContainer
 } from './styled'
 import { EditorButton, FrameButton } from 'browser-components/buttons'
 import {
@@ -80,6 +81,7 @@ import { getUseDb } from 'shared/modules/connections/connectionsDuck'
 import { getHistory } from 'shared/modules/history/historyDuck'
 import { defaultNameFromDisplayContent } from 'browser-components/SavedScripts'
 import { getParams } from 'shared/modules/params/paramsDuck'
+import SearchBar from './SearchBar'
 
 type EditorFrameProps = {
   bus: Bus
@@ -282,6 +284,11 @@ export function MainEditor({
           {currentlyEditing.isStatic ? ' (read-only)' : ''}
         </ScriptTitle>
       )}
+      <SearchBar
+        onSearchSelected={(item: any) => {
+          console.log(item)
+        }}
+      ></SearchBar>
       <FlexContainer>
         <Header>
           <EditorContainer>
