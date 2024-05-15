@@ -121,6 +121,8 @@ export function MainEditor({
   const [currentlyEditing, setCurrentlyEditing] = useState<SavedScript | null>(
     null
   )
+  const [queryArr, setQueryArr] = useState([''])
+  const [queryParams, setQueryParams] = useState([''])
   const editorRef = useRef<MonacoHandles>(null)
 
   const toggleFullscreen = () => {
@@ -264,6 +266,31 @@ export function MainEditor({
     return defaultNameFromDisplayContent(content)
   }
 
+  function updateEditor(query?: string[]) {
+    let finalQuery = ''
+    let currQueryArr = []
+    if (query) {
+      setQueryArr(query)
+      currQueryArr = query
+    } else {
+      currQueryArr = queryArr
+    }
+    for (const index in currQueryArr) {
+      finalQuery += currQueryArr[index]
+      if (queryParams.length > 0 && currQueryArr.length > 1) {
+        finalQuery += queryParams.shift()
+      }
+    }
+    editorRef.current?.setValue(finalQuery)
+  }
+
+  function handleParamInput(event: any, index: number) {
+    const params = queryParams
+    params[index] = event.target.value
+    setQueryParams(params)
+    updateEditor()
+  }
+
   const showUnsaved = !!(
     unsaved &&
     currentlyEditing &&
@@ -284,11 +311,15 @@ export function MainEditor({
           {currentlyEditing.isStatic ? ' (read-only)' : ''}
         </ScriptTitle>
       )}
-      <SearchBar
-        onSearchSelected={(item: any) => {
-          console.log(item)
-        }}
-      ></SearchBar>
+      <SearchBar onSearchSelected={updateEditor}></SearchBar>
+      <input
+        style={{ width: '100%', display: 'block' }}
+        onChange={event => handleParamInput(event, 0)}
+      />
+      <input
+        style={{ width: '100%', display: 'block' }}
+        onChange={event => handleParamInput(event, 1)}
+      />
       <FlexContainer>
         <Header>
           <EditorContainer>
