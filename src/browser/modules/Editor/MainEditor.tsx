@@ -277,8 +277,13 @@ export function MainEditor({
     }
     for (const index in currQueryArr) {
       finalQuery += currQueryArr[index]
-      if (queryParams.length > 0 && currQueryArr.length > 1) {
-        finalQuery += queryParams.shift()
+      if (
+        queryParams[0] != '' &&
+        currQueryArr.length > 1 &&
+        queryParams.length > parseInt(index) &&
+        parseInt(index) + 1 != currQueryArr.length
+      ) {
+        finalQuery += queryParams[index]
       }
     }
     editorRef.current?.setValue(finalQuery)
@@ -316,10 +321,22 @@ export function MainEditor({
         style={{ width: '100%', display: 'block' }}
         onChange={event => handleParamInput(event, 0)}
       />
+      {/* <button onClick={() => {
+        const params = queryParams
+        params[0] = currParam
+        setQueryParams(params)
+        updateEditor()
+      }}>Add param 0</button> */}
       <input
         style={{ width: '100%', display: 'block' }}
         onChange={event => handleParamInput(event, 1)}
       />
+      {/* <button onClick={() => {
+        const params = queryParams
+        params[1] = currParam
+        setQueryParams(params)
+        updateEditor()
+      }}>Add param 1</button> */}
       <FlexContainer>
         <Header>
           <EditorContainer>
