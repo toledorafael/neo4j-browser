@@ -318,7 +318,7 @@ export function MainEditor({
       )}
       <SearchBar onSearchSelected={updateEditor}></SearchBar>
       <input
-        style={{ width: '100%', display: 'block' }}
+        style={{ display: 'block' }}
         onChange={event => handleParamInput(event, 0)}
       />
       {/* <button onClick={() => {
@@ -328,7 +328,7 @@ export function MainEditor({
         updateEditor()
       }}>Add param 0</button> */}
       <input
-        style={{ width: '100%', display: 'block' }}
+        style={{ display: 'block' }}
         onChange={event => handleParamInput(event, 1)}
       />
       {/* <button onClick={() => {
