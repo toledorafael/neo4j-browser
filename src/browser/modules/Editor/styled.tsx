@@ -88,3 +88,10 @@ export const SearchBarContainer = styled.div`
   display: block;
   z-index: 99 !important;
 `
+
+export const StyleToggleWrapper = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin: 0.5rem 0;
+`
