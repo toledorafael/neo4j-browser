@@ -71,6 +71,11 @@ export const FlexContainer = styled.div`
   padding: 4px;
 `
 
+export const FlexContainerInvisible = styled.div`
+  display: none;
+  padding: 4px;
+`
+
 export const ScriptTitle = styled.div<{ unsaved: boolean }>`
   font-style: ${props => (props.unsaved ? 'italic' : 'normal')};
   border-bottom: 1px solid rgb(77, 74, 87, 0.3);
@@ -89,9 +94,12 @@ export const SearchBarContainer = styled.div`
   z-index: 99 !important;
 `
 
-export const StyleToggleWrapper = styled.label`
+export const QueryStyleToggleWrapper = styled.label`
   display: flex;
+  max-width: 1000px;
   align-items: center;
   font-size: 12px;
-  margin: 0.5rem 0;
+  padding: 2px;
+  margin-left: 0.5em;
+  margin-top: 0.5em;
 `
