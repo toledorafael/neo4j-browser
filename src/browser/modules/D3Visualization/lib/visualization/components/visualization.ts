@@ -447,9 +447,9 @@ const vizFn = function(
     }
 
     // This commented lines turn off node menu
-    // for (renderer of Array.from(menuRenderer)) {
-    //   nodeGroups.call(renderer.onGraphChange, viz)
-    // }
+    for (renderer of Array.from(menuRenderer)) {
+      nodeGroups.call(renderer.onGraphChange, viz)
+    }
 
     nodeGroups.exit().remove()
     if (updateViz) {
