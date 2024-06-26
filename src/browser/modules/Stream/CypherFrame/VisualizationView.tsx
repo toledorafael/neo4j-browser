@@ -110,10 +110,11 @@ export class Visualization extends Component<any, VisualizationState> {
   }
 
   getNeighbours(id: any, currentNeighbourIds = []) {
-    const query = `MATCH path = (a)--(o)
+    const query = `MATCH path = (a)-[r]-(o)
+                   WITH count(r) as c, a, r, o, path
                    WHERE id(a) = ${id}
                    AND NOT (id(o) IN[${currentNeighbourIds.join(',')}])
-                   RETURN path, size((a)--()) as c
+                   RETURN path, c
                    ORDER BY id(o)
                    LIMIT ${this.props.maxNeighbours -
                      currentNeighbourIds.length}`
