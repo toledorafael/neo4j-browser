@@ -24,7 +24,7 @@ const subtitle = ''
 const content = (
   <>
     <pre className="pre-scrollable code runnable remove-play-icon">
-      {'MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 20'}
+      {'MATCH (n)-[r]->(m) RETURN n LIMIT 1'}
     </pre>
 
     {/* <div className="teasers">
