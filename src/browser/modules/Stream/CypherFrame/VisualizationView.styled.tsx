@@ -61,7 +61,7 @@ export const StyledVisContainer = styled.div<{ fullscreen: boolean }>`
   }
 
   > .neod3viz .remove_node,
-  .expand_node:hover {
+  .expand_varWrite .expand_node:hover {
     border: 2px #000 solid;
   }
 

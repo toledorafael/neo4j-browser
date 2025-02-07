@@ -251,6 +251,9 @@ export class Graph extends Component<any, State, { layout: LayoutState }> {
         this.graph,
         this.graphView,
         this.props.getNodeNeighbours,
+        this.props.getVarWriteNeighbours,
+        this.props.getEdgeTypeNeighbours,
+        this.props.getHiddenEdgeTypes,
         this.props.onItemMouseOver,
         this.props.onItemSelect,
         this.props.onGraphModelChange

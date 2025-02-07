@@ -22,6 +22,9 @@ import { mapNodes, mapRelationships, getGraphStats } from './mapper'
 
 export class GraphEventHandler {
   getNodeNeighbours: any
+  getVarWriteNeighbours: any
+  getEdgeTypeNeighbours: any
+  getHiddenEdgeTypes: any
   graph: any
   graphView: any
   onGraphModelChange: any
@@ -32,6 +35,9 @@ export class GraphEventHandler {
     graph: any,
     graphView: any,
     getNodeNeighbours: any,
+    getVarWriteNeighbours: any,
+    getEdgeTypeNeighbours: any,
+    getHiddenEdgeTypes: any,
     onItemMouseOver: any,
     onItemSelected: any,
     onGraphModelChange: any
@@ -39,6 +45,9 @@ export class GraphEventHandler {
     this.graph = graph
     this.graphView = graphView
     this.getNodeNeighbours = getNodeNeighbours
+    this.getVarWriteNeighbours = getVarWriteNeighbours
+    this.getEdgeTypeNeighbours = getEdgeTypeNeighbours
+    this.getHiddenEdgeTypes = getHiddenEdgeTypes
     this.selectedItem = null
     this.onItemMouseOver = onItemMouseOver
     this.onItemSelected = onItemSelected
@@ -85,6 +94,10 @@ export class GraphEventHandler {
     if (!d) {
       return
     }
+    // TODO: run query to get types of edges
+    // TODO: open menu of option of edge types
+    this.getEdgeTypes(d)
+
     d.fixed = true
     if (!d.selected) {
       this.selectItem(d)
@@ -127,6 +140,70 @@ export class GraphEventHandler {
     )
   }
 
+  expandVarWrite(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getVarWriteNeighbours(
+      d,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandEdgeType(d: any, edgeType: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getEdgeTypeNeighbours(
+      d,
+      edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  getEdgeTypes(d: any) {
+    // d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getHiddenEdgeTypes(
+      d,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any) => {
+        if (err) return
+        // Replace this
+        // graph.addExpandedNodes(d, mapNodes(nodes))
+        // graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
   nodeCollapse(d: any) {
     d.expanded = false
     this.graph.collapseNode(d)
@@ -148,6 +225,7 @@ export class GraphEventHandler {
   }
 
   onMenuMouseOver(itemWithMenu: any) {
+    console.log(itemWithMenu)
     this.onItemMouseOver({
       type: 'context-menu-item',
       item: {
@@ -212,6 +290,8 @@ export class GraphEventHandler {
       .on('nodeClose', this.nodeClose.bind(this))
       .on('nodeClicked', this.nodeClicked.bind(this))
       .on('nodeDblClicked', this.nodeDblClicked.bind(this))
+      .on('expandVarWrite', this.expandVarWrite.bind(this))
+      .on('expandEdgeType', this.expandEdgeType.bind(this))
       .on('nodeUnlock', this.nodeUnlock.bind(this))
     this.onItemMouseOut()
   }

@@ -39,6 +39,9 @@ import { setupBoltWorker, addTypesAsField } from './setup-bolt-worker'
 
 import BoltWorkerModule from 'shared/services/bolt/boltWorker'
 import { Connection } from 'shared/modules/connections/connectionsDuck'
+import { recordToJSONMapper } from 'browser/modules/Stream/CypherFrame/helpers'
+import { map } from 'd3'
+import { toInteger } from 'lodash-es'
 
 let connectionProperties: {} | null = null
 let _useDb: string | null = null
@@ -246,6 +249,9 @@ export default {
       intConverter,
       objectConverter: mappings.extractFromNeoObjects
     })
+  },
+  recordsToJSON: (records: any) => {
+    return records.map(recordToJSONMapper)
   },
   extractNodesAndRelationshipsFromRecords: (
     records: any,

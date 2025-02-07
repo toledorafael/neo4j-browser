@@ -32,6 +32,7 @@ import { CYPHER_REQUEST } from 'shared/modules/cypher/cypherDuck'
 import { NEO4J_BROWSER_USER_ACTION_QUERY } from 'services/bolt/txMetadata'
 import { getMaxFieldItems } from 'shared/modules/settings/settingsDuck'
 import { resultHasTruncatedFields } from 'browser/modules/Stream/CypherFrame/helpers'
+import { toInteger } from 'lodash-es'
 
 type VisualizationState = any
 
@@ -147,6 +148,111 @@ export class Visualization extends Component<any, VisualizationState> {
     })
   }
 
+  getVarWriteNeighbours(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (a)-[r:varWrite]->(o)
+                   WITH count(r) as c, a, r, o, path
+                   WHERE id(a) = ${id}
+                   AND NOT (id(o) IN[${currentNeighbourIds.join(',')}])
+                   RETURN path, c
+                   ORDER BY id(o)
+                   LIMIT ${this.props.maxNeighbours -
+                     currentNeighbourIds.length}`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              const count =
+                response.result.records.length > 0
+                  ? parseInt(response.result.records[0].get('c').toString())
+                  : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              resolve({ ...resultGraph, count: count })
+            }
+          }
+        )
+    })
+  }
+
+  getEdgeTypeNeighbours(id: any, edgeType: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (a)-[r:${edgeType}]-(o)
+                   WITH count(r) as c, a, r, o, path
+                   WHERE id(a) = ${id}
+                   AND NOT (id(o) IN[${currentNeighbourIds.join(',')}])
+                   RETURN path, c
+                   ORDER BY id(o)
+                   LIMIT ${this.props.maxNeighbours -
+                     currentNeighbourIds.length}`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              const count =
+                response.result.records.length > 0
+                  ? parseInt(response.result.records[0].get('c').toString())
+                  : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              resolve({ ...resultGraph, count: count })
+            }
+          }
+        )
+    })
+  }
+
+  getHiddenEdgesTypes(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (a)-[r]-(o)
+                   WITH a, r, o, path, type(r) as edgeType, count(r) as total
+                    WHERE id(a) = ${id}
+                   AND NOT (id(o) IN[${currentNeighbourIds.join(',')}])
+                   RETURN DISTINCT edgeType, total`
+
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              const types = bolt
+                .recordsToJSON(response.result.records)
+                .map((it: any) => {
+                  it.total = toInteger(it.total)
+                  return it
+                })
+              resolve({ ...types })
+            }
+          }
+        )
+    })
+  }
+
   getInternalRelationships(existingNodeIds: any, newNodeIds: any) {
     newNodeIds = newNodeIds.map(neo4j.int)
     existingNodeIds = existingNodeIds.map(neo4j.int)
@@ -196,6 +302,9 @@ export class Visualization extends Component<any, VisualizationState> {
           graphStyleData={this.props.graphStyleData}
           updateStyle={this.props.updateStyle}
           getNeighbours={this.getNeighbours.bind(this)}
+          getVarWriteNeighbours={this.getVarWriteNeighbours.bind(this)}
+          getEdgeTypeNeighbours={this.getEdgeTypeNeighbours.bind(this)}
+          getHiddenEdgesTypes={this.getHiddenEdgesTypes.bind(this)}
           nodes={this.state.nodes}
           relationships={this.state.relationships}
           fullscreen={this.props.fullscreen}

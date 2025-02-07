@@ -23,6 +23,70 @@ import NeoD3Geometry from './graphGeometry'
 import * as vizRenderers from '../renders/init'
 import { menu as menuRenderer } from '../renders/menu'
 import vizClickHandler from '../utils/clickHandler'
+// import styles from "./styles.css"
+
+// const menuItems = [
+//   {
+//     title: 'First action',
+//     action: (d:any) => {
+//       // TODO: add any action you want to perform
+//       console.log(d);
+//     }
+//   },
+//   {
+//     title: 'Second action',
+//     action: (d:any) => {
+//       // TODO: add any action you want to perform
+//       console.log(d);
+//     }
+//   }
+// ];
+
+// const menuFactory = (x:any, y:any, menuItems:any, data:any, svgId:any) => {
+//   d3.select(`.${styles.contextMenu}`).remove();
+
+//   // Draw the menu
+//   d3.select(svgId)
+//       .append('g').attr('class', styles.contextMenu)
+//       .selectAll('tmp')
+//       .data(menuItems).enter()
+//       .append('g').attr('class', styles.menuEntry)
+//       .style({'cursor': 'pointer'});
+
+//   // Draw menu entries
+//   d3.selectAll(`.${styles.menuEntry}`)
+//       .append('rect')
+//       .attr('x', x)
+//       .attr('y', (d, i) => {
+//         console.log(d)
+//         return y + (i * 30); })
+//       .attr('rx', 2)
+//       .attr('width', 150)
+//       .attr('height', 30)
+//       .on('click', (d) => { d.action(data) });
+
+//   d3.selectAll(`.${styles.menuEntry}`)
+//       .append('text')
+//       .text((d) => { return d.title; })
+//       .attr('x', x)
+//       .attr('y', (d, i) => {
+//         console.log(d)
+//         return y + (i * 30); })
+//       .attr('dy', 20)
+//       .attr('dx', 45)
+//       .on('click', (d) => { d.action(data) });
+
+//   // Other interactions
+//   d3.select('body')
+//       .on('click', () => {
+//           d3.select(`.${styles.contextMenu}`).remove();
+//       });
+// }
+
+// const createContextMenu = (event:any, d:any, menuItems:any, width:any, height:any, svgId:any) => {
+//   menuFactory(event.pageX - width / 2, event.pageY - height / 1.5, menuItems, d, svgId);
+//   event.preventDefault();
+// }
 
 const vizFn = function(
   el: any,
@@ -434,6 +498,9 @@ const vizFn = function(
       .call(clickHandler)
       .on('mouseover', onNodeMouseOver)
       .on('mouseout', onNodeMouseOut)
+    // .on('contextmenu', (d) => {
+    //   createContextMenu(d3.event, d, menuItems, 100, 50, "#graphSvg")
+    // })
     // .on('contextmenu', function (d, i) {
     //   d3.event.preventDefault()
     //   d3.event.stopPropagation()
@@ -446,7 +513,6 @@ const vizFn = function(
       nodeGroups.call(renderer.onGraphChange, viz)
     }
 
-    // This commented lines turn off node menu
     for (renderer of Array.from(menuRenderer)) {
       nodeGroups.call(renderer.onGraphChange, viz)
     }

@@ -20,6 +20,10 @@
 import d3 from 'd3'
 import Renderer from '../components/renderer'
 import icons from './d3Icons'
+import { tooltip } from '../styles.css'
+import { divide } from 'lodash-es'
+import { number } from 'prop-types'
+import { argsToArgsConfig } from 'graphql/type/definition'
 
 const noop = function() {}
 
@@ -40,8 +44,46 @@ const arc = function(radius?: any, itemNumber?: any, width?: any) {
     .padAngle(0.03)
 }
 
+const newArc = function(
+  numberOfItems: any,
+  radius?: any,
+  itemNumber?: any,
+  width?: any
+) {
+  const localWidth = width == null ? 30 : width
+  const startAngle = ((2 * Math.PI) / numberOfItems) * (itemNumber - 1)
+  const endAngle = startAngle + (2 * Math.PI) / numberOfItems
+  const innerRadius = Math.max(radius + 8, 20)
+  const arcInfo = {
+    itemNumber: itemNumber,
+    radius: radius,
+    width: width,
+    localWidth: localWidth,
+    numberOfItems: numberOfItems,
+    startAngle: startAngle * 57,
+    endAngle: endAngle * 57,
+    innerRadius: innerRadius
+  }
+  console.log(arcInfo)
+  return d3.svg
+    .arc()
+    .innerRadius(innerRadius)
+    .outerRadius(innerRadius + localWidth)
+    .startAngle(startAngle)
+    .endAngle(endAngle)
+    .padAngle(0.03)
+
+  // return d3.select("svg").append("g").arc()
+  // .innerRadius(innerRadius)
+  // .outerRadius(innerRadius + localWidth)
+  // .startAngle(startAngle)
+  // .endAngle(endAngle)
+  // .padAngle(0.03)
+}
+
 const getSelectedNode = function(node: any) {
-  if (node.selected) {
+  if (node.selected && node.hiddenEdgeTypes) {
+    // if (node.selected) {
     return [node]
   } else {
     return []
@@ -62,18 +104,29 @@ const attachContextEvent = (
         ;(d3.event as Event).stopPropagation()
         return null
       })
-      elem.on('mouseup', (node: any) => viz.trigger(event, node))
+      // TODO: add extra argument specifying the type if event = expand
+      // If event expandX => event = expand and X = trigger argument
+      elem.on('mouseup', (node: any) => {
+        if (event.includes('expand')) {
+          const edgeType = event.slice(6)
+          viz.trigger('expandEdgeType', node, edgeType)
+        } else {
+          viz.trigger(event, node)
+        }
+      })
       elem.on('mouseover', (node: any) => {
         node.contextMenu = {
           menuSelection: event,
           menuContent: content,
           label
         }
+        // Set visibility of question to 'visible'
         return viz.trigger('menuMouseOver', node)
       })
       result.push(
         elem.on('mouseout', (node: any) => {
           delete node.contextMenu
+          // Set visibility of question to 'hidden'
           return viz.trigger('menuMouseOut', node)
         })
       )
@@ -156,17 +209,224 @@ const createMenuItem = function(
   return iconPath.exit().remove()
 }
 
-const donutRemoveNode = new Renderer({
+const createMenuListItem = function(
+  selection: any,
+  viz: any,
+  buttonProps: any,
+  numberOfItems: any
+) {
+  // const node = selection.selectAll(`.icon.${buttonProps.className}`).data(getSelectedNode)[0]
+  const path = selection
+    .selectAll(`path.${buttonProps.className}`)
+    .data(getSelectedNode)
+  const iconPath = selection
+    .selectAll(`.icon.${buttonProps.className}`)
+    .data(getSelectedNode)
+  // node[0].hiddenEdgeTypes = buttonProps.edgeType
+  // TODO: find a wat to get update hidden edge type to keep only the type being expanded
+  // so when expandEdgeType is called, it looks in the property of the node and expands correctly
+
+  const tab = path
+    .enter()
+    .append('path')
+    .classed(buttonProps.className, true)
+    .classed('context-menu-item', true)
+    .attr({
+      d(node: any) {
+        // @ts-expect-error Expected 1-2 arguments, but got 0.ts(2554)
+        return newArc(numberOfItems, node.radius, buttonProps.itemNumber, 1)()
+      }
+    })
+  // .append("text")
+  // // .attr("dy", ".35em")
+  // // .attr("text-anchor", "middle")
+  // .text("This is a text!");
+  // // .attr("transform", `translate(${arc.centroid()})`)
+  // .on('mouseover', function (d:any, i:any) {
+  //   console.log("Hovering")
+  //   console.log(d)
+  //   console.log(i)
+
+  //   //Makes div appear
+  //   div.transition()
+  //     .duration(100)
+  //     .style("opacity", 1)
+
+  //   div.html("$" + d3.format(".2f")(10000))
+  //     .style("left", ((<any>d3.event).pageX + 10) + "px")
+  //     .style("top", ((<any>d3.event).pageX - 15) + "px")
+  // })
+  // .on('mouseout', function (d:any, i:any) {
+  //   console.log("Unhovering")
+  //   console.log(d)
+  //   console.log(i)
+
+  //   //makes div disappear
+  //  div.transition()
+  //     .duration(200)
+  //     .style("opacity", 0)
+
+  // })
+
+  const rawSvgIcon = icons[buttonProps.textValue]
+
+  // const div = d3.select("neod3viz").append("div")
+  const div = tab
+    .append('text')
+    .classed(buttonProps.className, true)
+    .classed('tooltip', true)
+    .text('$' + d3.format('.2f')(10000))
+    .style('opacity', 1)
+    .style('left', '10px')
+    .style('top', '10px')
+
+  const icon = iconPath
+    .enter()
+    .appendSVG(rawSvgIcon)
+    .classed(buttonProps.className, true)
+    .classed('context-menu-item', true)
+    .attr({
+      transform(node: any) {
+        return `translate(${Math.floor(
+          // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
+          newArc(
+            numberOfItems,
+            node.radius,
+            buttonProps.itemNumber
+          ).centroid()[0] +
+            (buttonProps.position[0] * 100) / 100
+        )},${Math.floor(
+          // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
+          newArc(
+            numberOfItems,
+            node.radius,
+            buttonProps.itemNumber
+          ).centroid()[1] +
+            (buttonProps.position[1] * 100) / 100
+        )}) scale(0.7)`
+      },
+      color(node: any) {
+        return viz.style.forNode(node).get('text-color-internal')
+      }
+    })
+    .append('text')
+    // .attr("dy", ".35em")
+    // .attr("text-anchor", "middle")
+    .text('This is a text!')
+  // .attr("transform", `translate(${arc.centroid()})`)
+
+  // Removing to stop the dragging of the background
+  attachContextEvent(
+    buttonProps.eventName,
+    [tab, icon],
+    viz,
+    buttonProps.helpValue,
+    rawSvgIcon
+  )
+
+  tab
+    .transition()
+    .duration(200)
+    .attr({
+      d(node: any) {
+        // @ts-expect-error Expected 1-2 arguments, but got 0.ts(2554)
+        return newArc(numberOfItems, node.radius, buttonProps.itemNumber)()
+      }
+    })
+
+  path
+    .exit()
+    .transition()
+    .duration(200)
+    .attr({
+      d(node: any) {
+        // @ts-expect-error Expected 1-2 arguments, but got 0.ts(2554)
+        return newArc(numberOfItems, node.radius, buttonProps.itemNumber, 1)()
+      }
+    })
+    .remove()
+
+  return iconPath.exit().remove()
+}
+
+const createMenuList = function(selection: any, viz: any) {
+  // Get node data (edge type for now, specific queries later)
+  const hiddenEdgeTypes = selection.data()[0].hiddenEdgeTypes
+
+  //TODO: for each edgeType create a menuitem
+  if (hiddenEdgeTypes) {
+    // const buttonsProps:any = hiddenEdgeTypes.map((edgeTypeItem:any) => {
+    //   return {
+    //     eventName: 'expand'+edgeTypeItem.edgeType,
+    //     itemNumber: 1,
+    //     className: 'expand_'+edgeTypeItem.edgeType,
+    //     position: [-8, 0],
+    //     textValue: edgeTypeItem.edgeType+"("+edgeTypeItem.total+")",
+    //     helpValue:'Expand '+edgeTypeItem.edgeType+' relationships'
+    //   }
+    // })
+
+    const buttonsProps: any = []
+
+    for (const key in hiddenEdgeTypes) {
+      buttonsProps.push({
+        eventName: 'expand' + hiddenEdgeTypes[key].edgeType,
+        itemNumber: Number(key) + 1,
+        className: 'expand_' + hiddenEdgeTypes[key].edgeType,
+        position: [-8, 0],
+        textValue:
+          hiddenEdgeTypes[key].edgeType +
+          '(' +
+          hiddenEdgeTypes[key].total +
+          ')',
+        helpValue: 'Expand ' + hiddenEdgeTypes[key].edgeType + ' relationships'
+      })
+    }
+
+    // const buttonsProps:any = [
+    //   {eventName: 'expand'+hiddenEdgeTypes[0].edgeType,
+    //     itemNumber: 1,
+    //     className: 'expand_'+hiddenEdgeTypes[0].edgeType,
+    //    position: [-8, 0],
+    //    textValue: hiddenEdgeTypes[0].edgeType+"("+hiddenEdgeTypes[0].total+")",
+    //     helpValue:'Expand '+hiddenEdgeTypes[0].edgeType+' relationships'},
+    //   {eventName: 'expand'+hiddenEdgeTypes[1].edgeType,
+    //     itemNumber: 2,
+    //     className: 'expand_'+hiddenEdgeTypes[1].edgeType,
+    //     position: [-8, -10],
+    //     textValue: hiddenEdgeTypes[1].edgeType+"("+hiddenEdgeTypes[1].total+")",
+    //     helpValue:'Expand '+hiddenEdgeTypes[1].edgeType+' relationships'},
+    //   // {eventName: 'nodeDblClicked',
+    //   //   itemNumber:2,
+    //   //   className:'expand_node',
+    //   //   position: [-8, -10],
+    //   //   textValue: hiddenEdgeTypes[1].edgeType+"("+hiddenEdgeTypes[1].total+")",
+    //   //   helpValue:'Expand / Collapse child relationships'},
+    //   {eventName: 'expand'+hiddenEdgeTypes[2].edgeType,
+    //     itemNumber: 3,
+    //     className: 'expand_'+hiddenEdgeTypes[2].edgeType,
+    //     position:[-10, -6],
+    //     textValue: hiddenEdgeTypes[2].edgeType+"("+hiddenEdgeTypes[2].total+")",
+    //     helpValue:'Expand '+hiddenEdgeTypes[2].edgeType+' relationships'},
+    // ]
+
+    buttonsProps.forEach((button: any) => {
+      createMenuListItem(selection, viz, button, buttonsProps.length)
+    })
+  }
+}
+
+const donutVarWriteNode = new Renderer({
   onGraphChange(selection: any, viz: any) {
     return createMenuItem(
       selection,
       viz,
-      'nodeClose',
+      'expandVarWrite',
       1,
-      'remove_node',
+      'expand_varWrite',
       [-8, 0],
-      'Remove',
-      'Dismiss'
+      'Expand / Collapse',
+      'Expand varWrite relationships'
     )
   },
 
@@ -207,10 +467,20 @@ const donutUnlockNode = new Renderer({
   onTick: noop
 })
 
+const listEdgeTypes = new Renderer({
+  onGraphChange(selection: any, viz: any) {
+    return createMenuList(selection, viz)
+  },
+
+  onTick: noop
+})
+
 const menu: any[] = []
 
-menu.push(donutExpandNode)
-menu.push(donutRemoveNode)
-menu.push(donutUnlockNode)
+// menu.push(donutExpandNode)
+// menu.push(donutVarWriteNode)
+// menu.push(donutUnlockNode)
+
+menu.push(listEdgeTypes)
 
 export { menu }

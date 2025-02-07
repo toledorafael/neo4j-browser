@@ -64,6 +64,9 @@ type ExplorerComponentProps = {
   maxNeighbours: number
   graphStyleData: any
   getNeighbours: any
+  getVarWriteNeighbours: any
+  getEdgeTypeNeighbours: any
+  getHiddenEdgesTypes: any
   updateStyle: any
   frameHeight: number
   fullscreen: boolean
@@ -228,6 +231,98 @@ export class ExplorerLocal extends Component<
     )
   }
 
+  getVarWriteNeighbours(node: any, currentNeighbours: any, callback: any) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getVarWriteNeighbours(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getEdgeTypeNeighbours(
+    node: any,
+    edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getEdgeTypeNeighbours(node.id, edgeType, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getHiddenEdgeTypes(node: any, currentNeighbours: any, callback: any) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getHiddenEdgesTypes(node.id, currentNeighbours).then(
+      (result: any) => {
+        node.hiddenEdgeTypes = result
+        // if (
+        //   result.count >
+        //   this.props.maxNeighbours - currentNeighbours.length
+        // ) {
+        //   this.setState({
+        //     selectedItem: {
+        //       type: 'status-item',
+        //       item: `Rendering was limited to ${
+        //         this.props.maxNeighbours
+        //       } of the node's total ${result.count +
+        //         currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+        //     }
+        //   })
+        // }
+        callback(null)
+      },
+      () => {
+        callback(null)
+      }
+    )
+  }
+
   onItemMouseOver(item: VizItem): void {
     this.setHoveredItem(item)
   }
@@ -303,6 +398,9 @@ export class ExplorerLocal extends Component<
           relationships={this.state.relationships}
           nodes={this.state.nodes}
           getNodeNeighbours={this.getNodeNeighbours.bind(this)}
+          getVarWriteNeighbours={this.getVarWriteNeighbours.bind(this)}
+          getEdgeTypeNeighbours={this.getEdgeTypeNeighbours.bind(this)}
+          getHiddenEdgeTypes={this.getHiddenEdgeTypes.bind(this)}
           onItemMouseOver={this.onItemMouseOver.bind(this)}
           onItemSelect={this.onItemSelect.bind(this)}
           graphStyle={graphStyle}
