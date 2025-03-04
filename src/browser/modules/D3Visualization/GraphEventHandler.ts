@@ -91,11 +91,9 @@ export class GraphEventHandler {
   }
 
   nodeClicked(d: any) {
-    if (!d) {
+    if (!d || typeof d == 'string') {
       return
     }
-    // TODO: run query to get types of edges
-    // TODO: open menu of option of edge types
     this.getEdgeTypes(d)
 
     d.fixed = true
@@ -227,12 +225,12 @@ export class GraphEventHandler {
   onMenuMouseOver(itemWithMenu: any) {
     console.log(itemWithMenu)
     this.onItemMouseOver({
-      type: 'context-menu-item',
-      item: {
-        label: itemWithMenu.contextMenu.label,
-        content: itemWithMenu.contextMenu.menuContent,
-        selection: itemWithMenu.contextMenu.menuSelection
-      }
+      type: 'context-menu-item'
+      // item: {
+      //   // label: itemWithMenu.contextMenu.label,
+      //   content: itemWithMenu.contextMenu.menuContent,
+      //   selection: itemWithMenu.contextMenu.menuSelection
+      // }
     })
   }
 

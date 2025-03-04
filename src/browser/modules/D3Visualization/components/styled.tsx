@@ -161,6 +161,15 @@ export const StyledSvgWrapper = styled.div`
         font-size: 14px;
       }
     }
+    .context-menu-item-label {
+      fill: rgb(12, 1, 1);
+      text-anchor: left;
+      pointer-events: none;
+      text-align: center;
+      font-size: 14px;
+      background-color: rgb(255, 254, 254);
+      font-family: Consolas;
+    }
   }
 `
 
