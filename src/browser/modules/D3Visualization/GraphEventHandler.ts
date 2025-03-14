@@ -25,6 +25,7 @@ export class GraphEventHandler {
   getVarWriteNeighbours: any
   getEdgeTypeNeighbours: any
   getHiddenEdgeTypes: any
+  getWhoCanCallThis: any
   graph: any
   graphView: any
   onGraphModelChange: any
@@ -38,6 +39,7 @@ export class GraphEventHandler {
     getVarWriteNeighbours: any,
     getEdgeTypeNeighbours: any,
     getHiddenEdgeTypes: any,
+    getWhoCanCallThis: any,
     onItemMouseOver: any,
     onItemSelected: any,
     onGraphModelChange: any
@@ -48,6 +50,7 @@ export class GraphEventHandler {
     this.getVarWriteNeighbours = getVarWriteNeighbours
     this.getEdgeTypeNeighbours = getEdgeTypeNeighbours
     this.getHiddenEdgeTypes = getHiddenEdgeTypes
+    this.getWhoCanCallThis = getWhoCanCallThis
     this.selectedItem = null
     this.onItemMouseOver = onItemMouseOver
     this.onItemSelected = onItemSelected
@@ -173,6 +176,29 @@ export class GraphEventHandler {
       d,
       edgeType,
       this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhoCanCallThis(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhoCanCallThis(
+      d,
+      // edgeType,
+      // this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
         graph.addExpandedNodes(d, mapNodes(nodes))

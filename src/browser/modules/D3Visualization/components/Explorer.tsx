@@ -67,6 +67,7 @@ type ExplorerComponentProps = {
   getVarWriteNeighbours: any
   getEdgeTypeNeighbours: any
   getHiddenEdgesTypes: any
+  getWhoCanCallThis: any
   updateStyle: any
   frameHeight: number
   fullscreen: boolean
@@ -294,6 +295,40 @@ export class ExplorerLocal extends Component<
     )
   }
 
+  getWhoCanCallThis(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhoCanCallThis(node.id).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
   getHiddenEdgeTypes(node: any, currentNeighbours: any, callback: any) {
     if (currentNeighbours.length > this.props.maxNeighbours) {
       callback(null, { nodes: [], relationships: [] })
@@ -401,6 +436,7 @@ export class ExplorerLocal extends Component<
           getVarWriteNeighbours={this.getVarWriteNeighbours.bind(this)}
           getEdgeTypeNeighbours={this.getEdgeTypeNeighbours.bind(this)}
           getHiddenEdgeTypes={this.getHiddenEdgeTypes.bind(this)}
+          getWhoCanCallThis={this.getWhoCanCallThis.bind(this)}
           onItemMouseOver={this.onItemMouseOver.bind(this)}
           onItemSelect={this.onItemSelect.bind(this)}
           graphStyle={graphStyle}

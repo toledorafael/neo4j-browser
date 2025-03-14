@@ -224,6 +224,39 @@ export class Visualization extends Component<any, VisualizationState> {
     })
   }
 
+  getWhoCanCallThis(id: any) {
+    const query = `MATCH path = (f1:cFunction)-[:call]->(f2:cFunction)
+                   WHERE id(f2) = ${id}
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              const count =
+                response.result.records.length > 0
+                  ? parseInt(response.result.records[0].get('c').toString())
+                  : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              resolve({ ...resultGraph, count: count })
+            }
+          }
+        )
+    })
+  }
+
   getHiddenEdgesTypes(id: any, currentNeighbourIds = []) {
     const query = `MATCH path = (a)-[r]-(o)
                    WITH a, r, o, path, type(r) as edgeType, count(r) as total
@@ -305,6 +338,7 @@ export class Visualization extends Component<any, VisualizationState> {
           getVarWriteNeighbours={this.getVarWriteNeighbours.bind(this)}
           getEdgeTypeNeighbours={this.getEdgeTypeNeighbours.bind(this)}
           getHiddenEdgesTypes={this.getHiddenEdgesTypes.bind(this)}
+          getWhoCanCallThis={this.getWhoCanCallThis.bind(this)}
           nodes={this.state.nodes}
           relationships={this.state.relationships}
           fullscreen={this.props.fullscreen}
