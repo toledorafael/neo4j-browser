@@ -165,10 +165,31 @@ export const StyledSvgWrapper = styled.div`
       fill: rgb(12, 1, 1);
       text-anchor: left;
       pointer-events: none;
-      text-align: center;
+      text-align: left;
       font-size: 14px;
-      background-color: rgb(255, 254, 254);
       font-family: Consolas;
+      background: #ffffff;
+      color: #313639;
+      border: 1px solid #313639;
+      border-radius: 8px;
+    }
+
+    .context-menu-item-labelbox {
+      position: absolute;
+      text-align: center;
+      padding: 0.5rem;
+      background: #ffffff;
+      color: #313639;
+      border: 1px solid #313639;
+      border-radius: 8px;
+      pointer-events: none;
+      font-size: 1.3rem;
+      width: 50px;
+    }
+
+    .context-menu-item-rect {
+      pointer-events: none;
+      fill: rgb(250, 224, 139);
     }
   }
 `

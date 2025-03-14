@@ -29,6 +29,8 @@ const noop = function() {}
 
 const numberOfItemsInContextMenu = 3
 
+const lastMenuOptions: any = {}
+
 const labelCoord: any = {}
 
 const arc = function(radius?: any, itemNumber?: any, width?: any) {
@@ -66,7 +68,6 @@ const newArc = function(
     endAngle: endAngle * 57,
     innerRadius: innerRadius
   }
-  console.log(arcInfo)
   return d3.svg
     .arc()
     .innerRadius(innerRadius)
@@ -96,7 +97,7 @@ const attachContextEvent = (
   event: any,
   elems: any[],
   viz: any,
-  menuItemLabel: any
+  menuItemLabel: any[]
 ) =>
   (() => {
     const result = []
@@ -107,6 +108,14 @@ const attachContextEvent = (
       })
       // If event expandX => event = expand and X = trigger argument
       elem.on('mouseup', (node: any) => {
+        for (const labelElem of Array.from(menuItemLabel)) {
+          if (labelElem.style('opacity') == 1) {
+            labelElem
+              // .transition()
+              // .duration(50)
+              .style('opacity', 0)
+          }
+        }
         if (event.includes('expand')) {
           const edgeType = event.slice(6)
           viz.trigger('expandEdgeType', node, edgeType)
@@ -121,22 +130,26 @@ const attachContextEvent = (
           // label
         }
 
-        if (menuItemLabel.style('opacity') == 0) {
-          menuItemLabel
-            // .transition()
-            // .duration(200)
-            .style('opacity', 1)
+        for (const labelElem of Array.from(menuItemLabel)) {
+          if (labelElem.style('opacity') == 0) {
+            labelElem
+              // .transition()
+              // .duration(50)
+              .style('opacity', 1)
+          }
         }
 
         return viz.trigger('menuMouseOver', node)
       })
       result.push(
         elem.on('mouseout', (node: any) => {
-          if (menuItemLabel.style('opacity') == 1) {
-            menuItemLabel
-              // .transition()
-              // .duration(200)
-              .style('opacity', 0)
+          for (const labelElem of Array.from(menuItemLabel)) {
+            if (labelElem.style('opacity') == 1) {
+              labelElem
+                // .transition()
+                // .duration(200)
+                .style('opacity', 0)
+            }
           }
           delete node.contextMenu
           return viz.trigger('menuMouseOut', node)
@@ -178,18 +191,30 @@ const createMenuListItem = function(
       }
     })
 
-  const rawSvgIcon = icons[buttonProps.textValue]
+  // const rawSvgIcon = icons[buttonProps.textValue]
 
   if (arcCentroid != undefined) {
     labelCoord[buttonProps.itemNumber] = arcCentroid
   }
+
+  const rect = labelPath
+    .enter()
+    .append('rect')
+    .attr('class', 'context-menu-item-rect')
+    .attr('x', labelCoord[buttonProps.itemNumber][0] - 5)
+    .attr('y', labelCoord[buttonProps.itemNumber][1] - 15)
+    .attr('height', 20)
+    .attr('width', 8.5 * buttonProps.className.length)
+    .attr('rx', 5)
+    .attr('ry', 5)
+    // .style("fill", "#f1f1f1")
+    .style('opacity', 0)
 
   const menuItemLabel = labelPath
     .enter()
     // .data(buttonProps.className)
     .append('text')
     .attr('class', 'context-menu-item-label')
-    // .attr('transform', `translate(${Math.floor(arcCentroid[0] + (buttonProps.position[0] * 100) / 100)},${Math.floor(arcCentroid[1]  + (buttonProps.position[1] * 100) / 100)}) scale(0.7)`)
     .attr(
       'transform',
       `translate(${labelCoord[buttonProps.itemNumber][0]},${
@@ -200,7 +225,10 @@ const createMenuListItem = function(
     .style('opacity', 0)
 
   // Removing to stop the dragging of the background
-  attachContextEvent(buttonProps.eventName, [tab, path], viz, menuItemLabel)
+  attachContextEvent(buttonProps.eventName, [tab, path, rect], viz, [
+    rect,
+    menuItemLabel
+  ])
 
   tab
     .transition()
@@ -229,30 +257,44 @@ const createMenuListItem = function(
 
 const createMenuList = function(selection: any, viz: any) {
   // Get node data (edge type for now, specific queries later)
-  const hiddenEdgeTypes = selection.data()[0].hiddenEdgeTypes
+  // const hiddenEdgeTypes = selection.data()[0].hiddenEdgeTypes
 
-  if (hiddenEdgeTypes) {
-    const buttonsProps: any = []
+  const selectedNode = selection.data().filter((node: any) => node.selected)
+  let hiddenEdgeTypes: any[] = []
+  if (selectedNode != undefined) {
+    hiddenEdgeTypes =
+      selectedNode.length > 0
+        ? (hiddenEdgeTypes = selectedNode[0].hiddenEdgeTypes)
+        : []
+  }
 
-    for (const key in hiddenEdgeTypes) {
-      buttonsProps.push({
-        eventName: 'expand' + hiddenEdgeTypes[key].edgeType,
-        itemNumber: Number(key) + 1,
-        className: 'expand_' + hiddenEdgeTypes[key].edgeType,
-        position: [-8, 0],
-        textValue:
-          hiddenEdgeTypes[key].edgeType +
-          '(' +
-          hiddenEdgeTypes[key].total +
-          ')',
-        helpValue: 'Expand ' + hiddenEdgeTypes[key].edgeType + ' relationships'
-      })
+  const path = selection.selectAll(`.context-menu-item`).data()
+
+  if (hiddenEdgeTypes != undefined) {
+    if (hiddenEdgeTypes.length == 0 && path.length != 0) {
+      hiddenEdgeTypes = path[0].hiddenEdgeTypes
     }
+  }
 
-    buttonsProps.forEach((button: any) => {
-      createMenuListItem(selection, viz, button, buttonsProps.length)
+  // if (hiddenEdgeTypes != undefined) {
+  const buttonsProps: any = []
+
+  for (const key in hiddenEdgeTypes) {
+    buttonsProps.push({
+      eventName: 'expand' + hiddenEdgeTypes[key].edgeType,
+      itemNumber: Number(key) + 1,
+      className: 'expand_' + hiddenEdgeTypes[key].edgeType,
+      position: [-8, 0],
+      textValue:
+        hiddenEdgeTypes[key].edgeType + '(' + hiddenEdgeTypes[key].total + ')',
+      helpValue: 'Expand ' + hiddenEdgeTypes[key].edgeType + ' relationships'
     })
   }
+
+  buttonsProps.forEach((button: any) => {
+    createMenuListItem(selection, viz, button, buttonsProps.length)
+  })
+  // }
 }
 
 const listEdgeTypes = new Renderer({
