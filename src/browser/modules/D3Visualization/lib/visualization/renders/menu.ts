@@ -262,32 +262,45 @@ const createMenuList = function(selection: any, viz: any) {
   const selectedNode = selection.data().filter((node: any) => node.selected)
   let hiddenEdgeTypes: any[] = []
   if (selectedNode != undefined) {
-    hiddenEdgeTypes =
-      selectedNode.length > 0
-        ? (hiddenEdgeTypes = selectedNode[0].hiddenEdgeTypes)
-        : []
-  }
-
-  const path = selection.selectAll(`.context-menu-item`).data()
-
-  if (hiddenEdgeTypes != undefined) {
-    if (hiddenEdgeTypes.length == 0 && path.length != 0) {
-      hiddenEdgeTypes = path[0].hiddenEdgeTypes
+    if (selectedNode.length > 0) {
+      for (const key in selectedNode[0].hiddenEdgeTypes) {
+        hiddenEdgeTypes.push(selectedNode[0].hiddenEdgeTypes[key].edgeType)
+      }
     }
   }
 
-  // if (hiddenEdgeTypes != undefined) {
+  const menuItemsArr = selection.selectAll(`.context-menu-item`)
+  const shownButtonsLabels: any[] = []
+
+  // const path = selection.selectAll(`.context-menu-item`).data()
+
+  if (hiddenEdgeTypes != undefined) {
+    if (hiddenEdgeTypes.length == 0 && menuItemsArr.length != 0) {
+      for (const menuItems of menuItemsArr) {
+        if (menuItems.length > 0) {
+          for (const item of menuItems) {
+            shownButtonsLabels.push(item.classList[0].slice(7))
+          }
+          break
+        }
+      }
+    }
+  }
+
+  if (hiddenEdgeTypes.length == 0 && shownButtonsLabels.length > 0) {
+    hiddenEdgeTypes = shownButtonsLabels
+  }
+
   const buttonsProps: any = []
 
   for (const key in hiddenEdgeTypes) {
     buttonsProps.push({
-      eventName: 'expand' + hiddenEdgeTypes[key].edgeType,
+      eventName: 'expand' + hiddenEdgeTypes[key],
       itemNumber: Number(key) + 1,
-      className: 'expand_' + hiddenEdgeTypes[key].edgeType,
+      className: 'expand_' + hiddenEdgeTypes[key],
       position: [-8, 0],
-      textValue:
-        hiddenEdgeTypes[key].edgeType + '(' + hiddenEdgeTypes[key].total + ')',
-      helpValue: 'Expand ' + hiddenEdgeTypes[key].edgeType + ' relationships'
+      textValue: hiddenEdgeTypes[key],
+      helpValue: 'Expand ' + hiddenEdgeTypes[key] + ' relationships'
     })
   }
 
