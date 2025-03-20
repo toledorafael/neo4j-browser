@@ -224,9 +224,10 @@ export class Visualization extends Component<any, VisualizationState> {
     })
   }
 
-  getWhoCanCallThis(id: any) {
+  getWhoCanCallThis(id: any, currentNeighbourIds = []) {
     const query = `MATCH path = (f1:cFunction)-[:call]->(f2:cFunction)
                    WHERE id(f2) = ${id}
+                   AND NOT (id(f1) IN[${currentNeighbourIds.join(',')}])
                    RETURN distinct path`
     return new Promise((resolve, reject) => {
       this.props.bus &&
@@ -237,10 +238,10 @@ export class Visualization extends Component<any, VisualizationState> {
             if (!response.success) {
               reject(new Error())
             } else {
-              const count =
-                response.result.records.length > 0
-                  ? parseInt(response.result.records[0].get('c').toString())
-                  : 0
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
               const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
                 response.result.records,
                 false,
@@ -250,7 +251,8 @@ export class Visualization extends Component<any, VisualizationState> {
                 this.graph._nodes,
                 resultGraph.nodes
               )
-              resolve({ ...resultGraph, count: count })
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
             }
           }
         )

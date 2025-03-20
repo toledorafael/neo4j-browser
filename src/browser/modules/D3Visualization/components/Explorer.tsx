@@ -304,7 +304,7 @@ export class ExplorerLocal extends Component<
     if (currentNeighbours.length > this.props.maxNeighbours) {
       callback(null, { nodes: [], relationships: [] })
     }
-    this.props.getWhoCanCallThis(node.id).then(
+    this.props.getWhoCanCallThis(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
         if (

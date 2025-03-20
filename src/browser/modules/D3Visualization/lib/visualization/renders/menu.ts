@@ -116,12 +116,13 @@ const attachContextEvent = (
               .style('opacity', 0)
           }
         }
-        if (event.includes('expand')) {
-          const edgeType = event.slice(6)
-          viz.trigger('expandEdgeType', node, edgeType)
-        } else {
-          viz.trigger(event, node)
-        }
+        // if (event.includes('expand')) {
+        //   const edgeType = event.slice(6)
+        //   viz.trigger('expandEdgeType', node, edgeType)
+        // } else {
+        //   viz.trigger(event, node)
+        // }
+        viz.trigger(event, node)
       })
       elem.on('mouseover', (node: any) => {
         node.contextMenu = {
@@ -197,38 +198,40 @@ const createMenuListItem = function(
     labelCoord[buttonProps.itemNumber] = arcCentroid
   }
 
-  const rect = labelPath
-    .enter()
-    .append('rect')
-    .attr('class', 'context-menu-item-rect')
-    .attr('x', labelCoord[buttonProps.itemNumber][0] - 5)
-    .attr('y', labelCoord[buttonProps.itemNumber][1] - 15)
-    .attr('height', 20)
-    .attr('width', 8.5 * buttonProps.className.length)
-    .attr('rx', 5)
-    .attr('ry', 5)
-    // .style("fill", "#f1f1f1")
-    .style('opacity', 0)
+  if (labelCoord != undefined && Object.keys(labelCoord).length != 0) {
+    const rect = labelPath
+      .enter()
+      .append('rect')
+      .attr('class', 'context-menu-item-rect')
+      .attr('x', labelCoord[buttonProps.itemNumber][0] - 5)
+      .attr('y', labelCoord[buttonProps.itemNumber][1] - 15)
+      .attr('height', 20)
+      .attr('width', 8.5 * buttonProps.textValue.length)
+      .attr('rx', 5)
+      .attr('ry', 5)
+      // .style("fill", "#f1f1f1")
+      .style('opacity', 0)
 
-  const menuItemLabel = labelPath
-    .enter()
-    // .data(buttonProps.className)
-    .append('text')
-    .attr('class', 'context-menu-item-label')
-    .attr(
-      'transform',
-      `translate(${labelCoord[buttonProps.itemNumber][0]},${
-        labelCoord[buttonProps.itemNumber][1]
-      })`
-    )
-    .text(buttonProps.className)
-    .style('opacity', 0)
+    const menuItemLabel = labelPath
+      .enter()
+      // .data(buttonProps.className)
+      .append('text')
+      .attr('class', 'context-menu-item-label')
+      .attr(
+        'transform',
+        `translate(${labelCoord[buttonProps.itemNumber][0]},${
+          labelCoord[buttonProps.itemNumber][1]
+        })`
+      )
+      .text(buttonProps.textValue)
+      .style('opacity', 0)
 
-  // Removing to stop the dragging of the background
-  attachContextEvent(buttonProps.eventName, [tab, path, rect], viz, [
-    rect,
-    menuItemLabel
-  ])
+    // Removing to stop the dragging of the background
+    attachContextEvent(buttonProps.eventName, [tab, path, rect], viz, [
+      rect,
+      menuItemLabel
+    ])
+  }
 
   tab
     .transition()
@@ -255,16 +258,55 @@ const createMenuListItem = function(
   return labelPath.exit().remove()
 }
 
+const functionQuestions = ['WhoCanCallThis', 'WhatAreTheArgs']
+// ,
+//                            'whereIsMethodDefined', 'whereIsMethodCalled',
+//                            'areAllCallsComingFromSameClass']
+
+const variableQuestions = [
+  'whatCanUpdatethis',
+  'whereIsItDeclared',
+  'whereIsItAccessed'
+]
+
+const classQuestions = [
+  'whereDoesItFitInHierarchy',
+  'whereAreInstancesCreated',
+  'whatDataCanWeAccess'
+]
+
+const questionLabels = {
+  WhoCanCallThis: 'Who can call this?',
+  WhatAreTheArgs: 'What are the args of this?'
+}
+
 const createMenuList = function(selection: any, viz: any) {
   // Get node data (edge type for now, specific queries later)
   // const hiddenEdgeTypes = selection.data()[0].hiddenEdgeTypes
 
   const selectedNode = selection.data().filter((node: any) => node.selected)
-  let hiddenEdgeTypes: any[] = []
+  let menuOptions: string[] = []
+  // let menuOptionsQuestions: any[] = []
   if (selectedNode != undefined) {
     if (selectedNode.length > 0) {
-      for (const key in selectedNode[0].hiddenEdgeTypes) {
-        hiddenEdgeTypes.push(selectedNode[0].hiddenEdgeTypes[key].edgeType)
+      //Get menu options from hiddenEdgeTypes property in the node
+      // for (const key in selectedNode[0].hiddenEdgeTypes) {
+      //   menuOptions.push(selectedNode[0].hiddenEdgeTypes[key].edgeType)
+      // }
+
+      //TODO: Get menu options from the type of the node
+      switch (selectedNode[0].labels[0]) {
+        case 'cFunction':
+          for (const key in functionQuestions) {
+            menuOptions.push(functionQuestions[key])
+          }
+          break
+        case 'cVariable':
+          menuOptions = variableQuestions
+          break
+        case 'cClass':
+          menuOptions = classQuestions
+          break
       }
     }
   }
@@ -272,10 +314,8 @@ const createMenuList = function(selection: any, viz: any) {
   const menuItemsArr = selection.selectAll(`.context-menu-item`)
   const shownButtonsLabels: any[] = []
 
-  // const path = selection.selectAll(`.context-menu-item`).data()
-
-  if (hiddenEdgeTypes != undefined) {
-    if (hiddenEdgeTypes.length == 0 && menuItemsArr.length != 0) {
+  if (menuOptions != undefined) {
+    if (menuOptions.length == 0 && menuItemsArr.length != 0) {
       for (const menuItems of menuItemsArr) {
         if (menuItems.length > 0) {
           for (const item of menuItems) {
@@ -287,20 +327,21 @@ const createMenuList = function(selection: any, viz: any) {
     }
   }
 
-  if (hiddenEdgeTypes.length == 0 && shownButtonsLabels.length > 0) {
-    hiddenEdgeTypes = shownButtonsLabels
+  if (menuOptions.length == 0 && shownButtonsLabels.length > 0) {
+    menuOptions = shownButtonsLabels
   }
 
   const buttonsProps: any = []
 
-  for (const key in hiddenEdgeTypes) {
+  for (const key in menuOptions) {
     buttonsProps.push({
-      eventName: 'expand' + hiddenEdgeTypes[key],
+      eventName: 'expand' + menuOptions[key],
       itemNumber: Number(key) + 1,
-      className: 'expand_' + hiddenEdgeTypes[key],
+      className: 'expand_' + menuOptions[key],
       position: [-8, 0],
-      textValue: hiddenEdgeTypes[key],
-      helpValue: 'Expand ' + hiddenEdgeTypes[key] + ' relationships'
+      textValue:
+        questionLabels[menuOptions[key] as keyof typeof questionLabels],
+      helpValue: 'Expand ' + menuOptions[key] + ' relationships'
     })
   }
 

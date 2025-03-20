@@ -198,7 +198,30 @@ export class GraphEventHandler {
     this.getWhoCanCallThis(
       d,
       // edgeType,
-      // this.graph.findNodeNeighbourIds(d.id),
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhatAreTheArgs(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhoCanCallThis(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
         graph.addExpandedNodes(d, mapNodes(nodes))
@@ -316,6 +339,8 @@ export class GraphEventHandler {
       .on('nodeDblClicked', this.nodeDblClicked.bind(this))
       .on('expandVarWrite', this.expandVarWrite.bind(this))
       .on('expandEdgeType', this.expandEdgeType.bind(this))
+      .on('expandWhoCanCallThis', this.expandWhoCanCallThis.bind(this))
+      .on('expandWhatAreTheArgs', this.expandWhatAreTheArgs.bind(this))
       .on('nodeUnlock', this.nodeUnlock.bind(this))
     this.onItemMouseOut()
   }
