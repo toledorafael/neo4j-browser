@@ -258,26 +258,35 @@ const createMenuListItem = function(
   return labelPath.exit().remove()
 }
 
-const functionQuestions = ['WhoCanCallThis', 'WhatAreTheArgs']
-// ,
-//                            'whereIsMethodDefined', 'whereIsMethodCalled',
-//                            'areAllCallsComingFromSameClass']
+const functionQuestions = [
+  'WhoCanCallThis',
+  'WhatAreTheArgs',
+  'InWhichClassIsItDefined',
+  'WhereIsMethodCalled',
+  'AreAllCallsComingFromSameClass'
+]
 
 const variableQuestions = [
-  'whatCanUpdatethis',
-  'whereIsItDeclared',
-  'whereIsItAccessed'
+  'WhatCanUpdatethis',
+  'WhereIsItDeclared',
+  'WhereIsItAccessed',
+  'WhatDataCanWeAccess'
 ]
 
-const classQuestions = [
-  'whereDoesItFitInHierarchy',
-  'whereAreInstancesCreated',
-  'whatDataCanWeAccess'
-]
+const classQuestions = ['WhereAreInstancesCreated']
 
 const questionLabels = {
   WhoCanCallThis: 'Who can call this?',
-  WhatAreTheArgs: 'What are the args of this?'
+  WhatAreTheArgs: 'What are the args of this?',
+  InWhichClassIsItDefined: 'In which class is this defined?',
+  WhereIsMethodCalled: 'Where is this called?',
+  AreAllCallsComingFromSameClass:
+    'From which class are the calls to this coming from?',
+  WhatCanUpdatethis: 'Who can update this?',
+  WhereIsItDeclared: 'Where is this declared?',
+  WhereIsItAccessed: 'Where is this accessed?',
+  WhatDataCanWeAccess: 'What data is contained in this object?',
+  WhereAreInstancesCreated: 'Where are instances of this class created?'
 }
 
 const createMenuList = function(selection: any, viz: any) {

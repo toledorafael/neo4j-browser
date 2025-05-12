@@ -68,6 +68,15 @@ type ExplorerComponentProps = {
   getEdgeTypeNeighbours: any
   getHiddenEdgesTypes: any
   getWhoCanCallThis: any
+  getWhatAreTheArgs: any
+  getInWhichClassIsItDefined: any
+  getWhereIsMethodCalled: any
+  getAreAllCallsComingFromSameClass: any
+  getWhatCanUpdatethis: any
+  getWhereIsItDeclared: any
+  getWhereIsItAccessed: any
+  getWhereAreInstancesCreated: any
+  getWhatDataCanWeAccess: any
   updateStyle: any
   frameHeight: number
   fullscreen: boolean
@@ -329,6 +338,314 @@ export class ExplorerLocal extends Component<
     )
   }
 
+  getWhatAreTheArgs(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhatAreTheArgs(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getInWhichClassIsItDefined(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getInWhichClassIsItDefined(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getWhereIsMethodCalled(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhereIsMethodCalled(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getAreAllCallsComingFromSameClass(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props
+      .getAreAllCallsComingFromSameClass(node.id, currentNeighbours)
+      .then(
+        (result: any) => {
+          const nodes = result.nodes
+          if (
+            result.count >
+            this.props.maxNeighbours - currentNeighbours.length
+          ) {
+            this.setState({
+              selectedItem: {
+                type: 'status-item',
+                item: `Rendering was limited to ${
+                  this.props.maxNeighbours
+                } of the node's total ${result.count +
+                  currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+              }
+            })
+          }
+          callback(null, { nodes: nodes, relationships: result.relationships })
+        },
+        () => {
+          callback(null, { nodes: [], relationships: [] })
+        }
+      )
+  }
+
+  getWhatCanUpdatethis(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhatCanUpdatethis(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getWhereIsItDeclared(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhereIsItDeclared(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getWhereIsItAccessed(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhereIsItAccessed(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getWhereAreInstancesCreated(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhereAreInstancesCreated(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getWhatDataCanWeAccess(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getWhatDataCanWeAccess(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
   getHiddenEdgeTypes(node: any, currentNeighbours: any, callback: any) {
     if (currentNeighbours.length > this.props.maxNeighbours) {
       callback(null, { nodes: [], relationships: [] })
@@ -437,6 +754,21 @@ export class ExplorerLocal extends Component<
           getEdgeTypeNeighbours={this.getEdgeTypeNeighbours.bind(this)}
           getHiddenEdgeTypes={this.getHiddenEdgeTypes.bind(this)}
           getWhoCanCallThis={this.getWhoCanCallThis.bind(this)}
+          getWhatAreTheArgs={this.getWhatAreTheArgs.bind(this)}
+          getInWhichClassIsItDefined={this.getInWhichClassIsItDefined.bind(
+            this
+          )}
+          getWhereIsMethodCalled={this.getWhereIsMethodCalled.bind(this)}
+          getAreAllCallsComingFromSameClass={this.getAreAllCallsComingFromSameClass.bind(
+            this
+          )}
+          getWhatCanUpdatethis={this.getWhatCanUpdatethis.bind(this)}
+          getWhereIsItDeclared={this.getWhereIsItDeclared.bind(this)}
+          getWhereIsItAccessed={this.getWhereIsItAccessed.bind(this)}
+          getWhereAreInstancesCreated={this.getWhereAreInstancesCreated.bind(
+            this
+          )}
+          getWhatDataCanWeAccess={this.getWhatDataCanWeAccess.bind(this)}
           onItemMouseOver={this.onItemMouseOver.bind(this)}
           onItemSelect={this.onItemSelect.bind(this)}
           graphStyle={graphStyle}

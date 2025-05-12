@@ -26,6 +26,15 @@ export class GraphEventHandler {
   getEdgeTypeNeighbours: any
   getHiddenEdgeTypes: any
   getWhoCanCallThis: any
+  getWhatAreTheArgs: any
+  getInWhichClassIsItDefined: any
+  getWhereIsMethodCalled: any
+  getAreAllCallsComingFromSameClass: any
+  getWhatCanUpdatethis: any
+  getWhereIsItDeclared: any
+  getWhereIsItAccessed: any
+  getWhereAreInstancesCreated: any
+  getWhatDataCanWeAccess: any
   graph: any
   graphView: any
   onGraphModelChange: any
@@ -40,6 +49,15 @@ export class GraphEventHandler {
     getEdgeTypeNeighbours: any,
     getHiddenEdgeTypes: any,
     getWhoCanCallThis: any,
+    getWhatAreTheArgs: any,
+    getInWhichClassIsItDefined: any,
+    getWhereIsMethodCalled: any,
+    getAreAllCallsComingFromSameClass: any,
+    getWhatCanUpdatethis: any,
+    getWhereIsItDeclared: any,
+    getWhereIsItAccessed: any,
+    getWhereAreInstancesCreated: any,
+    getWhatDataCanWeAccess: any,
     onItemMouseOver: any,
     onItemSelected: any,
     onGraphModelChange: any
@@ -51,6 +69,15 @@ export class GraphEventHandler {
     this.getEdgeTypeNeighbours = getEdgeTypeNeighbours
     this.getHiddenEdgeTypes = getHiddenEdgeTypes
     this.getWhoCanCallThis = getWhoCanCallThis
+    this.getWhatAreTheArgs = getWhatAreTheArgs
+    this.getInWhichClassIsItDefined = getInWhichClassIsItDefined
+    this.getWhereIsMethodCalled = getWhereIsMethodCalled
+    this.getAreAllCallsComingFromSameClass = getAreAllCallsComingFromSameClass
+    this.getWhatCanUpdatethis = getWhatCanUpdatethis
+    this.getWhereIsItDeclared = getWhereIsItDeclared
+    this.getWhereIsItAccessed = getWhereIsItAccessed
+    this.getWhereAreInstancesCreated = getWhereAreInstancesCreated
+    this.getWhatDataCanWeAccess = getWhatDataCanWeAccess
     this.selectedItem = null
     this.onItemMouseOver = onItemMouseOver
     this.onItemSelected = onItemSelected
@@ -218,7 +245,191 @@ export class GraphEventHandler {
     const graph = this.graph
     const graphView = this.graphView
     const graphModelChanged = this.graphModelChanged.bind(this)
-    this.getWhoCanCallThis(
+    this.getWhatAreTheArgs(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandInWhichClassIsItDefined(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getInWhichClassIsItDefined(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhereIsMethodCalled(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhereIsMethodCalled(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandAreAllCallsComingFromSameClass(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getAreAllCallsComingFromSameClass(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhatCanUpdatethis(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhatCanUpdatethis(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhereIsItDeclared(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhereIsItDeclared(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhereIsItAccessed(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhereIsItAccessed(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhereAreInstancesCreated(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhereAreInstancesCreated(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        graph.addExpandedNodes(d, mapNodes(nodes))
+        graph.addRelationships(mapRelationships(relationships, graph))
+        graphView.update()
+        graphModelChanged()
+      }
+    )
+  }
+
+  expandWhatDataCanWeAccess(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      return
+    }
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getWhatDataCanWeAccess(
       d,
       // edgeType,
       this.graph.findNodeNeighbourIds(d.id),
@@ -341,6 +552,29 @@ export class GraphEventHandler {
       .on('expandEdgeType', this.expandEdgeType.bind(this))
       .on('expandWhoCanCallThis', this.expandWhoCanCallThis.bind(this))
       .on('expandWhatAreTheArgs', this.expandWhatAreTheArgs.bind(this))
+      .on(
+        'expandInWhichClassIsItDefined',
+        this.expandInWhichClassIsItDefined.bind(this)
+      )
+      .on(
+        'expandWhereIsMethodCalled',
+        this.expandWhereIsMethodCalled.bind(this)
+      )
+      .on(
+        'expandAreAllCallsComingFromSameClass',
+        this.expandAreAllCallsComingFromSameClass.bind(this)
+      )
+      .on('expandWhatCanUpdatethis', this.expandWhatCanUpdatethis.bind(this))
+      .on('expandWhereIsItDeclared', this.expandWhereIsItDeclared.bind(this))
+      .on('expandWhereIsItAccessed', this.expandWhereIsItAccessed.bind(this))
+      .on(
+        'expandWhereAreInstancesCreated',
+        this.expandWhereAreInstancesCreated.bind(this)
+      )
+      .on(
+        'expandWhatDataCanWeAccess',
+        this.expandWhatDataCanWeAccess.bind(this)
+      )
       .on('nodeUnlock', this.nodeUnlock.bind(this))
     this.onItemMouseOut()
   }
