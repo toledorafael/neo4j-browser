@@ -2,7 +2,7 @@ import Logic from 'logic-solver'
 import 'regenerator-runtime/runtime.js'
 
 export default class SatSolver {
-  constructor (featureExpression) {
+  constructor(featureExpression) {
     if (featureExpression !== '') {
       var formula = this.parse(featureExpression)
       this.solver = new Logic.Solver()
@@ -88,11 +88,11 @@ export default class SatSolver {
       .replaceAll(/\s/g, '')
       .replaceAll('!', '-')
     if (
-      newFeatureExpression.includes('/\\') ||
-      newFeatureExpression.includes('\\/')
+      newFeatureExpression.includes('&&') ||
+      newFeatureExpression.includes('||')
     ) {
-      newFeatureExpression = newFeatureExpression.replaceAll('/\\', '*')
-      newFeatureExpression = newFeatureExpression.replaceAll('\\/', '+')
+      newFeatureExpression = newFeatureExpression.replaceAll('&&', '*')
+      newFeatureExpression = newFeatureExpression.replaceAll('||', '+')
       return this.parseNegation(newFeatureExpression)
     } else {
       return newFeatureExpression

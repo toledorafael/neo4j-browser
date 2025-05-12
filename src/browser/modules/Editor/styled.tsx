@@ -71,6 +71,11 @@ export const FlexContainer = styled.div`
   padding: 4px;
 `
 
+export const FlexContainerInvisible = styled.div`
+  display: none;
+  padding: 4px;
+`
+
 export const ScriptTitle = styled.div<{ unsaved: boolean }>`
   font-style: ${props => (props.unsaved ? 'italic' : 'normal')};
   border-bottom: 1px solid rgb(77, 74, 87, 0.3);
@@ -79,4 +84,22 @@ export const ScriptTitle = styled.div<{ unsaved: boolean }>`
   font-family: 'Fira Code', Monaco, 'Courier New', Terminal, monospace;
   font-size: 14px;
   line-height: 23px;
+`
+
+export const SearchBarContainer = styled.div`
+  max-width: 1000px;
+  margin: auto;
+  padding: 4px;
+  display: block;
+  z-index: 99 !important;
+`
+
+export const QueryStyleToggleWrapper = styled.label`
+  display: flex;
+  max-width: 1000px;
+  align-items: center;
+  font-size: 12px;
+  padding: 2px;
+  margin-left: 0.5em;
+  margin-top: 0.5em;
 `

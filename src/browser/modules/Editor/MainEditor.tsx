@@ -51,7 +51,10 @@ import {
   Header,
   EditorContainer,
   FlexContainer,
-  ScriptTitle
+  FlexContainerInvisible,
+  ScriptTitle,
+  SearchBarContainer,
+  QueryStyleToggleWrapper
 } from './styled'
 import { EditorButton, FrameButton } from 'browser-components/buttons'
 import {
@@ -80,6 +83,10 @@ import { getUseDb } from 'shared/modules/connections/connectionsDuck'
 import { getHistory } from 'shared/modules/history/historyDuck'
 import { defaultNameFromDisplayContent } from 'browser-components/SavedScripts'
 import { getParams } from 'shared/modules/params/paramsDuck'
+import SearchBar from './SearchBar'
+// import QuestionDisplay from './QuestionDisplay'
+import Switch from 'react-switch'
+import { Visibility } from 'semantic-ui-react'
 
 type EditorFrameProps = {
   bus: Bus
@@ -119,6 +126,11 @@ export function MainEditor({
   const [currentlyEditing, setCurrentlyEditing] = useState<SavedScript | null>(
     null
   )
+  const [queryArr, setQueryArr] = useState([''])
+  const [queryParams, setQueryParams] = useState([''])
+  const [questionArr, setQuestionArr] = useState([''])
+  const [textBoxVisibility, setTextboxVisibility] = useState([false, false])
+  const [cypherBarVisibility, setcypherBarVisibility] = useState(false)
   const editorRef = useRef<MonacoHandles>(null)
 
   const toggleFullscreen = () => {
@@ -251,6 +263,14 @@ export function MainEditor({
     }
   }
 
+  function changeQueryInterface() {
+    if (cypherBarVisibility == false) {
+      setcypherBarVisibility(true)
+    } else {
+      setcypherBarVisibility(false)
+    }
+  }
+
   function getName({ name, content, isProjectFile }: SavedScript) {
     if (name) {
       return name
@@ -260,6 +280,44 @@ export function MainEditor({
     }
 
     return defaultNameFromDisplayContent(content)
+  }
+
+  function updateEditor(queryItem?: any) {
+    let finalQuery = ''
+    let currQueryArr = []
+    if (queryItem) {
+      setQueryArr(queryItem.query)
+      setQuestionArr(queryItem.questionText)
+
+      if (queryItem.questionText.length == 1)
+        setTextboxVisibility([false, false])
+      if (queryItem.questionText.length == 2)
+        setTextboxVisibility([true, false])
+      if (queryItem.questionText.length == 3) setTextboxVisibility([true, true])
+
+      currQueryArr = queryItem.query
+    } else {
+      currQueryArr = queryArr
+    }
+    for (const index in currQueryArr) {
+      finalQuery += currQueryArr[index]
+      if (
+        queryParams[0] != '' &&
+        currQueryArr.length > 1 &&
+        queryParams.length > parseInt(index) &&
+        parseInt(index) + 1 != currQueryArr.length
+      ) {
+        finalQuery += queryParams[parseInt(index)]
+      }
+    }
+    editorRef.current?.setValue(finalQuery)
+  }
+
+  function handleParamInput(event: any, index: number) {
+    const params = queryParams
+    params[index] = event.target.value
+    setQueryParams(params)
+    updateEditor()
   }
 
   const showUnsaved = !!(
@@ -282,85 +340,254 @@ export function MainEditor({
           {currentlyEditing.isStatic ? ' (read-only)' : ''}
         </ScriptTitle>
       )}
-      <FlexContainer>
-        <Header>
-          <EditorContainer>
-            <Monaco
-              bus={bus}
-              enableMultiStatementMode={enableMultiStatementMode}
-              history={history}
-              fullscreen={isFullscreen}
-              toggleFullscreen={toggleFullscreen}
-              id={'main-editor'}
-              fontLigatures={codeFontLigatures}
-              onChange={() => {
-                setUnsaved(true)
-              }}
-              onDisplayHelpKeys={() =>
-                executeCommand(':help keys', commandSources.editor)
-              }
-              onExecute={createRunCommandFunction(commandSources.editor)}
-              ref={editorRef}
-              useDb={useDb}
-              params={params}
-            />
-          </EditorContainer>
-          {currentlyEditing && !currentlyEditing.isStatic && (
-            <EditorButton
-              data-testid="editor-Favorite"
-              onClick={() => {
-                setUnsaved(false)
-                const editorValue = editorRef.current?.getValue() || ''
-
-                const { isProjectFile, name } = currentlyEditing
-                if (isProjectFile && name) {
-                  addFile({
-                    variables: {
-                      projectId,
-                      fileUpload: new File([editorValue], name),
-                      overwrite: true
-                    }
-                  })
-                } else {
-                  updateFavorite(currentlyEditing.id, editorValue)
+      <QueryStyleToggleWrapper>
+        <span style={{ marginRight: '6px' }}>Question</span>
+        <Switch
+          onChange={() => changeQueryInterface()}
+          checked={cypherBarVisibility == true}
+          className="react-switch"
+          handleDiameter={16}
+          height={24}
+          width={48}
+          onColor="#8ecae6"
+          offColor="#181a1d"
+          checkedIcon={true}
+          uncheckedIcon={
+            false
+            // <svg
+            //   height="100%"
+            //   width="100%"
+            //   viewBox="0 0 24 48"
+            //   id="b"
+            //   xmlns="http://www.w3.org/2000/svg"
+            //   fill="#ffffff"
+            //   stroke="#ffffff"
+            //   strokeWidth=""
+            //   style={{
+            //     display: 'flex',
+            //     flexDirection: 'row',
+            //     alignItems: 'center'
+            //   }}
+            // >
+            //   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            //   <g
+            //     id="SVGRepo_tracerCarrier"
+            //     strokeLinecap="round"
+            //     strokeLinejoin="round"
+            //   ></g>
+            //   <g id="SVGRepo_iconCarrier">
+            //     <defs>
+            //       {/* <style>
+            //         {
+            //           'fill:none;stroke:#ffffff;stroke-linecap:round;stroke-linejoin:round;'
+            //         }
+            //       </style> */}
+            //     </defs>
+            //     <path d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"></path>
+            //   </g>
+            // </svg>
+            //   <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            //   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"/>
+            // </svg>
+            //   <svg class="w-[14px] h-[14px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            //   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.6" d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"/>
+            // </svg>
+          }
+        />
+        <span style={{ marginLeft: '6px' }}>Cypher</span>
+      </QueryStyleToggleWrapper>
+      {cypherBarVisibility ? (
+        <FlexContainer>
+          <Header>
+            <EditorContainer>
+              <Monaco
+                bus={bus}
+                enableMultiStatementMode={enableMultiStatementMode}
+                history={history}
+                fullscreen={isFullscreen}
+                toggleFullscreen={toggleFullscreen}
+                id={'main-editor'}
+                fontLigatures={codeFontLigatures}
+                onChange={() => {
+                  setUnsaved(true)
+                }}
+                onDisplayHelpKeys={() =>
+                  executeCommand(':help keys', commandSources.editor)
                 }
-                setCurrentlyEditing({
-                  ...currentlyEditing,
-                  content: editorValue
-                })
-              }}
-              key={'editor-Favorite'}
-              title={`Update ${
-                currentlyEditing.isProjectFile ? 'project file' : 'favorite'
-              }`}
-              icon={
-                currentlyEditing.isProjectFile
-                  ? updateFileIcon
-                  : updateFavoriteIcon
-              }
+                onExecute={createRunCommandFunction(commandSources.editor)}
+                ref={editorRef}
+                useDb={useDb}
+                params={params}
+              />
+            </EditorContainer>
+            {currentlyEditing && !currentlyEditing.isStatic && (
+              <EditorButton
+                data-testid="editor-Favorite"
+                onClick={() => {
+                  setUnsaved(false)
+                  const editorValue = editorRef.current?.getValue() || ''
+
+                  const { isProjectFile, name } = currentlyEditing
+                  if (isProjectFile && name) {
+                    addFile({
+                      variables: {
+                        projectId,
+                        fileUpload: new File([editorValue], name),
+                        overwrite: true
+                      }
+                    })
+                  } else {
+                    updateFavorite(currentlyEditing.id, editorValue)
+                  }
+                  setCurrentlyEditing({
+                    ...currentlyEditing,
+                    content: editorValue
+                  })
+                }}
+                key={'editor-Favorite'}
+                title={`Update ${
+                  currentlyEditing.isProjectFile ? 'project file' : 'favorite'
+                }`}
+                icon={
+                  currentlyEditing.isProjectFile
+                    ? updateFileIcon
+                    : updateFavoriteIcon
+                }
+                width={16}
+              />
+            )}
+            <EditorButton
+              data-testid="editor-Run"
+              onClick={createRunCommandFunction(commandSources.playButton)}
+              title={isMac ? 'Run (⌘↩)' : 'Run (ctrl+enter)'}
+              icon={runIcon}
+              key="editor-Run"
               width={16}
             />
-          )}
-          <EditorButton
-            data-testid="editor-Run"
-            onClick={createRunCommandFunction(commandSources.playButton)}
-            title={isMac ? 'Run (⌘↩)' : 'Run (ctrl+enter)'}
-            icon={runIcon}
-            key="editor-Run"
-            width={16}
-          />
-        </Header>
-        {buttons.map(({ onClick, icon, title, testId }) => (
-          <FrameButton
-            key={`frame-${title}`}
-            title={title}
-            onClick={onClick}
-            dataTestId={`editor-${testId}`}
-          >
-            {icon}
-          </FrameButton>
-        ))}
-      </FlexContainer>
+          </Header>
+          {buttons.map(({ onClick, icon, title, testId }) => (
+            <FrameButton
+              key={`frame-${title}`}
+              title={title}
+              onClick={onClick}
+              dataTestId={`editor-${testId}`}
+            >
+              {icon}
+            </FrameButton>
+          ))}
+        </FlexContainer>
+      ) : (
+        <div>
+          <SearchBar onSearchSelected={updateEditor}></SearchBar>
+
+          <FlexContainerInvisible>
+            <Header>
+              <EditorContainer>
+                <Monaco
+                  bus={bus}
+                  enableMultiStatementMode={enableMultiStatementMode}
+                  history={history}
+                  fullscreen={isFullscreen}
+                  toggleFullscreen={toggleFullscreen}
+                  id={'main-editor'}
+                  fontLigatures={codeFontLigatures}
+                  onChange={() => {
+                    setUnsaved(true)
+                  }}
+                  onDisplayHelpKeys={() =>
+                    executeCommand(':help keys', commandSources.editor)
+                  }
+                  onExecute={createRunCommandFunction(commandSources.editor)}
+                  ref={editorRef}
+                  useDb={useDb}
+                  params={params}
+                />
+              </EditorContainer>
+              {currentlyEditing && !currentlyEditing.isStatic && (
+                <EditorButton
+                  data-testid="editor-Favorite"
+                  onClick={() => {
+                    setUnsaved(false)
+                    const editorValue = editorRef.current?.getValue() || ''
+
+                    const { isProjectFile, name } = currentlyEditing
+                    if (isProjectFile && name) {
+                      addFile({
+                        variables: {
+                          projectId,
+                          fileUpload: new File([editorValue], name),
+                          overwrite: true
+                        }
+                      })
+                    } else {
+                      updateFavorite(currentlyEditing.id, editorValue)
+                    }
+                    setCurrentlyEditing({
+                      ...currentlyEditing,
+                      content: editorValue
+                    })
+                  }}
+                  key={'editor-Favorite'}
+                  title={`Update ${
+                    currentlyEditing.isProjectFile ? 'project file' : 'favorite'
+                  }`}
+                  icon={
+                    currentlyEditing.isProjectFile
+                      ? updateFileIcon
+                      : updateFavoriteIcon
+                  }
+                  width={16}
+                />
+              )}
+              {/* <EditorButton
+                data-testid="editor-Run"
+                onClick={createRunCommandFunction(commandSources.playButton)}
+                title={isMac ? 'Run (⌘↩)' : 'Run (ctrl+enter)'}
+                icon={runIcon}
+                key="editor-Run"
+                width={16}
+              /> */}
+            </Header>
+            {buttons.map(({ onClick, icon, title, testId }) => (
+              <FrameButton
+                key={`frame-${title}`}
+                title={title}
+                onClick={onClick}
+                dataTestId={`editor-${testId}`}
+              >
+                {icon}
+              </FrameButton>
+            ))}
+          </FlexContainerInvisible>
+          <div style={{ margin: '0.5em' }}>
+            {questionArr[0]}
+            {textBoxVisibility[0] && (
+              <input
+                style={{ width: '150px' }}
+                onChange={event => handleParamInput(event, 0)}
+              />
+            )}
+            {questionArr[1]}
+            {textBoxVisibility[1] && (
+              <input
+                style={{ width: '150px' }}
+                onChange={event => handleParamInput(event, 1)}
+              />
+            )}
+            {questionArr[2]}
+            {queryArr[0] != '' && (
+              <EditorButton
+                data-testid="editor-Run"
+                onClick={createRunCommandFunction(commandSources.playButton)}
+                title={isMac ? 'Run (⌘↩)' : 'Run (ctrl+enter)'}
+                icon={runIcon}
+                key="editor-Run"
+                width={16}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </MainEditorWrapper>
   )
 }
