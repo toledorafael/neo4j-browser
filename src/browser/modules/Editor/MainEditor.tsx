@@ -320,6 +320,13 @@ export function MainEditor({
     updateEditor()
   }
 
+  function updateEntityId(event: any) {
+    const startQuery = "MATCH (n{id:'"
+    const endQuery = "'}) RETURN n"
+    const finalQuery = startQuery + event.target.value + endQuery
+    editorRef.current?.setValue(finalQuery)
+  }
+
   const showUnsaved = !!(
     unsaved &&
     currentlyEditing &&
@@ -478,7 +485,26 @@ export function MainEditor({
         </FlexContainer>
       ) : (
         <div>
-          <SearchBar onSearchSelected={updateEditor}></SearchBar>
+          {/* <SearchBar onSearchSelected={updateEditor}></SearchBar> */}
+          <FlexContainer>
+            <Header>
+              <div style={{ margin: '0.5em' }}>
+                {'Search: '}
+                <input
+                  style={{ width: '150px' }}
+                  onChange={event => updateEntityId(event)}
+                />
+                <EditorButton
+                  data-testid="editor-Run"
+                  onClick={createRunCommandFunction(commandSources.playButton)}
+                  title={isMac ? 'Run (⌘↩)' : 'Run (ctrl+enter)'}
+                  icon={runIcon}
+                  key="editor-Run"
+                  width={16}
+                />
+              </div>
+            </Header>
+          </FlexContainer>
 
           <FlexContainerInvisible>
             <Header>
