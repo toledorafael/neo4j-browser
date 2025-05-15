@@ -57,7 +57,7 @@ function FrameTemplate({
   numRecords = 0,
   getRecords,
   visElement,
-  sidebar,
+  // sidebar,
   aside,
   statusbar
 }: FrameTemplateProps): JSX.Element {
@@ -122,7 +122,7 @@ function FrameTemplate({
         )}
 
         <StyledFrameBody fullscreen={isFullscreen} collapsed={isCollapsed}>
-          {sidebar && sidebar()}
+          {/* {sidebar && sidebar()} */}
           {aside && <StyledFrameAside>{aside}</StyledFrameAside>}
           <StyledFrameMainSection>
             <StyledFrameContents
