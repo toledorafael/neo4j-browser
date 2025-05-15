@@ -139,9 +139,9 @@ function OverviewPane({
   updateStyle,
   setLightTheme,
   setDarkTheme,
-  addFilterAction,
-  updateLayoutAction
-}: OverviewPaneProps): JSX.Element {
+  addFilterAction
+}: // updateLayoutAction
+OverviewPaneProps): JSX.Element {
   const [maxLabelsCount, setMaxLabelsCount] = useState(OVERVIEW_STEP_SIZE)
   const [maxRelationshipsCount, setMaxRelationshipsCount] = useState(
     OVERVIEW_STEP_SIZE
@@ -329,7 +329,7 @@ function OverviewPane({
 
         {/* Graph controlls */}
         {/* Input box to enter a new filter */}
-        <StyleInputDiv>
+        {/* <StyleInputDiv>
           <StyleTextArea
             placeholder="Feature expression"
             onChange={updateFeatureExpressionState}
@@ -337,10 +337,10 @@ function OverviewPane({
           <StyleSubmitButton onClick={handleSubmit}>
             Create filter
           </StyleSubmitButton>
-        </StyleInputDiv>
+        </StyleInputDiv> */}
 
         {/* Layout switcher */}
-        <div>
+        {/* <div>
           <PaneBodySectionHeader
             title={'Layout'}
             numOfElementsVisible={featureItems.length}
@@ -369,10 +369,10 @@ function OverviewPane({
               </StyleRelationshipLayoutButton>
             ))}
           </StyledLegendInlineList>
-        </div>
+        </div> */}
 
         {/* Theme switcher */}
-        <div>
+        {/* <div>
           <PaneBodySectionHeader
             title={'Theme'}
             numOfElementsVisible={2}
@@ -427,10 +427,10 @@ function OverviewPane({
             />
             <span style={{ marginLeft: '6px' }}>Light</span>
           </StyleToggleWrapper>
-        </div>
+        </div> */}
 
         {/* Legend for filters */}
-        {filters && filters.length > 0 && (
+        {/* {filters && filters.length > 0 && (
           <StyledGraphLegend>
             <table>
               <tr>
@@ -469,7 +469,7 @@ function OverviewPane({
               })}
             </table>
           </StyledGraphLegend>
-        )}
+        )} */}
       </PaneBody>
     </>
   )
