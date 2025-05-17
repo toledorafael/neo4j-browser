@@ -164,8 +164,13 @@ const createMenuListItem = function(
   selection: any,
   viz: any,
   buttonProps: any,
-  numberOfItems: any
+  numberOfItems: any,
+  queryResults: any
 ) {
+  // const menuItemsArr = selection.selectAll(`.context-menu-item`)
+  //If there is something being shown find path, labelPathn and tab for that instead of
+  // buttonProps.className
+  console.log(queryResults)
   let arcCentroid: any
   const path = selection
     .selectAll(`path.${buttonProps.className}`)
@@ -209,7 +214,13 @@ const createMenuListItem = function(
       .attr('width', 8.5 * buttonProps.textValue.length)
       .attr('rx', 5)
       .attr('ry', 5)
-      // .style("fill", "#f1f1f1")
+      .style('fill', () => {
+        if (queryResults[buttonProps.className.slice(7)] == false) {
+          return '#ff5050'
+        } else {
+          return '#fae08b'
+        }
+      })
       .style('opacity', 0)
 
     const menuItemLabel = labelPath
@@ -234,8 +245,8 @@ const createMenuListItem = function(
   }
 
   tab
-    .transition()
-    .duration(200)
+    // .transition()
+    // .duration(200)
     .attr({
       d(node: any) {
         // @ts-expect-error Expected 1-2 arguments, but got 0.ts(2554)
@@ -245,8 +256,8 @@ const createMenuListItem = function(
 
   path
     .exit()
-    .transition()
-    .duration(200)
+    // .transition()
+    // .duration(200)
     .attr({
       d(node: any) {
         // @ts-expect-error Expected 1-2 arguments, but got 0.ts(2554)
@@ -294,6 +305,9 @@ const createMenuList = function(selection: any, viz: any) {
   // const hiddenEdgeTypes = selection.data()[0].hiddenEdgeTypes
 
   const selectedNode = selection.data().filter((node: any) => node.selected)
+
+  let queryResults: any = {}
+
   let menuOptions: string[] = []
   // let menuOptionsQuestions: any[] = []
   if (selectedNode != undefined) {
@@ -302,7 +316,19 @@ const createMenuList = function(selection: any, viz: any) {
       // for (const key in selectedNode[0].hiddenEdgeTypes) {
       //   menuOptions.push(selectedNode[0].hiddenEdgeTypes[key].edgeType)
       // }
-
+      queryResults = {
+        WhoCanCallThis: selectedNode[0].WhoCanCallThis,
+        WhatAreTheArgs: selectedNode[0].WhatAreTheArgs,
+        InWhichClassIsItDefined: selectedNode[0].InWhichClassIsItDefined,
+        WhereIsMethodCalled: selectedNode[0].WhereIsMethodCalled,
+        AreAllCallsComingFromSameClass:
+          selectedNode[0].AreAllCallsComingFromSameClass,
+        WhatCanUpdatethis: selectedNode[0].WhatCanUpdatethis,
+        WhereIsItDeclared: selectedNode[0].WhereIsItDeclared,
+        WhereIsItAccessed: selectedNode[0].WhereIsItAccessed,
+        WhatDataCanWeAccess: selectedNode[0].WhatDataCanWeAccess,
+        WhereAreInstancesCreated: selectedNode[0].WhereAreInstancesCreated
+      }
       //TODO: Get menu options from the type of the node
       switch (selectedNode[0].labels[0]) {
         case 'cFunction':
@@ -323,21 +349,43 @@ const createMenuList = function(selection: any, viz: any) {
   const menuItemsArr = selection.selectAll(`.context-menu-item`)
   const shownButtonsLabels: any[] = []
 
-  if (menuOptions != undefined) {
-    if (menuOptions.length == 0 && menuItemsArr.length != 0) {
-      for (const menuItems of menuItemsArr) {
-        if (menuItems.length > 0) {
-          for (const item of menuItems) {
-            shownButtonsLabels.push(item.classList[0].slice(7))
-          }
-          break
+  if (menuItemsArr.some((e: any) => e.length != 0)) {
+    for (const menuItems of menuItemsArr) {
+      if (menuItems.length > 0) {
+        for (const item of menuItems) {
+          shownButtonsLabels.push(item.classList[0].slice(7))
         }
+        break
       }
     }
   }
 
-  if (menuOptions.length == 0 && shownButtonsLabels.length > 0) {
-    menuOptions = shownButtonsLabels
+  // if (menuOptions != undefined) {
+  //   if (menuOptions.length == 0 && menuItemsArr.length != 0) {
+  //     for (const menuItems of menuItemsArr) {
+  //       if (menuItems.length > 0) {
+  //         for (const item of menuItems) {
+  //           shownButtonsLabels.push(item.classList[0].slice(7))
+  //         }
+  //         break
+  //       }
+  //     }
+  //   }
+  // }
+
+  const selectionWithoutSelected = selection.filter((d: any) => {
+    return !d.selected
+  })
+  if (shownButtonsLabels.length > 0) {
+    if (menuOptions.length == 0) {
+      menuOptions = shownButtonsLabels
+    } else {
+      if (JSON.stringify(menuOptions) !== JSON.stringify(shownButtonsLabels)) {
+        // run createMenuListItem with showLabels array and selection without the selectedNode
+        menuOptions = shownButtonsLabels
+        selection = selectionWithoutSelected
+      }
+    }
   }
 
   const buttonsProps: any = []
@@ -355,7 +403,13 @@ const createMenuList = function(selection: any, viz: any) {
   }
 
   buttonsProps.forEach((button: any) => {
-    createMenuListItem(selection, viz, button, buttonsProps.length)
+    createMenuListItem(
+      selection,
+      viz,
+      button,
+      buttonsProps.length,
+      queryResults
+    )
   })
   // }
 }
