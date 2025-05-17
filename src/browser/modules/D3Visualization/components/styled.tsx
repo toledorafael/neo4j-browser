@@ -189,7 +189,7 @@ export const StyledSvgWrapper = styled.div`
 
     .context-menu-item-rect {
       pointer-events: none;
-      fill: rgb(250, 224, 139);
+      fill: #fae08b;
     }
   }
 `
