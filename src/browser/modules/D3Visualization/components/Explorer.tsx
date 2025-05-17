@@ -488,6 +488,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhatCanUpdatethis(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhatCanUpdatethis = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
