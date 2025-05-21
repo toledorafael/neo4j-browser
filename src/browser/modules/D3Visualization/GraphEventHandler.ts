@@ -205,10 +205,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -228,10 +235,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -251,10 +265,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -274,10 +295,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -297,10 +325,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -320,10 +355,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -343,10 +385,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -366,10 +415,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -389,10 +445,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -412,10 +475,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }
@@ -435,10 +505,17 @@ export class GraphEventHandler {
       this.graph.findNodeNeighbourIds(d.id),
       (err: any, { nodes, relationships }: any) => {
         if (err) return
-        graph.addExpandedNodes(d, mapNodes(nodes))
-        graph.addRelationships(mapRelationships(relationships, graph))
-        graphView.update()
-        graphModelChanged()
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
       }
     )
   }

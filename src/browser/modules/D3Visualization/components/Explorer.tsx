@@ -316,6 +316,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhoCanCallThis(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhoCanCallThis = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -350,6 +354,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhatAreTheArgs(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhatAreTheArgs = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -384,6 +392,10 @@ export class ExplorerLocal extends Component<
     this.props.getInWhichClassIsItDefined(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.InWhichClassIsItDefined = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -418,6 +430,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhereIsMethodCalled(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhereIsMethodCalled = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -454,6 +470,10 @@ export class ExplorerLocal extends Component<
       .then(
         (result: any) => {
           const nodes = result.nodes
+          const relationships = result.relationships
+          if (nodes.length == 0 && relationships.length == 0) {
+            node.AreAllCallsComingFromSameClass = false
+          }
           if (
             result.count >
             this.props.maxNeighbours - currentNeighbours.length
@@ -526,6 +546,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhereIsItDeclared(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhereIsItDeclared = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -560,6 +584,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhereIsItAccessed(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhereIsItAccessed = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -594,6 +622,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhereAreInstancesCreated(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhereAreInstancesCreated = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length
@@ -628,6 +660,10 @@ export class ExplorerLocal extends Component<
     this.props.getWhatDataCanWeAccess(node.id, currentNeighbours).then(
       (result: any) => {
         const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.WhatDataCanWeAccess = false
+        }
         if (
           result.count >
           this.props.maxNeighbours - currentNeighbours.length

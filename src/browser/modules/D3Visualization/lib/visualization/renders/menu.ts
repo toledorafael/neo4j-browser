@@ -170,7 +170,7 @@ const createMenuListItem = function(
   // const menuItemsArr = selection.selectAll(`.context-menu-item`)
   //If there is something being shown find path, labelPathn and tab for that instead of
   // buttonProps.className
-  console.log(queryResults)
+
   let arcCentroid: any
   const path = selection
     .selectAll(`path.${buttonProps.className}`)
