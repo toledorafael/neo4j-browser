@@ -223,8 +223,14 @@ export class GraphEventHandler {
   expandWhoCanCallThis(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhoCanCallThis == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhoCanCallThis = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -253,8 +259,14 @@ export class GraphEventHandler {
   expandWhatAreTheArgs(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhatAreTheArgs == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhatAreTheArgs = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -283,8 +295,14 @@ export class GraphEventHandler {
   expandInWhichClassIsItDefined(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtInWhichClassIsItDefined == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtInWhichClassIsItDefined = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -313,8 +331,14 @@ export class GraphEventHandler {
   expandWhereIsMethodCalled(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhereIsMethodCalled == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhereIsMethodCalled = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -343,8 +367,14 @@ export class GraphEventHandler {
   expandAreAllCallsComingFromSameClass(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtAreAllCallsComingFromSameClass == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtAreAllCallsComingFromSameClass = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -373,8 +403,14 @@ export class GraphEventHandler {
   expandWhatCanUpdatethis(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhatCanUpdatethis == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhatCanUpdatethis = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -403,8 +439,14 @@ export class GraphEventHandler {
   expandWhereIsItDeclared(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhereIsItDeclared == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhereIsItDeclared = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -433,8 +475,14 @@ export class GraphEventHandler {
   expandWhereIsItAccessed(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhereIsItAccessed == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhereIsItAccessed = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -463,8 +511,14 @@ export class GraphEventHandler {
   expandWhereAreInstancesCreated(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhereAreInstancesCreated == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhereAreInstancesCreated = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -493,8 +547,14 @@ export class GraphEventHandler {
   expandWhatDataCanWeAccess(d: any) {
     if (d.expanded) {
       this.nodeCollapse(d)
-      return
+      if (d.expandedAtWhatDataCanWeAccess == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
     }
+    d.expandedAtWhatDataCanWeAccess = true
     d.expanded = true
     const graph = this.graph
     const graphView = this.graphView
@@ -544,6 +604,19 @@ export class GraphEventHandler {
     this.graph.collapseNode(d)
     this.graphView.update()
     this.graphModelChanged()
+  }
+
+  resetExpansionFlags(d: any) {
+    d.expandedAtWhoCanCallThis = false
+    d.expandedAtWhatAreTheArgs = false
+    d.expandedAtInWhichClassIsItDefined = false
+    d.expandedAtWhereIsMethodCalled = false
+    d.expandedAtAreAllCallsComingFromSameClass = false
+    d.expandedAtWhatCanUpdatethis = false
+    d.expandedAtWhereIsItDeclared = false
+    d.expandedAtWhereIsItAccessed = false
+    d.expandedAtWhatDataCanWeAccess = false
+    d.expandedAtWhereAreInstancesCreated = false
   }
 
   onNodeMouseOver(node: any) {
