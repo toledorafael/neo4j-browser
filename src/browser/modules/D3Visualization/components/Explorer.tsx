@@ -77,6 +77,18 @@ type ExplorerComponentProps = {
   getWhereIsItAccessed: any
   getWhereAreInstancesCreated: any
   getWhatDataCanWeAccess: any
+  getIncomingVarInfFunc: any
+  getOutgoingCall: any
+  getOutgoingWrite: any
+  getOutgoingContainFunction: any
+  getIncomingParWrite: any
+  getIncomingVarWrite: any
+  getIncomingContainVariable: any
+  getOutgoingVarInfFunc: any
+  getOutgoingVarWrite: any
+  getOutgoingParWrite: any
+  getOutgoingInstanceOf: any
+  getOutgoingContain: any
   updateStyle: any
   frameHeight: number
   fullscreen: boolean
@@ -686,6 +698,462 @@ export class ExplorerLocal extends Component<
     )
   }
 
+  getIncomingVarInfFunc(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getIncomingVarInfFunc(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.IncomingVarInfFunc = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingCall(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingCall(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingCall = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingWrite(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingWrite(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingWrite = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingContainFunction(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingContainFunction(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingContainFunction = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getIncomingParWrite(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getIncomingParWrite(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.IncomingParWrite = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getIncomingVarWrite(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getIncomingVarWrite(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.IncomingVarWrite = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getIncomingContainVariable(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getIncomingContainVariable(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.IncomingContainVariable = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingVarInfFunc(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingVarInfFunc(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingVarInfFunc = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingVarWrite(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingVarWrite(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingVarWrite = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingParWrite(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingParWrite(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingParWrite = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingInstanceOf(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingInstanceOf(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingInstanceOf = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
+  getOutgoingContain(
+    node: any,
+    // edgeType: any,
+    currentNeighbours: any,
+    callback: any
+  ) {
+    if (currentNeighbours.length > this.props.maxNeighbours) {
+      callback(null, { nodes: [], relationships: [] })
+    }
+    this.props.getOutgoingContain(node.id, currentNeighbours).then(
+      (result: any) => {
+        const nodes = result.nodes
+        const relationships = result.relationships
+        if (nodes.length == 0 && relationships.length == 0) {
+          node.OutgoingContain = false
+        }
+        if (
+          result.count >
+          this.props.maxNeighbours - currentNeighbours.length
+        ) {
+          this.setState({
+            selectedItem: {
+              type: 'status-item',
+              item: `Rendering was limited to ${
+                this.props.maxNeighbours
+              } of the node's total ${result.count +
+                currentNeighbours.length} neighbours due to browser config maxNeighbours.`
+            }
+          })
+        }
+        callback(null, { nodes: nodes, relationships: result.relationships })
+      },
+      () => {
+        callback(null, { nodes: [], relationships: [] })
+      }
+    )
+  }
+
   getHiddenEdgeTypes(node: any, currentNeighbours: any, callback: any) {
     if (currentNeighbours.length > this.props.maxNeighbours) {
       callback(null, { nodes: [], relationships: [] })
@@ -809,6 +1277,22 @@ export class ExplorerLocal extends Component<
             this
           )}
           getWhatDataCanWeAccess={this.getWhatDataCanWeAccess.bind(this)}
+          getIncomingVarInfFunc={this.getIncomingVarInfFunc.bind(this)}
+          getOutgoingCall={this.getOutgoingCall.bind(this)}
+          getOutgoingWrite={this.getOutgoingWrite.bind(this)}
+          getOutgoingContainFunction={this.getOutgoingContainFunction.bind(
+            this
+          )}
+          getIncomingParWrite={this.getIncomingParWrite.bind(this)}
+          getIncomingVarWrite={this.getIncomingVarWrite.bind(this)}
+          getIncomingContainVariable={this.getIncomingContainVariable.bind(
+            this
+          )}
+          getOutgoingVarInfFunc={this.getOutgoingVarInfFunc.bind(this)}
+          getOutgoingVarWrite={this.getOutgoingVarWrite.bind(this)}
+          getOutgoingParWrite={this.getOutgoingParWrite.bind(this)}
+          getOutgoingInstanceOf={this.getOutgoingInstanceOf.bind(this)}
+          getOutgoingContain={this.getOutgoingContain.bind(this)}
           onItemMouseOver={this.onItemMouseOver.bind(this)}
           onItemSelect={this.onItemSelect.bind(this)}
           graphStyle={graphStyle}

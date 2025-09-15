@@ -273,18 +273,29 @@ const functionQuestions = [
   'WhoCanCallThis',
   'WhatAreTheArgs',
   'InWhichClassIsItDefined',
-  'WhereIsMethodCalled',
-  'AreAllCallsComingFromSameClass'
+  // 'WhereIsMethodCalled',
+  'AreAllCallsComingFromSameClass',
+  // 'IncomingVarInfFunc',
+  'OutgoingCall',
+  'OutgoingWrite',
+  'OutgoingContainFunction'
 ]
 
 const variableQuestions = [
   'WhatCanUpdatethis',
   'WhereIsItDeclared',
-  'WhereIsItAccessed',
-  'WhatDataCanWeAccess'
+  // 'WhereIsItAccessed',
+  'WhatDataCanWeAccess',
+  'IncomingParWrite',
+  'IncomingVarWrite',
+  // 'IncomingContainVariable',
+  // 'OutgoingVarInfFunc',
+  'OutgoingVarWrite',
+  'OutgoingParWrite',
+  'OutgoingInstanceOf'
 ]
 
-const classQuestions = ['WhereAreInstancesCreated']
+const classQuestions = ['WhereAreInstancesCreated', 'OutgoingContain']
 
 const questionLabels = {
   WhoCanCallThis: 'Who can call this?',
@@ -293,11 +304,24 @@ const questionLabels = {
   WhereIsMethodCalled: 'Where is this called?',
   AreAllCallsComingFromSameClass:
     'From which class are the calls to this coming from?',
-  WhatCanUpdatethis: 'Who can update this?',
+  WhatCanUpdatethis: 'Which function writes to this?',
   WhereIsItDeclared: 'Where is this declared?',
   WhereIsItAccessed: 'Where is this accessed?',
   WhatDataCanWeAccess: 'What data is contained in this object?',
-  WhereAreInstancesCreated: 'Where are instances of this class created?'
+  WhereAreInstancesCreated: 'What are instances of this class?',
+  IncomingVarInfFunc: 'Which variables may influence this function?',
+  OutgoingCall: 'Who can be called by this?',
+  OutgoingWrite: 'What variable does this function write to?',
+  OutgoingContainFunction: 'Which variable does this function contain?',
+  IncomingParWrite: 'Which variable is passed as this argument?',
+  IncomingVarWrite: 'Which variable writes to this variable?',
+  IncomingContainVariable: 'Which entity contains this variable?',
+  OutgoingVarInfFunc: 'Which function is influenced by this variable?',
+  OutgoingVarWrite: 'Which variable does this variable write to?',
+  OutgoingParWrite:
+    "Which function argument is assigned this variable's value?",
+  OutgoingInstanceOf: 'Which class does this variable instantiate?',
+  OutgoingContain: 'Which entities does this class contain?'
 }
 
 const createMenuList = function(selection: any, viz: any) {
@@ -327,7 +351,19 @@ const createMenuList = function(selection: any, viz: any) {
         WhereIsItDeclared: selectedNode[0].WhereIsItDeclared,
         WhereIsItAccessed: selectedNode[0].WhereIsItAccessed,
         WhatDataCanWeAccess: selectedNode[0].WhatDataCanWeAccess,
-        WhereAreInstancesCreated: selectedNode[0].WhereAreInstancesCreated
+        WhereAreInstancesCreated: selectedNode[0].WhereAreInstancesCreated,
+        IncomingVarInfFunc: selectedNode[0].IncomingVarInfFunc,
+        OutgoingCall: selectedNode[0].OutgoingCall,
+        OutgoingWrite: selectedNode[0].OutgoingWrite,
+        OutgoingContainFunction: selectedNode[0].OutgoingContainFunction,
+        IncomingParWrite: selectedNode[0].IncomingParWrite,
+        IncomingVarWrite: selectedNode[0].IncomingVarWrite,
+        IncomingContainVariable: selectedNode[0].IncomingContainVariable,
+        OutgoingVarInfFunc: selectedNode[0].OutgoingVarInfFunc,
+        OutgoingVarWrite: selectedNode[0].OutgoingVarWrite,
+        OutgoingParWrite: selectedNode[0].OutgoingParWrite,
+        OutgoingInstanceOf: selectedNode[0].OutgoingInstanceOf,
+        OutgoingContain: selectedNode[0].OutgoingContain
       }
       //TODO: Get menu options from the type of the node
       switch (selectedNode[0].labels[0]) {

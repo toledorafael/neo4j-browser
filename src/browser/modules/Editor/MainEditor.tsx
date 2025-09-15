@@ -131,6 +131,7 @@ export function MainEditor({
   const [questionArr, setQuestionArr] = useState([''])
   const [textBoxVisibility, setTextboxVisibility] = useState([false, false])
   const [cypherBarVisibility, setcypherBarVisibility] = useState(false)
+  const [entityName, setEntityName] = useState('')
   const editorRef = useRef<MonacoHandles>(null)
 
   const toggleFullscreen = () => {
@@ -260,6 +261,7 @@ export function MainEditor({
       editorRef.current?.setValue('')
       setCurrentlyEditing(null)
       setFullscreen(false)
+      setEntityName('')
     }
   }
 
@@ -321,7 +323,8 @@ export function MainEditor({
   }
 
   function updateEntityId(event: any) {
-    const startQuery = "MATCH (n{id:'"
+    setEntityName(event.target.value)
+    const startQuery = "MATCH (n{label:'"
     const endQuery = "'}) RETURN n"
     const finalQuery = startQuery + event.target.value + endQuery
     editorRef.current?.setValue(finalQuery)
@@ -491,8 +494,10 @@ export function MainEditor({
               <div style={{ margin: '0.5em' }}>
                 {'Search: '}
                 <input
-                  style={{ width: '150px' }}
+                  style={{ width: '250px' }}
                   onChange={event => updateEntityId(event)}
+                  value={entityName}
+                  placeholder="Enter entity name here..."
                 />
                 <EditorButton
                   data-testid="editor-Run"

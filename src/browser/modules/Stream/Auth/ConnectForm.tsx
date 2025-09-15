@@ -215,12 +215,12 @@ export default function ConnectForm(props: ConnectFormProps): JSX.Element {
         {props.authenticationMethod === NATIVE && (
           <StyledConnectionFormEntry>
             <StyledConnectionLabel>
-              Participant ID
+              {/* Participant ID
               <StyledConnectionTextInput
                 data-testid="participant"
                 onChange={props.onParticipantIDChange}
                 defaultValue={props.participantID}
-              />
+              /> */}
             </StyledConnectionLabel>
           </StyledConnectionFormEntry>
         )}

@@ -94,16 +94,16 @@ export class ConnectionForm extends Component<any, ConnectionFormState> {
       requestedUseDb: '',
       ...connection,
       // host: generateBoltUrl(allowedSchemes, connection.host),
-      // host: 'neo4j+s://a21eca6b.databases.neo4j.io',
-      host: 'bolt://localhost:7687',
+      host: 'neo4j+s://64514eef.databases.neo4j.io',
+      // host: 'bolt://localhost:7687',
       authenticationMethod,
       isLoading: false,
       passwordChangeNeeded: props.passwordChangeNeeded || false,
       forcePasswordChange: props.forcePasswordChange || false,
       successCallback: props.onSuccess || (() => {}),
       used: props.isConnected,
-      // password: 'zejihIlW2eSZtwZ8mcAiCDlA-t13bbCFop71rD4EmRE',
-      password: '',
+      password: 'HH5xKdoXPohUBbZ_bRnvaTESF27-XwPn8MWZC8_Kw5M',
+      // password: '',
       username: 'neo4j'
     }
   }

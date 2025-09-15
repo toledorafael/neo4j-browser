@@ -35,6 +35,18 @@ export class GraphEventHandler {
   getWhereIsItAccessed: any
   getWhereAreInstancesCreated: any
   getWhatDataCanWeAccess: any
+  getIncomingVarInfFunc: any
+  getOutgoingCall: any
+  getOutgoingWrite: any
+  getOutgoingContainFunction: any
+  getIncomingParWrite: any
+  getIncomingVarWrite: any
+  getIncomingContainVariable: any
+  getOutgoingVarInfFunc: any
+  getOutgoingVarWrite: any
+  getOutgoingParWrite: any
+  getOutgoingInstanceOf: any
+  getOutgoingContain: any
   graph: any
   graphView: any
   onGraphModelChange: any
@@ -58,6 +70,18 @@ export class GraphEventHandler {
     getWhereIsItAccessed: any,
     getWhereAreInstancesCreated: any,
     getWhatDataCanWeAccess: any,
+    getIncomingVarInfFunc: any,
+    getOutgoingCall: any,
+    getOutgoingWrite: any,
+    getOutgoingContainFunction: any,
+    getIncomingParWrite: any,
+    getIncomingVarWrite: any,
+    getIncomingContainVariable: any,
+    getOutgoingVarInfFunc: any,
+    getOutgoingVarWrite: any,
+    getOutgoingParWrite: any,
+    getOutgoingInstanceOf: any,
+    getOutgoingContain: any,
     onItemMouseOver: any,
     onItemSelected: any,
     onGraphModelChange: any
@@ -78,6 +102,18 @@ export class GraphEventHandler {
     this.getWhereIsItAccessed = getWhereIsItAccessed
     this.getWhereAreInstancesCreated = getWhereAreInstancesCreated
     this.getWhatDataCanWeAccess = getWhatDataCanWeAccess
+    this.getIncomingVarInfFunc = getIncomingVarInfFunc
+    this.getOutgoingCall = getOutgoingCall
+    this.getOutgoingWrite = getOutgoingWrite
+    this.getOutgoingContainFunction = getOutgoingContainFunction
+    this.getIncomingParWrite = getIncomingParWrite
+    this.getIncomingVarWrite = getIncomingVarWrite
+    this.getIncomingContainVariable = getIncomingContainVariable
+    this.getOutgoingVarInfFunc = getOutgoingVarInfFunc
+    this.getOutgoingVarWrite = getOutgoingVarWrite
+    this.getOutgoingParWrite = getOutgoingParWrite
+    this.getOutgoingInstanceOf = getOutgoingInstanceOf
+    this.getOutgoingContain = getOutgoingContain
     this.selectedItem = null
     this.onItemMouseOver = onItemMouseOver
     this.onItemSelected = onItemSelected
@@ -580,6 +616,438 @@ export class GraphEventHandler {
     )
   }
 
+  expandIncomingVarInfFunc(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtIncomingVarInfFunc == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtIncomingVarInfFunc = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getIncomingVarInfFunc(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingCall(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingCall == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingCall = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingCall(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingWrite(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingWrite == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingWrite = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingWrite(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingContainFunction(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingContainFunction == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingContainFunction = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingContainFunction(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandIncomingParWrite(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtIncomingParWrite == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtIncomingParWrite = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getIncomingParWrite(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandIncomingVarWrite(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtIncomingVarWrite == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtIncomingVarWrite = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getIncomingVarWrite(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandIncomingContainVariable(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtIncomingContainVariable == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtIncomingContainVariable = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getIncomingContainVariable(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingVarInfFunc(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingVarInfFunc == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingVarInfFunc = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingVarInfFunc(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingVarWrite(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingVarWrite == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingVarWrite = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingVarWrite(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingParWrite(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingParWrite == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingParWrite = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingParWrite(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
+  expandOutgoingInstanceOf(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingInstanceOf == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingInstanceOf = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingInstanceOf(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+  // OutgoingContain: 'Which entities does this class contain?'
+  expandOutgoingContain(d: any) {
+    if (d.expanded) {
+      this.nodeCollapse(d)
+      if (d.expandedAtOutgoingContain == true) {
+        this.resetExpansionFlags(d)
+        return
+      } else {
+        this.resetExpansionFlags(d)
+      }
+    }
+    d.expandedAtOutgoingContain = true
+    d.expanded = true
+    const graph = this.graph
+    const graphView = this.graphView
+    const graphModelChanged = this.graphModelChanged.bind(this)
+    this.getOutgoingContain(
+      d,
+      // edgeType,
+      this.graph.findNodeNeighbourIds(d.id),
+      (err: any, { nodes, relationships }: any) => {
+        if (err) return
+        if (nodes.length > 0 || relationships.length > 0) {
+          graph.addExpandedNodes(d, mapNodes(nodes))
+          graph.addRelationships(mapRelationships(relationships, graph))
+          graphView.update()
+          graphModelChanged()
+        } else {
+          d.expanded = false
+          graphView.update()
+          graphModelChanged()
+          return
+        }
+      }
+    )
+  }
+
   getEdgeTypes(d: any) {
     // d.expanded = true
     const graph = this.graph
@@ -617,6 +1085,18 @@ export class GraphEventHandler {
     d.expandedAtWhereIsItAccessed = false
     d.expandedAtWhatDataCanWeAccess = false
     d.expandedAtWhereAreInstancesCreated = false
+    d.expandedAtIncomingVarInfFunc = false
+    d.expandedAtOutgoingCall = false
+    d.expandedAtOutgoingWrite = false
+    d.expandedAtOutgoingContainFunction = false
+    d.expandedAtIncomingParWrite = false
+    d.expandedAtIncomingVarWrite = false
+    d.expandedAtIncomingContainVariable = false
+    d.expandedAtOutgoingVarInfFunc = false
+    d.expandedAtOutgoingVarWrite = false
+    d.expandedAtOutgoingParWrite = false
+    d.expandedAtOutgoingInstanceOf = false
+    d.expandedAtOutgoingContain = false
   }
 
   onNodeMouseOver(node: any) {
@@ -725,6 +1205,24 @@ export class GraphEventHandler {
         'expandWhatDataCanWeAccess',
         this.expandWhatDataCanWeAccess.bind(this)
       )
+      .on('expandIncomingVarInfFunc', this.expandIncomingVarInfFunc.bind(this))
+      .on('expandOutgoingCall', this.expandOutgoingCall.bind(this))
+      .on('expandOutgoingWrite', this.expandOutgoingWrite.bind(this))
+      .on(
+        'expandOutgoingContainFunction',
+        this.expandOutgoingContainFunction.bind(this)
+      )
+      .on('expandIncomingParWrite', this.expandIncomingParWrite.bind(this))
+      .on('expandIncomingVarWrite', this.expandIncomingVarWrite.bind(this))
+      .on(
+        'expandIncomingContainVariable',
+        this.expandIncomingContainVariable.bind(this)
+      )
+      .on('expandOutgoingVarInfFunc', this.expandOutgoingVarInfFunc.bind(this))
+      .on('expandOutgoingVarWrite', this.expandOutgoingVarWrite.bind(this))
+      .on('expandOutgoingParWrite', this.expandOutgoingParWrite.bind(this))
+      .on('expandOutgoingInstanceOf', this.expandOutgoingInstanceOf.bind(this))
+      .on('expandOutgoingContain', this.expandOutgoingContain.bind(this))
       .on('nodeUnlock', this.nodeUnlock.bind(this))
     this.onItemMouseOut()
   }

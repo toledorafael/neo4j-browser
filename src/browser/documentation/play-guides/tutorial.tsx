@@ -36,30 +36,31 @@ const slides = [
       <h3>Tutorial</h3>
       <p className="lead">
         In this tutorial, you will learn how to use <em>Neo4j Browser</em> to
-        visualize analysis results of configurable programs.
+        comprehend program behaviour.
       </p>
     </div>
     <div className="col-sm-9">
       <p>
-        This interface comprises the top bar (the neo4j$ prompt above), where
-        you can run queries over the database, and the list of visualization
-        frames (not yet shown - these will be visible after you pose a query),
-        in which you can visualize and inspect the results of the query. A
-        visualization frame can be maximized to fullscreen and closed whenever
-        you want by clicking the icons at the top.
+        This interface comprises the top bar (the Search box above), where you
+        can search for program entities (functions, variables, and classes) in
+        the model, and the list of visualization frames (not yet shown - these
+        will be visible after you search for an entity), in which you can
+        visualize and inspect the results of the search. A visualization frame
+        can be maximized to fullscreen and closed whenever you want by clicking
+        the icons at the top.
       </p>
       <p>This guide will show you how to:</p>
       <ol className="big">
-        <li>Run a query about configurable program data</li>
-        <li>Customize the visualization of the results</li>
-        <li>Add filters representing different program variants</li>
+        <li>Search for a program entity in the model</li>
+        <li>Pose questions about the shown entities</li>
+        <li>Expand the model to explore the code behaviour</li>
       </ol>
       <p></p>
       <p>
-        Note that you are not expected to learn the query language. All required
-        queries will be provided to you during the study. Click on the arrows on
-        the sides or bottom of this visualization frame to navigate through the
-        tutorial.
+        The code you will use in this study implements the game of Chess. We
+        will use parts of that code as examples in this tutorial. Click on the
+        arrows on the sides or bottom of this visualization frame to navigate
+        through the tutorial.
       </p>
     </div>
   </Slide>,
@@ -70,38 +71,43 @@ const slides = [
         {' '}
         A program comprises entities (e.g., classes, variables, functions) and
         the relationships between them (e.g., function calls, variable reads,
-        class containment). A graph representing such a program includes nodes
-        representing the entities and links indicating the relationships
-        established in the code.{' '}
+        class containment). A graphical model representing such a program
+        includes nodes representing the entities and links indicating the
+        relationships established in the code.{' '}
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        Consider a function that updates the <i>name</i> attribute of a{' '}
-        <i>Node</i> object contained in the Graph Application program:
+        Consider a function named <b>isPinned</b> that checks if a chess piece
+        is pinned by temporarily moving the piece and checking if the move
+        results in the king piece being in "check":
       </h5>
       <figure>
         <pre className="code">
-          {`void GraphApp::updateName(std::string nodeName, std::string newName) {
-   for (int i=0; i < nodes.size(); i++) {
-       if (nodes[i]->getName() == nodeName) {
-           nodes[i]->setName(newName);
-       }
-   }
+          {`bool Board::isPinned(int start, int dest) {
+  
+  bool side = arr[start]->getSide();
+  Board boardCopy = *this;
+  Move move{start, dest};
+  boardCopy.movePiece(move);
+  if (boardCopy.isInCheck(side)) {
+    return false;
+  }
+  return true;
 }`}
         </pre>
       </figure>
       <h5>
-        Now click on the following query and hit the play button beside the top
-        bar to create a new visualization frame with the graphical
-        representation of this program.
+        To find the graphical representation of this function in the model, type{' '}
+        <b>"isPinned"</b> in the Search box at the top bar and click the blue
+        play button to query the model for an entity with that name.
       </h5>
-      <pre className="pre-scrollable code runnable remove-play-icon">
+      {/* <pre className="pre-scrollable code runnable remove-play-icon">
         {
           'MATCH (a:cFunction)-[b]->(c) WHERE a.label CONTAINS "updateName" RETURN *'
         }
-      </pre>
+      </pre> */}
     </div>
   </Slide>,
   <Slide key="s3">
@@ -116,11 +122,11 @@ const slides = [
     </div>
     <div className="col-sm-9">
       <h5>
-        You can reposition the nodes by dragging them around. If you hover or
-        click on any node or link of the graph, the overview on the sidebar is
-        replaced by the information associated with the selected element. To
-        return to the overview, you need to deselect the clicked entity. You can
-        do that by clicking on the background or the selected entity once.
+        You can reposition the node by dragging it around. If you hover or click
+        on any node of the graph, the overview on the sidebar is replaced by the
+        information associated with the selected element. To return to the
+        overview, you need to deselect the clicked entity. You can do that by
+        clicking on the background or the selected entity once.
       </h5>
       <h5>
         You can pan and zoom the visualization in the frame if you want. You can
@@ -130,12 +136,10 @@ const slides = [
         clicking on the <img src="./assets/images/expand.svg" width={10} />
         &nbsp;button on the top right corner.
       </h5>
-      <h5>
-        As a first task, find the node that represents the function updateName.
-        What is the id of such a node?
-      </h5>
+      {/* <h5>
+        As a first task, find what are the args of the isPinned function?
+      </h5> */}
 
-      <h5>When you are ready, move to the next page to check your answer.</h5>
       <br />
       {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
     </div>
@@ -144,288 +148,419 @@ const slides = [
     <div className="col-sm-3">
       <h3>Graphical program data</h3>
       <p className="lead">
-        The new frame shows the data returned by the executed query. The sidebar
-        on the right provides an overview of the node labels and relationships
-        types present in the visualization.
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click a node, the interface opens a donut menu with
+        the options of questions one can ask about the node.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        The correct answer is <b>46</b>.
+        For example, consider we are interested in learning what the arguments
+        of the function <b>isPinned</b> are. Click the node to open the question
+        menu and click the option "What are the args for this?" to expand the
+        graph and expose the nodes representing the function's arguments.
+      </h5>
+      <h5>
+        <pre className="code">
+          {`bool Board::isPinned(int start, int dest) {
+  ...
+  }`}
+        </pre>
+      </h5>
+      <h5>
+        You should see the variable nodes <b>start</b> and <b>dest</b> connected
+        to the function through a <i>contain</i> link.
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s3">
+    <div className="col-sm-3">
+      <h3>Graphical program data</h3>
+      <p className="lead">
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click a node, the interface opens a donut menu with
+        the options of questions one can ask about the node.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        Suppose you are wondering which functions can be called by{' '}
+        <b>isPinned</b>. Click the node to open the question menu and click the
+        option "Who can be called by this?" to expand the graph and expose the
+        nodes representing the function being called.
+      </h5>
+
+      <h5>
+        <pre className="code">
+          {`bool Board::isPinned(int start, int dest) {
+  
+  bool side = arr[start]->getSide();
+  ...
+  ...
+  boardCopy.movePiece(move);
+  if (boardCopy.isInCheck(side)) {
+    ...
+  }
+  ...
+}`}
+        </pre>
+      </h5>
+      <h5>
+        You should see functions <b>getSide</b>, <b>movePiece</b>, and{' '}
+        <b>isInCheck</b>.
+      </h5>
+      {/* <h5>
+        As a first task, find what are the args of the isPinned function?
+      </h5> */}
+
+      <br />
+      {/* <img src="./assets/images/codeSnippet.png" width={700} /> */}
+    </div>
+  </Slide>,
+  <Slide key="s3">
+    <div className="col-sm-3">
+      <h3>Graphical program data</h3>
+      <p className="lead">
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click a node, the interface opens a donut menu with
+        the options of questions one can ask about the node.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        The links between <b>isPinned</b> and functions <b>getSide</b>,{' '}
+        <b>movePiece</b>, and <b>isInCheck</b> represent direct calls. If we are
+        interested in learning about indirect calls executed by <b>isPinned</b>{' '}
+        we must asked the same question to the added nodes.
+      </h5>
+
+      <h5>
+        For example, check if <b>isInCheck</b> calls any function. Click on the
+        node <b>isInCheck</b> and ask the question "Who can be called by this?"
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s3">
+    <div className="col-sm-3">
+      <h3>Graphical program data</h3>
+      <p className="lead">
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click a node, the interface opens a donut menu with
+        the options of questions one can ask about the node.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        You should see function <b>isUnderAttack</b>. The current state of the
+        model tells us that <b>isPinned</b> can indirectly call{' '}
+        <b>isUnderAttack</b>. Since its call to <b>isInCheck</b> can lead to the
+        execution of <b>isUnderAttack</b>.
+      </h5>
+
+      <h5>
+        Identifying all indirect calls of a function requires the expansion of
+        the call path until there are no new links to expand.
       </h5>
     </div>
   </Slide>,
   <Slide key="s5">
     <div className="col-sm-3">
-      <h3>Customizing visualization</h3>
+      <h3>Program comprehension questions</h3>
       <p className="lead">
-        The sidebar provides customization options to change visual attributes
-        of the nodes and links. The customization menu appears whenever you
-        click on a node label or relationship type listed in the overview. The
-        star sign (*) represents visual attributes applied to all links.
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <img
-        src="./assets/images/customizeVisual.gif"
-        alt="Customization options"
-      />
-      <h5>The customization menu includes the following options: </h5>
-      <ol>
-        <li>Turn on/off the visibility of nodes and links</li>
-        <li>Change the colours and diameter of nodes</li>
-        <li>Change the width of links</li>
+      <p>
+        The models in <em>Neo4j Browser</em> include the following types of
+        links:
+      </p>
+      <ol className="big">
+        <li>
+          <b>
+            <i>function1</i>
+          </b>{' '}
+          <u>call</u>{' '}
+          <b>
+            <i>function2</i>
+          </b>
+          : <i>function1</i> calls <i>function2</i>{' '}
+        </li>
+        <li>
+          <b>
+            <i>function</i>
+          </b>{' '}
+          <u>write</u>{' '}
+          <b>
+            <i>variable</i>
+          </b>
+          : <i>function</i> assigns data to <i>variable</i>
+        </li>
+        <li>
+          <b>
+            <i>variable</i>
+          </b>{' '}
+          <u>instanceOf</u>{' '}
+          <b>
+            <i>class</i>
+          </b>
+          : <i>variable</i> stores an instance of <i>class</i> (or <i>struct</i>
+          )
+        </li>
+        <li>
+          <b>
+            <i>entity1</i>
+          </b>{' '}
+          <u>contain</u>{' '}
+          <b>
+            <i>entity2</i>
+          </b>
+          : <i>entity1</i> contains <i>entity2</i> in some form; for instance, a
+          class contain a function
+        </li>
+        <li>
+          <b>
+            <i>variable1</i>
+          </b>{' '}
+          <u>varWrite</u>{' '}
+          <b>
+            <i>variable2</i>
+          </b>
+          : <i>variable1</i> is used in an assignment to <i>variable2</i>
+        </li>
+        <li>
+          <b>
+            <i>variable1</i>
+          </b>{' '}
+          <u>parWrite</u>{' '}
+          <b>
+            <i>variable2</i>
+          </b>
+          : <i>variable1</i> is an actual parameter whose value is passed to
+          formal parameter <i>variable2</i>
+        </li>
       </ol>
+
+      <p>
+        Control flow paths in the code are defined as sequences of <i>call</i>{' '}
+        links. Data flow paths are sequences of variable assignments (
+        <i>varWrite</i>), parameter passing (<i>parWrite</i>), and function
+        return values (<i>retWrite</i>).
+      </p>
     </div>
   </Slide>,
   <Slide key="s6">
     <div className="col-sm-3">
-      <h3>Customizing visualization</h3>
+      <h3>Program comprehension questions</h3>
       <p className="lead">
-        The sidebar provides customization options to change the visual
-        attributes of the nodes and links. The customization menu appears
-        whenever you click on a node label or relationship type listed in the
-        overview. The star sign (*) represents visual attributes applied to all
-        links.
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        To experiment with the customization options, perform the following
-        tasks on the query results:{' '}
+        To illustrate the representation of dataflow links, consider the
+        function <b>generateMove</b>:
       </h5>
-      <ol>
-        <li>Set the colour of cVariables to red</li>
-        <li>Set the colour of cFunctions to dark blue</li>
-        <li>
-          Set the width of all the links to the fourth thickest option available
-        </li>
-      </ol>
-      <h5>You can move to the next slide when you are done.</h5>
+
+      <h5>
+        <pre className="code">
+          {`Move Level1::generateMove() const {
+  ...
+  std::vector<int> canMove;
+  ...
+  int rand1 = rand() % canMove.size();
+  ...
+}`}
+        </pre>
+      </h5>
+      <h5>
+        Search for the node repesenting the variable <b>rand1</b>. Note that an
+        assignment to the variable is executed within the function, which means
+        that clicking on the question button "Which function writes to this?"
+        adds a new node representing the function <b>generateMove</b> and a{' '}
+        <i>write</i>.
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s6">
+    <div className="col-sm-3">
+      <h3>Program comprehension questions</h3>
+      <p className="lead">
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        <pre className="code">
+          {`Move Level1::generateMove() const {
+  ...
+  std::vector<int> canMove;
+  ...
+  int rand1 = rand() % canMove.size();
+  ...
+  }`}
+        </pre>
+        <h5>
+          Similarly, note that vector <b>canMove</b> is used in the assignment
+          to <b>rand1</b>. Then, clicking on question button "Which variable
+          writes to this variable?" adds the node representing <b>canMove</b>{' '}
+          and a <i>varWrite</i> link.
+        </h5>
+      </h5>
+      <h5></h5>
+    </div>
+  </Slide>,
+  <Slide key="s6">
+    <div className="col-sm-3">
+      <h3>Program comprehension questions</h3>
+      <p className="lead">
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        To illustrate the representation of dataflow links through parameter
+        passing, consider the function <b>kingMoves</b>:
+      </h5>
+
+      <h5>
+        <pre className="code">
+          {`vector<int> Board::kingMoves(int coord, bool side) {
+    ...
+        if (isUnderAttack(whiteKing, side) != -1) {}
+        ...
+}`}
+        </pre>
+      </h5>
+      <h5>
+        Search for the node repesenting the function <b>isUnderAttack</b>. In
+        the code, note that function <b>isUnderAttack</b> is called and passed
+        two actual parameter <b>whiteKing</b> and <b>side</b>. To find the
+        formal parameters of the function in the graph, click on the question
+        "What are the args of this?", and add nodes <b>coord</b> and <b>side</b>
+        .
+      </h5>
+    </div>
+  </Slide>,
+  <Slide key="s6">
+    <div className="col-sm-3">
+      <h3>Program comprehension questions</h3>
+      <p className="lead">
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
+      </p>
+      <br />
+    </div>
+    <div className="col-sm-9">
+      <h5>
+        <pre className="code">
+          {`vector<int> Board::kingMoves(int coord, bool side) {
+    ...
+        if (isUnderAttack(whiteKing, side) != -1) {}
+        ...
+}`}
+        </pre>
+        <h5>
+          For this example, let's focus on the parameter <b>side</b>. Select
+          that node and click on the question "Which variable is passed as this
+          argument?". The graph is expanded by adding two nodes also named{' '}
+          <b>side</b> and two <i>parWrite</i> links connecting them to the
+          original <b>side</b>. To identify which of the nodes represents the
+          formal parameter <b>side</b> declared in the signature of{' '}
+          <b>kingMoves</b> above, you can ask the question "Where is this
+          declared?" about each of the new nodes. Only one of them should be
+          connected to function <b>kingMoves</b> through a <i>contain</i> link.
+        </h5>
+
+        <h5>
+          Feel free to proceed to the next slide once you identify the correct
+          node.
+        </h5>
+      </h5>
+      <h5></h5>
     </div>
   </Slide>,
   <Slide key="s7">
     <div className="col-sm-3">
-      <h3>Customizing visualization</h3>
+      <h3>Program comprehension questions</h3>
       <p className="lead">
-        If you set the visual attributes correctly, your graph should look like
-        the following:
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
-      <img src="./assets/images/colouredGraph.png" height="400" />
+      <h5>
+        After posing a question the graph will expand to include the query's
+        results. You can remove the query results by re-clicking on the button
+        of the posed question. Also, clicking on another menu option will remove
+        the results of the previous query and reveal the results of the new
+        query.
+      </h5>
+
+      <h5>
+        If you pose a question that does not change the graph, meaning the
+        question's answer is an empty set, <em>Neo4j Browser</em> will not make
+        any changes to the graph (including not removing the results of the
+        previous query). Instead, the yellow box around the question label will
+        turn red to indicate that the results were empty.
+      </h5>
     </div>
   </Slide>,
   <Slide key="s8">
     <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
+      <h3>Program comprehension questions</h3>
       <p className="lead">
-        Software configuration is a fundamental aspect of software development.
-        It is the ability to create software variants for different contexts of
-        use. Engineers can create a configurable program that encompasses
-        multiple program variants that share common code. Variability occurs by
-        enabling or disabling portions of the code that implements optional
-        software features.
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        In the example programs used in the study, boolean flags called feature
-        variables represent whether the corresponding features are enabled or
-        not. In this codebase, feature variables have the prefix 'k' in their
-        names. For example, in the following code snippet, the feature
-        <i>kUndirected</i> must be enabled, as well as, one of <b>kBFS</b> or{' '}
-        <b>kDFS</b> for the instructions inside the condition block to execute.
-      </h5>
-      <figure>
-        <pre className="code">
-          {`void GraphApp::connectedComponents() {
-    if ((kBFS || kDFS) && kUndirected) {
-        clearVisited();
-        int compNum = 3;
-        ...
-    }
-}`}
-        </pre>
-      </figure>
-      <h5>
-        In the corresponding graph of program data, the links associated with
-        these instructions (i.e., the call to function <i>clearVisited()</i> and
-        the declaration and assignment to variable <i>compNum</i>) are
-        conditional on whether features <b>kUndirected</b>, <b>kBFS</b>, and{' '}
-        <b>kDFS</b> are enabled or disabled. Links that are conditional are
-        annotated with presence conditions, which are boolean expressions over
-        the feature variables.
-      </h5>
-      <img src="./assets/images/presenceCondition.png" />
-      <h5>
-        The operations in presence conditions are AND ('/\'), OR ('\/'), and NOT
-        ('!').
-      </h5>
-    </div>
-  </Slide>,
-  // Filter introduction
-  <Slide key="s9">
-    <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
-      <p className="lead">
-        The visualization frame allows you to customize and highlight the links
-        that are associated with specific program variants. To access such
-        customization options, you must create a filter describing the feature
-        configuration of the variant of interest.
-      </p>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        The form to create a new filter appears in the top left corner of the
-        visualization frame when it is in fullscreen mode.
-      </h5>
-      <img src="./assets/images/createFilter.gif" />
-      <h5>
-        As an example, let's apply a filter on the small graph. Run the
-        following query to retrieve the graph:
-      </h5>
-      <pre className="pre-scrollable code runnable remove-play-icon">
-        {
-          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) RETURN *'
-        }
-      </pre>
-      <h5>
-        Once the results of the query are displayed, maximize the visualization
-        frame, type <b>"kDFS /\ !kBFS /\ kUndirected"</b> in the textbox, and
-        click on the button below the textbox to create a filter for program
-        variants that satisfy the provided filter condition. The links whose
-        presence conditions satisfy the filter condition are highlighted.
+        To experiment with the interface, check which function may call the
+        function <b>legalSlidingMoves</b>. Use the question options to identify
+        the name of that function. Move to the next slide to check your answer.
       </h5>
     </div>
   </Slide>,
   <Slide key="s10">
     <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
+      <h3>Program comprehension questions</h3>
       <p className="lead">
-        The visualization frame allows you to customize and highlight the links
-        that are associated with specific program variants. To access such
-        customization options, you must create a filter describing the feature
-        configuration of the variant of interest.
+        <em>Neo4j Browser</em> answers questions you may have about the nodes in
+        the model. When you click on a node, the interface opens a donut menu
+        with the options of questions one can ask about the node.
       </p>
       <br />
     </div>
     <div className="col-sm-9">
       <h5>
-        There are four options for the style of highlighting filtered links:
-      </h5>
-      <h5>
-        <ol>
-          <li>
-            <b>Colour segments:</b> links that satisfy multiple filters have
-            multiple coloured segments
-          </li>
-          <li>
-            <b>Colour stripes:</b> links that satisfy multiple filters have
-            coloured stripes that span the length of the link
-          </li>
-          <li>
-            <b>Individual links:</b> there is a coloured instance of the link
-            for each satisfying filter
-          </li>
-          <li>
-            <b>Colour and shape segments:</b> links that satisfy multiple
-            filters have segments of different colour and shape
-          </li>
-        </ol>
-      </h5>
-      <h5>
-        To explore the layout options, you can create a second filter. Please
-        type <b>"!kDFS /\ kBFS /\ kUndirected"</b> to create a filter with a
-        different configuration. Feel free to experiment and get familiar with
-        the style options.
+        The function that can call <i>legalSlidingMoves</i> is named{' '}
+        <b>legalMoves</b>.
       </h5>
     </div>
   </Slide>,
   <Slide key="s11">
-    <div className="col-sm-3">
-      <h3>Configurable program graph</h3>
-      <p className="lead">
-        The visualization frame allows you to customize and highlight the links
-        that are associated with specific program variants. To access such
-        customization options, you must create a filter describing the feature
-        configuration of the variant of interest.
-      </p>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        Note the legend at the bottom left corner and the sidebar on the right
-        include the list of active filters. The legend includes buttons for the
-        two link-colour themes: dark and light.
-      </h5>
-      <h5>
-        Clicking on a filter label on the sidebar opens up the customization
-        menu for that particular filter.
-      </h5>
-      <img src="./assets/images/customizeFilter.gif" />
-      <h5>
-        The menu includes a set of available colours to customize the visual
-        encoding of the filters. When using the colour and shape segments, the
-        menu also includes options of shapes for the highlighted links. The
-        customization menu also includes the button to remove the selected
-        filter. Please make sure to delete all the filters you have created
-        before moving to the next slide.
-      </h5>
-    </div>
-  </Slide>,
-  // End of filter's introduction
-  <Slide key="s12">
-    <div className="col-sm-3">
-      <h3>Demo task</h3>
-      <br />
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        The tasks comprising this study will ask you to understand how entities
-        and relationships vary in different program variants, by examining the
-        corresponding graph of program data that includes conditional
-        relationships labelled with presence conditions. As an example, consider
-        the graph returned by the following query:
-      </h5>
-      <pre className="pre-scrollable code runnable remove-play-icon">
-        {
-          'MATCH (f1:cFunction{label:"DFS"})<-[r]-(g:cFunction{label:"conComps"})-[t]->(f2:cFunction{label:"BFS"}) MATCH (g)-[s:write]->(o:cVariable{label:"compNum"}) MATCH (p:cFunction{label:"execComnd"})-[u]->(g) RETURN *'
-        }
-      </pre>
-      <h5>
-        In which of the program variants the execution of function{' '}
-        <i>conComps</i> does not trigger any function calls?
-        <ul>
-          <li>V1: kConnectedComps /\ kDFS /\ !kBFS /\ kUndirected</li>
-          <li>V2: kConnectedComps /\ !kDFS /\ kBFS /\ kUndirected</li>
-          <li>V3: kConnectedComps /\ !kDFS /\ kBFS /\ !kUndirected</li>
-        </ul>
-      </h5>
-    </div>
-  </Slide>,
-  <Slide key="s13">
-    <div className="col-sm-3">
-      <h3>Demo task</h3>
-      <p className="lead"></p>
-    </div>
-    <div className="col-sm-9">
-      <h5>
-        The correct answer is <b>V3</b>. In that variant, <i>conComps</i> is
-        called by
-        <i>execComnd</i> but it does not call <i>DFS</i> or <i>BFS</i>. Whereas
-        in V1 and V2, either <i>DFS</i> or <i>BFS</i> are called. Take your time
-        to go back to the graph to understand the correct answer, if necessary.
-      </h5>
-    </div>
-  </Slide>,
-  <Slide key="s14">
     <div className="col-sm-3">
       <h3>End of tutorial</h3>
       <p className="lead">
@@ -433,15 +568,14 @@ const slides = [
       </p>
     </div>
     <div className="col-sm-9">
-      When you are ready, remove the filters that you have created, close the
-      visualization frames with results of previous queries (clicking on the 'X'
-      at the right top corner of each frame), click on the following query and
-      hit the play button beside the top bar to initialize a new frame with the
-      tasks for our user study.
+      When you are ready, close the visualization frame with results of the
+      tutorial questions (clicking on the 'X' at the right top corner of each
+      frame), and let the researcher know you are ready to proceed with the
+      study.
     </div>
-    <pre className="pre-scrollable code runnable remove-play-icon">
+    {/* <pre className="pre-scrollable code runnable remove-play-icon">
       {':play study'}
-    </pre>
+    </pre> */}
   </Slide>
 ]
 

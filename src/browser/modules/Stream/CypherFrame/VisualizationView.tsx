@@ -479,7 +479,6 @@ export class Visualization extends Component<any, VisualizationState> {
     })
   }
 
-  //Requires reviewing
   getWhereIsItAccessed(id: any, currentNeighbourIds = []) {
     const query = `MATCH path1 = (v: cVariable)-[:obj]->(c:cClass)
                    MATCH path2 = (c)-[:contain]->(f:cVariable)
@@ -519,6 +518,426 @@ export class Visualization extends Component<any, VisualizationState> {
 
   getWhereAreInstancesCreated(id: any, currentNeighbourIds = []) {
     const query = `MATCH path = (t:cClass)<-[:instanceOf]-(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getIncomingVarInfFunc(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cFunction)<-[:varInfFunc]-(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingCall(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cFunction)-[:call]->(v:cFunction)
+    WHERE id(t) = ${id}
+    AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+    RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingWrite(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cFunction)-[:write]->(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingContainFunction(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cFunction)-[:contain]->(v:cVariable)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getIncomingParWrite(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)<-[:parWrite]-(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getIncomingVarWrite(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)<-[:varWrite]-(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getIncomingContainVariable(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)<-[:contain]-(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingVarInfFunc(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)-[:varInfFunc]->(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingVarWrite(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)-[:varWrite]->(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingParWrite(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)-[:parWrite]->(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingInstanceOf(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cVariable)-[:instanceOf]->(v)
+                   WHERE id(t) = ${id}
+                   AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
+                   RETURN distinct path`
+    return new Promise((resolve, reject) => {
+      this.props.bus &&
+        this.props.bus.self(
+          CYPHER_REQUEST,
+          { query: query, queryType: NEO4J_BROWSER_USER_ACTION_QUERY },
+          (response: any) => {
+            if (!response.success) {
+              reject(new Error())
+            } else {
+              // const count =
+              //   response.result.records.length > 0
+              //     ? parseInt(response.result.records[0].get('c').toString())
+              //     : 0
+              const resultGraph = bolt.extractNodesAndRelationshipsFromRecordsForOldVis(
+                response.result.records,
+                false,
+                this.props.maxFieldItems
+              )
+              this.autoCompleteRelationships(
+                this.graph._nodes,
+                resultGraph.nodes
+              )
+              // resolve({ ...resultGraph, count: count })
+              resolve({ ...resultGraph })
+            }
+          }
+        )
+    })
+  }
+
+  getOutgoingContain(id: any, currentNeighbourIds = []) {
+    const query = `MATCH path = (t:cClass)-[:contain]->(v)
                    WHERE id(t) = ${id}
                    AND NOT (id(v) IN[${currentNeighbourIds.join(',')}])
                    RETURN distinct path`
@@ -690,6 +1109,22 @@ export class Visualization extends Component<any, VisualizationState> {
             this
           )}
           getWhatDataCanWeAccess={this.getWhatDataCanWeAccess.bind(this)}
+          getIncomingVarInfFunc={this.getIncomingVarInfFunc.bind(this)}
+          getOutgoingCall={this.getOutgoingCall.bind(this)}
+          getOutgoingWrite={this.getOutgoingWrite.bind(this)}
+          getOutgoingContainFunction={this.getOutgoingContainFunction.bind(
+            this
+          )}
+          getIncomingParWrite={this.getIncomingParWrite.bind(this)}
+          getIncomingVarWrite={this.getIncomingVarWrite.bind(this)}
+          getIncomingContainVariable={this.getIncomingContainVariable.bind(
+            this
+          )}
+          getOutgoingVarInfFunc={this.getOutgoingVarInfFunc.bind(this)}
+          getOutgoingVarWrite={this.getOutgoingVarWrite.bind(this)}
+          getOutgoingParWrite={this.getOutgoingParWrite.bind(this)}
+          getOutgoingInstanceOf={this.getOutgoingInstanceOf.bind(this)}
+          getOutgoingContain={this.getOutgoingContain.bind(this)}
           nodes={this.state.nodes}
           relationships={this.state.relationships}
           fullscreen={this.props.fullscreen}
