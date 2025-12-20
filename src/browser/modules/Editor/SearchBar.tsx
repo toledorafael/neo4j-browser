@@ -513,8 +513,8 @@ function SearchBar({ onSearchSelected }: { onSearchSelected: any }) {
       id: 35,
       name: 'Who can call this?',
       query: [
-        'MATCH (f1:cFunction)-[:call]->(f2:cFunction{id:"',
-        '"}) RETURN distincgt f1'
+        'MATCH (f1:cFunction)-[r:call]->(f2:cFunction{id:"',
+        '"}) RETURN *'
       ],
       questionText: ['Who can call this (', ')?']
     }
