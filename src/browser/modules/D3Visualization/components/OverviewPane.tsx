@@ -396,7 +396,7 @@ function OverviewPane({
         {/* Input box to enter a new filter */}
         <StyleInputDiv>
           <StyleTextArea
-            placeholder="Feature expression"
+            placeholder="Configuration expression"
             onChange={updateFeatureExpressionState}
           />
           <StyleSubmitButton onClick={handleSubmit}>
