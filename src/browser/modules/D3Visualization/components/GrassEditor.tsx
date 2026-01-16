@@ -473,6 +473,9 @@ export class GrassEditorComponent extends Component<
     this.props.palette.conditionColors.forEach((color, i) => {
       style[`--condition-color${i}`] = color
     })
+    this.props.palette.tableConditionColors.forEach((color, i) => {
+      style[`--table-condition-color${i}`] = color
+    })
     style['--graph-internal-text-color'] = this.props.palette.textColor
     style['--graph-condition-text-color'] = this.props.palette.condColor
     return (

@@ -55,8 +55,15 @@ import { LayoutState, updateLayoutAction } from 'shared/modules/layout/layout'
 import { Action, Dispatch } from 'redux'
 import { getPatternDashes } from '../lib/visualization/utils/pattern'
 import { featureItems, relationshipLayouts } from './Graph'
-import { StyleRelationshipLayoutButton } from 'browser/modules/DBMSInfo/styled'
+import {
+  StyleRelationshipLayoutButton,
+  StyledLayoutWrapper
+} from 'browser/modules/DBMSInfo/styled'
 import Switch from 'react-switch'
+import {
+  PathColorMapState,
+  rerenderPathColorMapAction
+} from 'shared/modules/pathColorMap/pathColorMap'
 
 type PaneBodySectionHeaderProps = {
   title: string
@@ -106,11 +113,11 @@ type OverviewPaneProps = {
   filters: FilterState
   layout: LayoutState
   palette: PaletteState
+  pathColorMap: PathColorMapState
   hiddenNodeLabels: string[]
   hiddenRelationshipTypes: string[]
   setNodeLabelVisibility: (label: string, value: boolean) => void
   setRelTypeVisibility: (type: string, value: boolean) => void
-  patternSelectorVisible: boolean
   updateStyle: any
   setLightTheme: () => void
   setDarkTheme: () => void
@@ -131,11 +138,11 @@ function OverviewPane({
   filters,
   layout,
   palette,
+  pathColorMap,
   hiddenNodeLabels,
   hiddenRelationshipTypes,
   setNodeLabelVisibility,
   setRelTypeVisibility,
-  patternSelectorVisible,
   updateStyle,
   setLightTheme,
   setDarkTheme,
@@ -171,13 +178,17 @@ function OverviewPane({
   const totalNumOfLabelTypes = labels ? Object.keys(labels).length : 0
   const totalNumOfRelTypes = relTypes ? Object.keys(relTypes).length : 0
 
-  const [currentLayout, setCurrentLayout] = useState(
+  /* const [currentLayout, setCurrentLayout] = useState(
     relationshipLayouts[featureItems[0].items[0].id]
-  )
+  ) */
   const [featureExpressionLayout, setFeatureExpressionLayout] = useState(
     layout ? layout : featureItems[0]
   )
   const [newConditionType, setNewConditionType] = useState('')
+  const [isPatternSelectorVisible, setIsPatternSelectorVisible] = useState(
+    relationshipLayouts[featureExpressionLayout.items[0].id].localPattern ||
+      false
+  )
 
   const handleSubmit = () => {
     if (newConditionType) {
@@ -193,12 +204,8 @@ function OverviewPane({
         (input: any) => (input.value = '')
       )
 
-      /* const stats = getGraphStats(graph)
-      const newstats = {
-        labels: stats.labels,
-        relTypes: stats.relTypes
-      }
-      onGraphModelChange(newstats) */
+      // Update context
+      rerenderPathColorMapAction(!pathColorMap.shouldRerender)
     }
   }
 
@@ -301,7 +308,7 @@ function OverviewPane({
                   selectedFilter={{
                     condition: filter
                   }}
-                  patternSelectorVisible={patternSelectorVisible}
+                  patternSelectorVisible={isPatternSelectorVisible}
                 />
               ))}
             </StyledLegendInlineList>
@@ -325,50 +332,6 @@ function OverviewPane({
             `Displaying ${numberToUSLocale(
               nodeCount
             )} nodes, ${numberToUSLocale(relationshipCount)} relationships.`}
-        </div>
-
-        {/* Graph controlls */}
-        {/* Input box to enter a new filter */}
-        <StyleInputDiv>
-          <StyleTextArea
-            placeholder="Feature expression"
-            onChange={updateFeatureExpressionState}
-          />
-          <StyleSubmitButton onClick={handleSubmit}>
-            Create filter
-          </StyleSubmitButton>
-        </StyleInputDiv>
-
-        {/* Layout switcher */}
-        <div>
-          <PaneBodySectionHeader
-            title={'Layout'}
-            numOfElementsVisible={featureItems.length}
-            totalNumOfElements={featureItems.length}
-          />
-          <StyledLegendInlineList>
-            {featureItems.map(featureItem => (
-              <StyleRelationshipLayoutButton
-                className={
-                  featureItem === featureExpressionLayout ? 'selected' : ''
-                }
-                key={featureItem.display}
-                onClick={() => {
-                  if (featureExpressionLayout !== featureItem) {
-                    updateLayoutAction(featureItem)
-                    log('change to ' + featureItem.display)
-
-                    setFeatureExpressionLayout(featureItem)
-                    setCurrentLayout(
-                      relationshipLayouts[featureItem.items[0].id]
-                    )
-                  }
-                }}
-              >
-                {featureItem.display}
-              </StyleRelationshipLayoutButton>
-            ))}
-          </StyledLegendInlineList>
         </div>
 
         {/* Theme switcher */}
@@ -429,7 +392,58 @@ function OverviewPane({
           </StyleToggleWrapper>
         </div>
 
+        {/* Graph controlls */}
+        {/* Input box to enter a new filter */}
+        <StyleInputDiv>
+          <StyleTextArea
+            placeholder="Configuration expression"
+            onChange={updateFeatureExpressionState}
+          />
+          <StyleSubmitButton onClick={handleSubmit}>
+            Create filter
+          </StyleSubmitButton>
+        </StyleInputDiv>
+
+        {/* Layout switcher */}
+        <div>
+          <PaneBodySectionHeader
+            title={'Layout'}
+            numOfElementsVisible={featureItems.length}
+            totalNumOfElements={featureItems.length}
+          />
+          <StyledLegendInlineList>
+            {featureItems.map(featureItem => {
+              return (
+                <StyledLayoutWrapper key={featureItem.display}>
+                  <StyleRelationshipLayoutButton
+                    className={
+                      featureItem === featureExpressionLayout ? 'selected' : ''
+                    }
+                    key={featureItem.display}
+                    onClick={() => {
+                      if (featureExpressionLayout !== featureItem) {
+                        updateLayoutAction(featureItem)
+                        log('change to ' + featureItem.display)
+
+                        setFeatureExpressionLayout(featureItem)
+                        setIsPatternSelectorVisible(
+                          relationshipLayouts[featureItem.items[0].id]
+                            .localPattern || false
+                        )
+                      }
+                    }}
+                  >
+                    {featureItem.display}
+                  </StyleRelationshipLayoutButton>
+                  <img src={featureItem.example} height="26" />
+                </StyledLayoutWrapper>
+              )
+            })}
+          </StyledLegendInlineList>
+        </div>
+
         {/* Legend for filters */}
+        {/*
         {filters && filters.length > 0 && (
           <StyledGraphLegend>
             <table>
@@ -469,7 +483,7 @@ function OverviewPane({
               })}
             </table>
           </StyledGraphLegend>
-        )}
+        )} */}
       </PaneBody>
     </>
   )
@@ -480,7 +494,9 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
   setDarkTheme: () => dispatch(presetPaletteAction('dark')),
   addFilterAction: (filter: string) => dispatch(addFilterAction(filter)),
   updateLayoutAction: (layout: LayoutState) =>
-    dispatch(updateLayoutAction(layout))
+    dispatch(updateLayoutAction(layout)),
+  rerenderPathColorMapAction: (shouldRerender: boolean) =>
+    dispatch(rerenderPathColorMapAction(shouldRerender))
 })
 
 export default connect(
@@ -488,7 +504,8 @@ export default connect(
     graphStyleData: actions.getGraphStyleData(state),
     filters: state.filters,
     layout: state.layout,
-    palette: state.palette
+    palette: state.palette,
+    pathColorMap: state.pathColorMap
   }),
   mapDispatchToProps
 )(OverviewPane)

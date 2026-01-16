@@ -44,6 +44,7 @@ export const StyledLabel = styled(chip)`
 `
 export const StyledRelationship = styled(chip)`
   border-radius: 3px;
+  opacity: 0.7;
   &:hover,
   &:focus,
   &:visited {
@@ -64,6 +65,7 @@ export const StyledProperty = styled(chip)`
   }
 `
 export const StyleRelationshipLayoutButton = styled(chip)`
+  word-break: keep-all !important;
   border-radius: 3px;
   background-color: #dadfe1;
   color: #6c7a89;
@@ -76,6 +78,11 @@ export const StyleRelationshipLayoutButton = styled(chip)`
     background: #95a5a6;
     color: white;
   }
+`
+
+export const StyledLayoutWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
 `
 
 export const StyledTable = styled.table``

@@ -65,6 +65,8 @@ import {
 import { PaletteState } from './modules/palette/palette'
 import { FilterState } from './modules/filters/filters'
 import { LayoutState } from './modules/layout/layout'
+import { PathColorMapState } from './modules/pathColorMap/pathColorMap'
+import { SelectionState } from './modules/selection/selection'
 
 export interface GlobalState {
   [settings]: typeof settingsInitialState
@@ -91,4 +93,6 @@ export interface GlobalState {
   palette: PaletteState
   filters: FilterState
   layout: LayoutState
+  pathColorMap: PathColorMapState
+  selection: SelectionState
 }

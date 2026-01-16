@@ -80,6 +80,7 @@ import RelatableView, {
 } from 'browser/modules/Stream/CypherFrame/relatable-view'
 import { requestExceedsVisLimits } from 'browser/modules/Stream/CypherFrame/helpers'
 import { GlobalState } from 'shared/globalState'
+import { getGraphStats } from 'browser/modules/D3Visualization/mapper'
 
 type CypherFrameBaseProps = {
   frame: Frame
@@ -334,7 +335,11 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
             updated={this.props.request.updated}
             fullscreen={this.state.fullscreen}
             assignVisElement={(svgElement: any, graphElement: any) => {
-              this.visElement = { svgElement, graphElement, type: 'plan' }
+              this.visElement = {
+                svgElement,
+                graphElement,
+                type: 'plan'
+              }
               this.setState({ hasVis: true })
             }}
             setPlanExpand={(planExpand: PlanExpand) =>
@@ -349,7 +354,11 @@ export class CypherFrame extends Component<CypherFrameProps, CypherFrameState> {
             updated={this.props.request.updated}
             frameHeight={this.state.frameHeight}
             assignVisElement={(svgElement: any, graphElement: any) => {
-              this.visElement = { svgElement, graphElement, type: 'graph' }
+              this.visElement = {
+                svgElement,
+                graphElement,
+                type: 'graph'
+              }
               this.setState({ hasVis: true })
             }}
             initialNodeDisplay={this.props.initialNodeDisplay}

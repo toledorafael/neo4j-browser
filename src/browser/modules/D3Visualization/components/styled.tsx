@@ -22,7 +22,8 @@ import styled from 'styled-components'
 
 export const legendRowHeight = 32
 export const inspectorFooterContractedHeight = 22
-export const panelMinWidth = 200
+export const panelMinWidth = 320
+export const tablePanelMinWidth = 500
 
 export const StyledSvgWrapper = styled.div`
   line-height: 0;
@@ -215,6 +216,7 @@ export const StyledLabelToken = styled(StyledToken)`
   cursor: default;
 `
 export const StyledTokenRelationshipType = styled(StyledToken)`
+  opacity: 0.7;
   padding: 4px 7px 4px 5px;
   border-radius: 3px;
   word-break: break-all;
@@ -255,9 +257,11 @@ export const StyledPickerSelector = styled.a`
   margin-top: 1px;
   line-height: 0;
   cursor: pointer;
-  opacity: 0.4;
   &:hover {
-    opacity: 1;
+    > .ring {
+      stroke: #fdcc59;
+      opacity: 0.3;
+    }
   }
   &.active {
     opacity: 1;
@@ -265,6 +269,12 @@ export const StyledPickerSelector = styled.a`
 `
 export const StyledCircleSelector = styled(StyledPickerSelector)`
   border-radius: 50%;
+  &:hover {
+    box-shadow: 0 0 0 1.5px #9195a0;
+  }
+  &.active {
+    box-shadow: 0 0 0 1.5px black;
+  }
 `
 export const StyledCaptionSelector = styled.a`
   cursor: pointer;
@@ -389,7 +399,7 @@ export const StyledZoomHolder = styled.div<{
 }>`
   position: ${props => (props.fullscreen ? 'fixed' : 'absolute')};
   bottom: 0;
-  right: 0;
+  right: ${props => props.offset}px;
   padding: 6px 6px 0 6px;
   border-left: ${props => props.theme.inFrameBorder};
   border-right: ${props => props.theme.inFrameBorder};
@@ -422,10 +432,11 @@ export const StyledZoomButton = styled.button`
 `
 
 export const StyledNodeInspectorContainer = styled.div<{
+  position: string
   width: number
 }>`
   position: absolute;
-  left: 0px;
+  ${props => (props.position === 'left' ? `left: 0px;` : `right: 0px;`)}
   top: 3px;
   z-index: 1;
   width: ${props => props.width}px;
@@ -440,10 +451,11 @@ export const StyledNodeInspectorContainer = styled.div<{
 `
 export const StyledNodeInspectorTopMenuChevron = styled.div<{
   expanded: boolean
+  position: string
 }>`
   cursor: pointer;
   position: absolute;
-  left: 0px;
+  ${props => (props.position === 'left' ? `left: 0px;` : `right: 20px;`)}
   top: 6px;
   z-index: 2;
   width: 32px;

@@ -204,6 +204,7 @@ export class Visualization extends Component<any, VisualizationState> {
             this.autoCompleteCallback = callback
           }}
           setGraph={this.setGraph.bind(this)}
+          result={this.props.result}
         />
       </StyledVisContainer>
     )
